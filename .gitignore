@@ -1,11 +1,14 @@
 *.log
 .DS_Store
 .env
-.env.backup
-.env.production
+.env.*
+!.env.example
+/docs
 .phpactor.json
 .phpunit.result.cache
 /.codex
+/.agents
+/.claude
 /.cursor/
 /.idea
 /.nova
