@@ -17,9 +17,16 @@
                 <p class="text-gray-600">Anda login sebagai <strong>Admin / Staff Operasional</strong>. Sesuai PRD FoodFlow, Anda memiliki hak akses untuk:</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <div class="border border-blue-200 rounded-lg p-4 bg-blue-50/50">
-                        <div class="font-semibold text-blue-900 mb-1">Pengelolaan Pengguna</div>
-                        <p class="text-sm text-gray-600">Kelola akun pengguna, status akun (Aktif/Tidak Aktif), dan hak akses.</p>
+                    <div class="border border-blue-200 rounded-lg p-4 bg-blue-50/50 flex flex-col justify-between">
+                        <div>
+                            <div class="font-semibold text-blue-900 mb-1">Pengelolaan Pengguna</div>
+                            <p class="text-sm text-gray-600">Kelola akun pengguna, status akun (Aktif/Tidak Aktif), dan hak akses.</p>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-blue-100">
+                            <a href="{{ route('admin.users.index') }}" class="inline-flex items-center text-xs font-semibold text-blue-700 hover:text-blue-900">
+                                Buka Kelola Pengguna &rarr;
+                            </a>
+                        </div>
                     </div>
                     <div class="border border-blue-200 rounded-lg p-4 bg-blue-50/50">
                         <div class="font-semibold text-blue-900 mb-1">Master Data & Pesanan</div>
