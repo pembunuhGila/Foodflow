@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
@@ -34,6 +35,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::put('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+
+    // Permintaan Pemulihan Kata Sandi (UC-02)
+    Route::get('/password-resets', [PasswordResetRequestController::class, 'index'])->name('password-resets.index');
+    Route::put('/password-resets/{passwordReset}/approve', [PasswordResetRequestController::class, 'approve'])->name('password-resets.approve');
+    Route::patch('/password-resets/{passwordReset}/reject', [PasswordResetRequestController::class, 'reject'])->name('password-resets.reject');
 });
 
 // 2. Staff Gudang / Inventory

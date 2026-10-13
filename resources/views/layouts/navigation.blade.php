@@ -20,6 +20,10 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Kelola Pengguna') }}
                         </x-nav-link>
+
+                        <x-nav-link :href="route('admin.password-resets.index')" :active="request()->routeIs('admin.password-resets.*')">
+                            {{ __('Permintaan Reset PW') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -85,6 +89,10 @@
             @if (Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Kelola Pengguna') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.password-resets.index')" :active="request()->routeIs('admin.password-resets.*')">
+                    {{ __('Permintaan Reset PW') }}
                 </x-responsive-nav-link>
             @endif
         </div>
