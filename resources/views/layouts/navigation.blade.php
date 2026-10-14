@@ -20,6 +20,12 @@
                         {{ __('Bahan Baku') }}
                     </x-nav-link>
 
+                    @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
+                        <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
+                            {{ __('Supplier') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (Auth::user()->isAdmin())
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Kelola Pengguna') }}
@@ -95,6 +101,12 @@
             <x-responsive-nav-link :href="route('ingredients.index')" :active="request()->routeIs('ingredients.*')">
                 {{ __('Bahan Baku') }}
             </x-responsive-nav-link>
+
+            @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
+                <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
+                    {{ __('Supplier') }}
+                </x-responsive-nav-link>
+            @endif
 
             @if (Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">

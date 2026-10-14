@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupplierController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,35 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update');
         Route::patch('/ingredients/{ingredient}/toggle-status', [IngredientController::class, 'toggleStatus'])->name('ingredients.toggle-status');
         Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy'])->name('ingredients.destroy');
+    });
+});
+
+// Master Data Supplier (UC-25: Kelola oleh Admin, Lihat oleh Gudang & Owner, Produksi ditolak)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (Admin, Gudang, Owner)
+    Route::get('/suppliers', [SupplierController::class, 'index'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('suppliers.index');
+
+    // 2. Form create & store (khusus Admin) - harus sebelum wildcard {supplier}
+    Route::get('/suppliers/create', [SupplierController::class, 'create'])
+        ->middleware('role:admin')
+        ->name('suppliers.create');
+    Route::post('/suppliers', [SupplierController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('suppliers.store');
+
+    // 3. Rute detail view (Admin, Gudang, Owner)
+    Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('suppliers.show');
+
+    // 4. Edit, update, toggle-status, destroy (khusus Admin)
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
+        Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+        Route::patch('/suppliers/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])->name('suppliers.toggle-status');
+        Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
     });
 });
 
