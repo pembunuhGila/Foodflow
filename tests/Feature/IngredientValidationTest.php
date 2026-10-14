@@ -23,10 +23,7 @@ class IngredientValidationTest extends TestCase
             'category' => 'Protein',
             'unit' => 'kg',
             'minimum_stock' => 10,
-            'calories' => 165,
-            'protein' => 31,
-            'fat' => 3.6,
-            'carbohydrates' => 0,
+            'notes' => 'Ayam potong segar tanpa kulit',
             'is_active' => true,
         ];
 

@@ -32,10 +32,6 @@ class StoreIngredientRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:100'],
             'unit' => ['required', 'string', 'max:50'],
             'minimum_stock' => ['required', 'numeric', 'min:0'],
-            'calories' => ['nullable', 'numeric', 'min:0'],
-            'protein' => ['nullable', 'numeric', 'min:0'],
-            'fat' => ['nullable', 'numeric', 'min:0'],
-            'carbohydrates' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ];
@@ -53,10 +49,6 @@ class StoreIngredientRequest extends FormRequest
             'category' => 'kategori bahan',
             'unit' => 'satuan unit',
             'minimum_stock' => 'stok minimum',
-            'calories' => 'kalori',
-            'protein' => 'protein',
-            'fat' => 'lemak',
-            'carbohydrates' => 'karbohidrat',
             'notes' => 'catatan',
             'is_active' => 'status aktif',
         ];

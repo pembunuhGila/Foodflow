@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -61,6 +62,35 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/dashboard', function () {
         return view('dashboard.owner');
     })->name('dashboard');
+});
+
+// Master Bahan Baku (UC-04: Kelola oleh Admin & Gudang, Lihat oleh Produksi & Owner)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (semua 4 role)
+    Route::get('/ingredients', [IngredientController::class, 'index'])
+        ->middleware('role:admin,gudang,produksi,owner')
+        ->name('ingredients.index');
+
+    // 2. Form create & store (khusus admin & gudang) - harus sebelum wildcard {ingredient}
+    Route::get('/ingredients/create', [IngredientController::class, 'create'])
+        ->middleware('role:admin,gudang')
+        ->name('ingredients.create');
+    Route::post('/ingredients', [IngredientController::class, 'store'])
+        ->middleware('role:admin,gudang')
+        ->name('ingredients.store');
+
+    // 3. Rute detail view (semua 4 role)
+    Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])
+        ->middleware('role:admin,gudang,produksi,owner')
+        ->name('ingredients.show');
+
+    // 4. Edit, update, toggle-status, destroy (khusus admin & gudang)
+    Route::middleware('role:admin,gudang')->group(function () {
+        Route::get('/ingredients/{ingredient}/edit', [IngredientController::class, 'edit'])->name('ingredients.edit');
+        Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update');
+        Route::patch('/ingredients/{ingredient}/toggle-status', [IngredientController::class, 'toggleStatus'])->name('ingredients.toggle-status');
+        Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy'])->name('ingredients.destroy');
+    });
 });
 
 Route::middleware('auth')->group(function () {
