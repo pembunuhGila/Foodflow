@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
 use App\Models\User;
@@ -180,6 +181,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+        // Komposisi Resep Bahan Baku (Recipe Builder - FR-08)
+        Route::get('/products/{product}/recipe', [ProductRecipeController::class, 'edit'])->name('products.recipe.edit');
+        Route::put('/products/{product}/recipe', [ProductRecipeController::class, 'update'])->name('products.recipe.update');
     });
 });
 

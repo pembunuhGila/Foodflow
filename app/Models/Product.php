@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -83,14 +84,32 @@ class Product extends Model
     }
 
     /**
-     * Ingredients associated with this product / menu recipe.
+     * Detail rincian komposisi resep bahan baku.
+     *
+     * @return HasMany<ProductIngredient, $this>
+     */
+    public function recipeItems(): HasMany
+    {
+        return $this->hasMany(ProductIngredient::class);
+    }
+
+    /**
+     * Cek apakah menu sudah memiliki komposisi resep bahan baku.
+     */
+    public function hasRecipe(): bool
+    {
+        return $this->recipeItems()->exists();
+    }
+
+    /**
+     * Bahan baku yang terhubung dengan menu ini melalui resep.
      *
      * @return BelongsToMany<Ingredient, $this>
      */
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class, 'product_ingredients')
-            ->withPivot(['amount', 'unit'])
+            ->withPivot(['id', 'quantity_per_unit', 'unit'])
             ->withTimestamps();
     }
 }
