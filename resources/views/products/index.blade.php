@@ -95,9 +95,20 @@
                                                 <a href="{{ route('products.show', $product) }}" class="font-medium text-gray-900 hover:text-emerald-600">
                                                     {{ $product->name }}
                                                 </a>
-                                                @if ($product->description)
-                                                    <p class="text-xs text-gray-400 truncate max-w-sm" title="{{ $product->description }}">{{ Str::limit($product->description, 50) }}</p>
-                                                @endif
+                                                <div class="flex items-center gap-2 mt-0.5">
+                                                    @if ($product->recipe_items_count > 0)
+                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            🧂 {{ $product->recipe_items_count }} bahan
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                                            ⚠️ Belum ada resep
+                                                        </span>
+                                                    @endif
+                                                    @if ($product->description)
+                                                        <span class="text-xs text-gray-400 truncate max-w-xs" title="{{ $product->description }}">{{ Str::limit($product->description, 35) }}</span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -138,6 +149,10 @@
                                         </a>
 
                                         @if (in_array(auth()->user()->role?->value, ['admin', 'produksi'], true))
+                                            <span class="text-gray-300">|</span>
+                                            <a href="{{ route('products.recipe.edit', $product) }}" class="text-blue-600 hover:text-blue-900 inline-block font-semibold" title="Kelola Komposisi Resep">
+                                                Resep
+                                            </a>
                                             <span class="text-gray-300">|</span>
                                             <a href="{{ route('products.edit', $product) }}" class="text-emerald-600 hover:text-emerald-900 inline-block" title="Edit Menu & Gizi">
                                                 Edit

@@ -51,7 +51,7 @@ class ProductController extends Controller
             }
         }
 
-        $products = $query->orderBy('name')->paginate(10)->withQueryString();
+        $products = $query->withCount('recipeItems')->orderBy('name')->paginate(10)->withQueryString();
 
         return view('products.index', [
             'products' => $products,

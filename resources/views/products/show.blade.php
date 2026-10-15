@@ -113,6 +113,90 @@
 
             </div>
 
+            <!-- Section 3: Komposisi Resep Bahan Baku (Recipe Builder - FR-08) -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <span>🧂</span> Komposisi Resep Bahan Baku
+                        </h3>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Rincian takaran bahan baku mentah untuk menghasilkan 1 {{ $product->unit ?? 'porsi' }} menu ini.
+                        </p>
+                    </div>
+
+                    @if (in_array(auth()->user()->role?->value, ['admin', 'produksi'], true))
+                        <a href="{{ route('products.recipe.edit', $product) }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold uppercase tracking-wider rounded-md transition shadow-sm">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Kelola Resep (Recipe Builder)
+                        </a>
+                    @endif
+                </div>
+
+                @if ($product->recipeItems->isNotEmpty())
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="w-12 px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">#</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Bahan Baku</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Takaran per 1 {{ $product->unit ?? 'porsi' }}</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Satuan Resep</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Satuan Baku Gudang</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 bg-white">
+                                @foreach ($product->recipeItems as $index => $item)
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-4 py-3 text-center text-xs font-bold text-gray-400">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-3 whitespace-nowrap">
+                                            <a href="{{ route('ingredients.show', $item->ingredient) }}" class="font-semibold text-gray-900 hover:text-emerald-600">
+                                                {{ $item->ingredient->name }}
+                                            </a>
+                                            @if ($item->ingredient->category)
+                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-600">
+                                                    {{ $item->ingredient->category }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-3 whitespace-nowrap font-bold text-emerald-700">
+                                            {{ rtrim(rtrim(number_format((float) $item->quantity_per_unit, 3, ',', '.'), '0'), ',') }}
+                                        </td>
+                                        <td class="px-6 py-3 whitespace-nowrap text-gray-700 font-medium">
+                                            {{ $item->unit }}
+                                        </td>
+                                        <td class="px-6 py-3 whitespace-nowrap text-gray-500 text-xs">
+                                            {{ $item->ingredient->unit }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 flex items-center justify-between">
+                        <span>Total: <strong>{{ $product->recipeItems->count() }}</strong> jenis bahan baku mentah terdaftar.</span>
+                        <span class="text-emerald-700 font-medium">Resep ini siap digunakan oleh kalkulator bahan produksi.</span>
+                    </div>
+                @else
+                    <div class="p-8 text-center">
+                        <span class="text-4xl block mb-2">🧂</span>
+                        <h4 class="text-base font-semibold text-gray-800">Menu ini belum memiliki komposisi resep bahan baku</h4>
+                        <p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">
+                            Tentukan takaran bahan baku mentah agar sistem dapat menghitung kebutuhan logistik secara otomatis pada rencana produksi.
+                        </p>
+                        @if (in_array(auth()->user()->role?->value, ['admin', 'produksi'], true))
+                            <div class="mt-4">
+                                <a href="{{ route('products.recipe.edit', $product) }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold uppercase tracking-wider rounded-md transition shadow-sm">
+                                    + Susun Resep Sekarang
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            </div>
+
         </div>
     </div>
 </x-app-layout>

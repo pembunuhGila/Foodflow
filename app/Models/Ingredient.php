@@ -6,6 +6,8 @@ use Database\Factories\IngredientFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ingredient extends Model
 {
@@ -69,5 +71,27 @@ class Ingredient extends Model
     public function isLowStock(float|int|string $currentStock): bool
     {
         return (float) $currentStock <= (float) $this->minimum_stock;
+    }
+
+    /**
+     * Menu masakan yang menggunakan bahan baku ini dalam resepnya.
+     *
+     * @return BelongsToMany<Product, $this>
+     */
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_ingredients')
+            ->withPivot(['id', 'quantity_per_unit', 'unit'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Detail item resep terkait.
+     *
+     * @return HasMany<ProductIngredient, $this>
+     */
+    public function recipeItems(): HasMany
+    {
+        return $this->hasMany(ProductIngredient::class);
     }
 }

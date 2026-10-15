@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Ingredient;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 
@@ -92,6 +93,55 @@ class ProductSeeder extends Seeder
                 ['name' => $productData['name']],
                 $productData
             );
+        }
+
+        // Hubungkan resep bahan baku contoh
+        $ayamPanggang = Product::where('name', 'Paket Nasi Beras Merah Dada Ayam Panggang')->first();
+        if ($ayamPanggang) {
+            $berasMerah = Ingredient::where('name', 'Beras Merah Organik')->first();
+            $dadaAyam = Ingredient::where('name', 'Dada Ayam Fillet Segar')->first();
+            $minyakZaitun = Ingredient::where('name', 'Minyak Zaitun Extra Virgin')->first();
+            $bawangPutih = Ingredient::where('name', 'Bawang Putih Kupas')->first();
+
+            $syncData = [];
+            if ($berasMerah) {
+                $syncData[$berasMerah->id] = ['quantity_per_unit' => 0.100, 'unit' => 'kg'];
+            }
+            if ($dadaAyam) {
+                $syncData[$dadaAyam->id] = ['quantity_per_unit' => 0.150, 'unit' => 'kg'];
+            }
+            if ($minyakZaitun) {
+                $syncData[$minyakZaitun->id] = ['quantity_per_unit' => 0.010, 'unit' => 'liter'];
+            }
+            if ($bawangPutih) {
+                $syncData[$bawangPutih->id] = ['quantity_per_unit' => 0.015, 'unit' => 'kg'];
+            }
+
+            if (! empty($syncData)) {
+                $ayamPanggang->ingredients()->sync($syncData);
+            }
+        }
+
+        $tumisSayur = Product::where('name', 'Tumis Sayur Pelangi (Bayam, Jagung Manis, Wortel)')->first();
+        if ($tumisSayur) {
+            $bayam = Ingredient::where('name', 'Sayur Bayam Segar')->first();
+            $wortel = Ingredient::where('name', 'Wortel Berastagi')->first();
+            $bawangPutih = Ingredient::where('name', 'Bawang Putih Kupas')->first();
+
+            $syncData = [];
+            if ($bayam) {
+                $syncData[$bayam->id] = ['quantity_per_unit' => 1.000, 'unit' => 'ikat'];
+            }
+            if ($wortel) {
+                $syncData[$wortel->id] = ['quantity_per_unit' => 0.100, 'unit' => 'kg'];
+            }
+            if ($bawangPutih) {
+                $syncData[$bawangPutih->id] = ['quantity_per_unit' => 0.010, 'unit' => 'kg'];
+            }
+
+            if (! empty($syncData)) {
+                $tumisSayur->ingredients()->sync($syncData);
+            }
         }
     }
 }
