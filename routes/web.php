@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
@@ -120,6 +121,35 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
         Route::patch('/suppliers/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])->name('suppliers.toggle-status');
         Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+    });
+});
+
+// Master Data Pelanggan (UC-26: Kelola oleh Admin, Lihat oleh Owner, Gudang & Produksi ditolak)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (Admin & Owner)
+    Route::get('/customers', [CustomerController::class, 'index'])
+        ->middleware('role:admin,owner')
+        ->name('customers.index');
+
+    // 2. Form create & store (khusus Admin) - harus sebelum wildcard {customer}
+    Route::get('/customers/create', [CustomerController::class, 'create'])
+        ->middleware('role:admin')
+        ->name('customers.create');
+    Route::post('/customers', [CustomerController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('customers.store');
+
+    // 3. Rute detail view (Admin & Owner)
+    Route::get('/customers/{customer}', [CustomerController::class, 'show'])
+        ->middleware('role:admin,owner')
+        ->name('customers.show');
+
+    // 4. Edit, update, toggle-status, destroy (khusus Admin)
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+        Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+        Route::patch('/customers/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('customers.toggle-status');
+        Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     });
 });
 
