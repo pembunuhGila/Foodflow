@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
 use App\Models\User;
@@ -150,6 +151,35 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
         Route::patch('/customers/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('customers.toggle-status');
         Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+    });
+});
+
+// Master Data Menu Makanan & Rekap Gizi (UC-23, FR-11, FR-12: Kelola oleh Admin & Produksi, Lihat oleh Gudang & Owner)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (semua 4 role)
+    Route::get('/products', [ProductController::class, 'index'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('products.index');
+
+    // 2. Form create & store (khusus Admin & Produksi) - sebelum wildcard {product}
+    Route::get('/products/create', [ProductController::class, 'create'])
+        ->middleware('role:admin,produksi')
+        ->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])
+        ->middleware('role:admin,produksi')
+        ->name('products.store');
+
+    // 3. Rute detail view (semua 4 role)
+    Route::get('/products/{product}', [ProductController::class, 'show'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('products.show');
+
+    // 4. Edit, update, toggle-status, destroy (khusus Admin & Produksi)
+    Route::middleware('role:admin,produksi')->group(function () {
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
 });
 
