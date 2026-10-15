@@ -24,6 +24,10 @@
                         {{ __('Menu Makanan') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
+                        {{ __('Rencana Produksi') }}
+                    </x-nav-link>
+
                     @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                         <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                             {{ __('Supplier') }}
@@ -114,6 +118,10 @@
 
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                 {{ __('Menu Makanan') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
+                {{ __('Rencana Produksi') }}
             </x-responsive-nav-link>
 
             @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
