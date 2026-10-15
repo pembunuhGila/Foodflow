@@ -112,4 +112,26 @@ class Product extends Model
             ->withPivot(['id', 'quantity_per_unit', 'unit'])
             ->withTimestamps();
     }
+
+    /**
+     * Rincian rencana produksi yang memuat menu ini.
+     *
+     * @return HasMany<ProductionPlanDetail, $this>
+     */
+    public function productionPlanDetails(): HasMany
+    {
+        return $this->hasMany(ProductionPlanDetail::class, 'product_id');
+    }
+
+    /**
+     * Rencana produksi yang memuat menu ini.
+     *
+     * @return BelongsToMany<ProductionPlan, $this>
+     */
+    public function productionPlans(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductionPlan::class, 'production_plan_details', 'product_id', 'production_plan_id')
+            ->withPivot(['id', 'planned_quantity', 'notes'])
+            ->withTimestamps();
+    }
 }

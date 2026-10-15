@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
@@ -185,6 +186,34 @@ Route::middleware(['auth'])->group(function () {
         // Komposisi Resep Bahan Baku (Recipe Builder - FR-08)
         Route::get('/products/{product}/recipe', [ProductRecipeController::class, 'edit'])->name('products.recipe.edit');
         Route::put('/products/{product}/recipe', [ProductRecipeController::class, 'update'])->name('products.recipe.update');
+    });
+});
+
+// Perencanaan Produksi & Jadwal Masak (UC-14, UC-15, FR-18)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (semua 4 role)
+    Route::get('/production-plans', [ProductionPlanController::class, 'index'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('production-plans.index');
+
+    // 2. Form create & store (khusus Admin & Produksi) - sebelum wildcard {productionPlan}
+    Route::get('/production-plans/create', [ProductionPlanController::class, 'create'])
+        ->middleware('role:admin,produksi')
+        ->name('production-plans.create');
+    Route::post('/production-plans', [ProductionPlanController::class, 'store'])
+        ->middleware('role:admin,produksi')
+        ->name('production-plans.store');
+
+    // 3. Rute detail view (semua 4 role)
+    Route::get('/production-plans/{productionPlan}', [ProductionPlanController::class, 'show'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('production-plans.show');
+
+    // 4. Edit, update, destroy (khusus Admin & Produksi)
+    Route::middleware('role:admin,produksi')->group(function () {
+        Route::get('/production-plans/{productionPlan}/edit', [ProductionPlanController::class, 'edit'])->name('production-plans.edit');
+        Route::put('/production-plans/{productionPlan}', [ProductionPlanController::class, 'update'])->name('production-plans.update');
+        Route::delete('/production-plans/{productionPlan}', [ProductionPlanController::class, 'destroy'])->name('production-plans.destroy');
     });
 });
 
