@@ -26,6 +26,12 @@
                         </x-nav-link>
                     @endif
 
+                    @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
+                        <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
+                            {{ __('Pelanggan') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (Auth::user()->isAdmin())
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Kelola Pengguna') }}
@@ -105,6 +111,12 @@
             @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                 <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                     {{ __('Supplier') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
+                <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
+                    {{ __('Pelanggan') }}
                 </x-responsive-nav-link>
             @endif
 
