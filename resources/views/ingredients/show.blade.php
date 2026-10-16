@@ -23,6 +23,37 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            {{-- Peringatan Batas Minimum Stok (BR-06) --}}
+            @if ($ingredient->isOutOfStock())
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-5 shadow-sm flex items-start gap-3">
+                    <div class="p-2 bg-red-100 text-red-600 rounded-lg flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-bold text-red-900">Peringatan: Stok Bahan Baku Habis! (BR-06)</h4>
+                        <p class="text-sm text-red-700 mt-1">
+                            Persediaan saat ini adalah <strong>0.00 {{ $ingredient->unit }}</strong>, sementara batas stok minimum yang ditetapkan adalah <strong>{{ number_format($ingredient->minimum_stock, 2) }} {{ $ingredient->unit }}</strong>. Segera lakukan pengadaan atau pemesanan ke supplier.
+                        </p>
+                    </div>
+                </div>
+            @elseif ($ingredient->isLowStock())
+                <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-5 shadow-sm flex items-start gap-3">
+                    <div class="p-2 bg-amber-100 text-amber-700 rounded-lg flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-bold text-amber-900">Peringatan Batas Minimum Stok (BR-06)</h4>
+                        <p class="text-sm text-amber-800 mt-1">
+                            Persediaan saat ini (<strong>{{ number_format($ingredient->current_stock, 2) }} {{ $ingredient->unit }}</strong>) berada di bawah atau menyentuh batas minimum stok (<strong>{{ number_format($ingredient->minimum_stock, 2) }} {{ $ingredient->unit }}</strong>). Bahan baku ini membutuhkan restock segera sebesar minimal <strong>{{ number_format($ingredient->getStockDeficit(), 2) }} {{ $ingredient->unit }}</strong>.
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Card Ringkasan Utama -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 p-8">
                 <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-gray-100 gap-4">
@@ -47,6 +78,7 @@
                         </p>
                     </div>
 
+                    <!-- Panel Info Stok & Satuan -->
                     <div class="flex items-center gap-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
                         <div>
                             <span class="block text-xs uppercase text-gray-500 font-semibold tracking-wider">Satuan Baku</span>
@@ -54,8 +86,34 @@
                         </div>
                         <div class="h-8 w-px bg-gray-200"></div>
                         <div>
+                            <span class="block text-xs uppercase text-gray-500 font-semibold tracking-wider">Stok Saat Ini</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg font-bold font-mono {{ $ingredient->isOutOfStock() ? 'text-red-600' : ($ingredient->isLowStock() ? 'text-amber-600' : 'text-emerald-600') }}">
+                                    {{ number_format($ingredient->current_stock, 2) }} {{ $ingredient->unit }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="h-8 w-px bg-gray-200"></div>
+                        <div>
                             <span class="block text-xs uppercase text-gray-500 font-semibold tracking-wider">Batas Minimum</span>
-                            <span class="text-lg font-bold text-amber-600">{{ number_format($ingredient->minimum_stock, 2) }} {{ $ingredient->unit }}</span>
+                            <span class="text-lg font-bold text-gray-900 font-mono">{{ number_format($ingredient->minimum_stock, 2) }} {{ $ingredient->unit }}</span>
+                        </div>
+                        <div class="h-8 w-px bg-gray-200"></div>
+                        <div>
+                            <span class="block text-xs uppercase text-gray-500 font-semibold tracking-wider">Kondisi</span>
+                            @if ($ingredient->isOutOfStock())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300">
+                                    Stok Habis
+                                </span>
+                            @elseif ($ingredient->isLowStock())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                    Stok Menipis
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Stok Aman
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>

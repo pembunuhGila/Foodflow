@@ -74,6 +74,17 @@ class IngredientController extends Controller
             }
         }
 
+        if ($request->filled('stock_status')) {
+            $stockStatus = $request->string('stock_status')->toString();
+            if ($stockStatus === 'low_stock') {
+                $query->lowStock();
+            } elseif ($stockStatus === 'out_of_stock') {
+                $query->outOfStock();
+            } elseif ($stockStatus === 'sufficient') {
+                $query->sufficientStock();
+            }
+        }
+
         $ingredients = $query->orderBy('name')->paginate(10)->withQueryString();
 
         $categories = Ingredient::query()
@@ -83,14 +94,18 @@ class IngredientController extends Controller
             ->filter()
             ->values();
 
+        $criticalCount = Ingredient::active()->lowStock()->count();
+
         return view('ingredients.index', [
             'ingredients' => $ingredients,
             'categories' => $categories,
             'commonCategories' => self::COMMON_CATEGORIES,
+            'criticalCount' => $criticalCount,
             'filters' => [
                 'search' => $request->query('search', ''),
                 'category' => $request->query('category', ''),
                 'status' => $request->query('status', ''),
+                'stock_status' => $request->query('stock_status', ''),
             ],
         ]);
     }
