@@ -32,6 +32,7 @@ class StoreIngredientRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:100'],
             'unit' => ['required', 'string', 'max:50'],
             'minimum_stock' => ['required', 'numeric', 'min:0'],
+            'current_stock' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ];
@@ -49,6 +50,7 @@ class StoreIngredientRequest extends FormRequest
             'category' => 'kategori bahan',
             'unit' => 'satuan unit',
             'minimum_stock' => 'stok minimum',
+            'current_stock' => 'stok saat ini',
             'notes' => 'catatan',
             'is_active' => 'status aktif',
         ];
