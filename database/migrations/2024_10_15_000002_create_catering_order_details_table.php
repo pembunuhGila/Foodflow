@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('catering_order_details', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('catering_order_id')->constrained('catering_orders')->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->integer('quantity');
-            $table->decimal('unit_price', 12, 2);
-            $table->decimal('subtotal', 12, 2);
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('catering_order_details')) {
+            Schema::create('catering_order_details', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('catering_order_id')->constrained('catering_orders')->cascadeOnDelete();
+                $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+                $table->integer('quantity');
+                $table->decimal('unit_price', 12, 2);
+                $table->decimal('subtotal', 12, 2);
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
