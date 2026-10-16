@@ -68,12 +68,19 @@
                             <x-input-error :messages="$errors->get('unit')" class="mt-1" />
                         </div>
 
-                        <!-- Stok Minimum -->
-                        <div class="md:col-span-2">
+                        <!-- Stok Minimum & Stok Saat Ini -->
+                        <div>
                             <label for="minimum_stock" class="block text-sm font-medium text-gray-700">Batas Stok Minimum <span class="text-red-500">*</span></label>
                             <input type="number" step="0.01" min="0" name="minimum_stock" id="minimum_stock" value="{{ old('minimum_stock', $ingredient->minimum_stock) }}" required class="mt-1 w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
-                            <p class="text-xs text-gray-500 mt-1">Sistem menampilkan peringatan saat persediaan berada di bawah batas ini (BR-06).</p>
+                            <p class="text-xs text-gray-500 mt-1">Batas peringatan restock persediaan (BR-06).</p>
                             <x-input-error :messages="$errors->get('minimum_stock')" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <label for="current_stock" class="block text-sm font-medium text-gray-700">Saldo Stok Saat Ini</label>
+                            <input type="number" step="0.01" min="0" name="current_stock" id="current_stock" value="{{ old('current_stock', $ingredient->current_stock) }}" class="mt-1 w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            <p class="text-xs text-gray-500 mt-1">Jumlah stok fisik riil yang ada saat ini di gudang.</p>
+                            <x-input-error :messages="$errors->get('current_stock')" class="mt-1" />
                         </div>
 
                         <!-- Catatan -->
