@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
+use App\Models\Ingredient;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +52,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // 2. Staff Gudang / Inventory
 Route::middleware(['auth', 'role:gudang'])->prefix('gudang')->name('gudang.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard.gudang');
+        $criticalIngredients = Ingredient::active()
+            ->lowStock()
+            ->orderBy('current_stock')
+            ->get();
+
+        return view('dashboard.gudang', [
+            'criticalIngredients' => $criticalIngredients,
+            'criticalCount' => $criticalIngredients->count(),
+        ]);
     })->name('dashboard');
 });
 
