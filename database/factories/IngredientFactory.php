@@ -33,6 +33,7 @@ class IngredientFactory extends Factory
             'category' => fake()->randomElement(['Karbohidrat', 'Protein Hewani', 'Protein Nabati', 'Sayuran', 'Bumbu & Minyak']),
             'unit' => fake()->randomElement(['kg', 'gram', 'liter', 'ml', 'pcs', 'butir', 'ikat']),
             'minimum_stock' => fake()->randomFloat(2, 5, 50),
+            'current_stock' => fake()->randomFloat(2, 0, 100),
             'calories' => fake()->randomFloat(2, 50, 400),
             'protein' => fake()->randomFloat(2, 1, 30),
             'fat' => fake()->randomFloat(2, 0.5, 20),
@@ -49,6 +50,38 @@ class IngredientFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Indicate that the ingredient is in low stock (at or below minimum stock).
+     */
+    public function lowStock(float $stock = 2.00): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minimum_stock' => 10.00,
+            'current_stock' => $stock,
+        ]);
+    }
+
+    /**
+     * Indicate that the ingredient is completely out of stock.
+     */
+    public function outOfStock(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'current_stock' => 0.00,
+        ]);
+    }
+
+    /**
+     * Indicate that the ingredient has sufficient stock above minimum stock.
+     */
+    public function sufficientStock(float $stock = 50.00): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minimum_stock' => 10.00,
+            'current_stock' => $stock,
         ]);
     }
 }
