@@ -3,11 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\CateringOrderDetail;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class ProductCrudTest extends TestCase
@@ -276,17 +275,8 @@ class ProductCrudTest extends TestCase
         $product = Product::factory()->create(['is_active' => true]);
 
         // Simulasikan riwayat relasi
-        if (! Schema::hasTable('catering_order_details')) {
-            Schema::create('catering_order_details', function ($table) {
-                $table->id();
-                $table->unsignedBigInteger('product_id');
-                $table->integer('quantity')->default(1);
-            });
-        }
-
-        DB::table('catering_order_details')->insert([
+        CateringOrderDetail::factory()->create([
             'product_id' => $product->id,
-            'quantity' => 10,
         ]);
 
         $response = $this->actingAs($this->admin)->delete(route('products.destroy', $product));

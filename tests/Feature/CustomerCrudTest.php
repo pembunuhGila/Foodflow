@@ -3,11 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\CateringOrder;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class CustomerCrudTest extends TestCase
@@ -160,18 +159,8 @@ class CustomerCrudTest extends TestCase
             'is_active' => true,
         ]);
 
-        if (! Schema::hasTable('catering_orders')) {
-            Schema::create('catering_orders', function ($table) {
-                $table->id();
-                $table->foreignId('customer_id');
-                $table->timestamps();
-            });
-        }
-
-        DB::table('catering_orders')->insert([
+        CateringOrder::factory()->create([
             'customer_id' => $customer->id,
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         $response = $this->actingAs($this->admin)->delete(route('customers.destroy', $customer));
