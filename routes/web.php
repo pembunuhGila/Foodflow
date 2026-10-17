@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CateringOrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
+use App\Models\Ingredient;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +53,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // 2. Staff Gudang / Inventory
 Route::middleware(['auth', 'role:gudang'])->prefix('gudang')->name('gudang.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard.gudang');
+        $criticalIngredients = Ingredient::active()
+            ->lowStock()
+            ->orderBy('current_stock')
+            ->get();
+
+        return view('dashboard.gudang', [
+            'criticalIngredients' => $criticalIngredients,
+            'criticalCount' => $criticalIngredients->count(),
+        ]);
     })->name('dashboard');
 });
 
@@ -225,6 +235,44 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/production-plans/{productionPlan}', [ProductionPlanController::class, 'update'])->name('production-plans.update');
         Route::delete('/production-plans/{productionPlan}', [ProductionPlanController::class, 'destroy'])->name('production-plans.destroy');
     });
+});
+
+// Pesanan Katering (UC-07, FR-14: Input oleh Admin, Lihat oleh Admin, Produksi, Gudang, Owner)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (semua 4 role)
+    Route::get('/catering-orders', [CateringOrderController::class, 'index'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('catering-orders.index');
+
+    // 2. Form create & store (khusus Admin) - sebelum wildcard {cateringOrder}
+    Route::get('/catering-orders/create', [CateringOrderController::class, 'create'])
+        ->middleware('role:admin')
+        ->name('catering-orders.create');
+    Route::post('/catering-orders', [CateringOrderController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('catering-orders.store');
+
+    // 3. Rute detail view (semua 4 role)
+    Route::get('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'show'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('catering-orders.show');
+
+    // 4. Edit form & update (khusus Admin)
+    Route::get('/catering-orders/{cateringOrder}/edit', [CateringOrderController::class, 'edit'])
+        ->middleware('role:admin')
+        ->name('catering-orders.edit');
+    Route::put('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'update'])
+        ->middleware('role:admin');
+    Route::patch('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'update'])
+        ->middleware('role:admin')
+        ->name('catering-orders.update');
+
+    // 5. Aksi perubahan status cepat (khusus Admin: kelola penuh, Owner: read-only)
+    Route::patch('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
+        ->middleware('role:admin')
+        ->name('catering-orders.update-status');
+    Route::put('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
+        ->middleware('role:admin');
 });
 
 Route::middleware('auth')->group(function () {

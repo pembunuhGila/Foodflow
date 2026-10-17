@@ -52,4 +52,36 @@ class IngredientFactory extends Factory
             'is_active' => false,
         ]);
     }
+
+    /**
+     * Indicate that the ingredient is in low stock (at or below minimum stock).
+     */
+    public function lowStock(float $stock = 2.00): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minimum_stock' => 10.00,
+            'current_stock' => $stock,
+        ]);
+    }
+
+    /**
+     * Indicate that the ingredient is completely out of stock.
+     */
+    public function outOfStock(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'current_stock' => 0.00,
+        ]);
+    }
+
+    /**
+     * Indicate that the ingredient has sufficient stock above minimum stock.
+     */
+    public function sufficientStock(float $stock = 50.00): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minimum_stock' => 10.00,
+            'current_stock' => $stock,
+        ]);
+    }
 }
