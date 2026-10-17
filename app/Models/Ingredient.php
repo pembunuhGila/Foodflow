@@ -194,10 +194,32 @@ class Ingredient extends Model
     }
 
     /**
+
      * Determine if this ingredient's unit allows decimal quantities (weight/volume).
      */
     public function allowsDecimalQuantity(): bool
     {
         return in_array(strtolower($this->unit), ['kg', 'g', 'gram', 'l', 'liter', 'ml']);
+    }
+    
+    public function getCurrentStock(): ?float
+    {
+        return $this->current_stock !== null ? (float) $this->current_stock : null;
+    }
+
+    /**
+     * Format nilai stok gudang dengan satuan (strip '-' jika data tidak tersedia).
+     */
+    public function formattedCurrentStock(): string
+    {
+        $stock = $this->getCurrentStock();
+
+        if ($stock === null) {
+            return '-';
+        }
+
+        $amount = rtrim(rtrim(number_format($stock, 2, ',', '.'), '0'), ',');
+
+        return "{$amount} {$this->unit}";
     }
 }
