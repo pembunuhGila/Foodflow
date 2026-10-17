@@ -24,6 +24,10 @@
                         {{ __('Menu Makanan') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('catering-orders.index')" :active="request()->routeIs('catering-orders.*')">
+                        {{ __('Pesanan Katering') }}
+                    </x-nav-link>
+
                     <x-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
                         {{ __('Rencana Produksi') }}
                     </x-nav-link>
@@ -118,6 +122,10 @@
 
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                 {{ __('Menu Makanan') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('catering-orders.index')" :active="request()->routeIs('catering-orders.*')">
+                {{ __('Pesanan Katering') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">

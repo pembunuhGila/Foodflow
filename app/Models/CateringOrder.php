@@ -34,6 +34,22 @@ class CateringOrder extends Model
     }
 
     /**
+     * Alias for delivery_date to support required_date from Use Case spec.
+     */
+    public function getRequiredDateAttribute()
+    {
+        return $this->delivery_date;
+    }
+
+    /**
+     * Mutator for required_date alias.
+     */
+    public function setRequiredDateAttribute($value): void
+    {
+        $this->attributes['delivery_date'] = $value;
+    }
+
+    /**
      * Boot method to generate a unique order number on creation.
      */
     protected static function booted(): void
@@ -109,5 +125,41 @@ class CateringOrder extends Model
     public function orderDetails(): HasMany
     {
         return $this->hasMany(CateringOrderDetail::class);
+    }
+
+    /**
+     * Format total_amount as Indonesian Rupiah.
+     */
+    public function formattedTotal(): string
+    {
+        return 'Rp '.number_format((float) $this->total_amount, 0, ',', '.');
+    }
+
+    /**
+     * Dapatkan label status bahasa Indonesia.
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'confirmed' => 'Terkonfirmasi',
+            'processing' => 'Sedang Diproses',
+            'delivered' => 'Terkirim',
+            'cancelled' => 'Dibatalkan',
+            default => 'Menunggu Konfirmasi',
+        };
+    }
+
+    /**
+     * Dapatkan badge style Tailwind CSS sesuai status.
+     */
+    public function getStatusBadgeClassAttribute(): string
+    {
+        return match ($this->status) {
+            'confirmed' => 'bg-blue-100 text-blue-700 border-blue-200',
+            'processing' => 'bg-purple-100 text-purple-700 border-purple-200',
+            'delivered' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
+            'cancelled' => 'bg-red-100 text-red-700 border-red-200',
+            default => 'bg-amber-100 text-amber-700 border-amber-200',
+        };
     }
 }
