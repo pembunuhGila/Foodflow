@@ -7,6 +7,8 @@ use App\Http\Requests\StoreProductionPlanRequest;
 use App\Http\Requests\UpdateProductionPlanRequest;
 use App\Models\Product;
 use App\Models\ProductionPlan;
+use App\Services\ProductionIngredientCalculator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -111,18 +113,55 @@ class ProductionPlanController extends Controller
     }
 
     /**
-     * Menampilkan detail rencana produksi dan komposisi menu.
+     * Menampilkan detail rencana produksi, komposisi menu, dan kalkulasi kebutuhan bahan baku otomatis.
      */
-    public function show(ProductionPlan $productionPlan): View
+    public function show(ProductionPlan $productionPlan, ProductionIngredientCalculator $calculator): View
     {
         $productionPlan->load([
             'creator',
             'details.product.recipeItems.ingredient',
         ]);
 
+        $calculation = $calculator->calculateForPlan($productionPlan);
+
         return view('production-plans.show', [
             'plan' => $productionPlan,
+            'calculation' => $calculation,
         ]);
+    }
+
+    /**
+     * Menampilkan lembar kerja / laporan kebutuhan bahan baku rencana produksi untuk dapur & logistik gudang.
+     */
+    public function ingredients(ProductionPlan $productionPlan, ProductionIngredientCalculator $calculator): View
+    {
+        $productionPlan->load([
+            'creator',
+            'details.product.recipeItems.ingredient',
+        ]);
+
+        $calculation = $calculator->calculateForPlan($productionPlan);
+
+        return view('production-plans.ingredients', [
+            'plan' => $productionPlan,
+            'calculation' => $calculation,
+        ]);
+    }
+
+    /**
+     * Preview kalkulasi kebutuhan bahan baku secara interaktif untuk simulasi menu & porsi.
+     */
+    public function calculatePreview(Request $request, ProductionIngredientCalculator $calculator): JsonResponse
+    {
+        $validated = $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.planned_quantity' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $calculation = $calculator->calculateForItems($validated['items']);
+
+        return response()->json($calculation);
     }
 
     /**
