@@ -247,15 +247,22 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:admin,produksi,gudang,owner')
         ->name('catering-orders.show');
 
-    // 4. Aksi perubahan status cepat (khusus Admin: kelola penuh, Owner: read-only)
+    // 4. Edit form & update (khusus Admin)
+    Route::get('/catering-orders/{cateringOrder}/edit', [CateringOrderController::class, 'edit'])
+        ->middleware('role:admin')
+        ->name('catering-orders.edit');
+    Route::put('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'update'])
+        ->middleware('role:admin');
+    Route::patch('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'update'])
+        ->middleware('role:admin')
+        ->name('catering-orders.update');
+
+    // 5. Aksi perubahan status cepat (khusus Admin: kelola penuh, Owner: read-only)
     Route::patch('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
         ->middleware('role:admin')
         ->name('catering-orders.update-status');
     Route::put('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
         ->middleware('role:admin');
-    Route::patch('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'update'])
-        ->middleware('role:admin')
-        ->name('catering-orders.update');
 });
 
 Route::middleware('auth')->group(function () {
