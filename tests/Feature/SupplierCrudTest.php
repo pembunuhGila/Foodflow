@@ -3,11 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class SupplierCrudTest extends TestCase
@@ -158,18 +157,9 @@ class SupplierCrudTest extends TestCase
             'is_active' => true,
         ]);
 
-        if (! Schema::hasTable('purchase_orders')) {
-            Schema::create('purchase_orders', function ($table) {
-                $table->id();
-                $table->foreignId('vendor_id');
-                $table->timestamps();
-            });
-        }
-
-        DB::table('purchase_orders')->insert([
+        PurchaseOrder::factory()->create([
             'vendor_id' => $supplier->id,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_by' => $this->admin->id,
         ]);
 
         $response = $this->actingAs($this->admin)->delete(route('suppliers.destroy', $supplier));
