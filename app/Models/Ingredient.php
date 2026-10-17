@@ -192,4 +192,12 @@ class Ingredient extends Model
     {
         return $this->hasMany(ProductIngredient::class);
     }
+
+    /**
+     * Determine if this ingredient's unit allows decimal quantities (weight/volume).
+     */
+    public function allowsDecimalQuantity(): bool
+    {
+        return in_array(strtolower($this->unit), ['kg', 'g', 'gram', 'l', 'liter', 'ml']);
+    }
 }

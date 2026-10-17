@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SupplierController;
 use App\Models\Ingredient;
 use App\Models\User;
@@ -263,6 +264,14 @@ Route::middleware(['auth'])->group(function () {
         ->name('catering-orders.update-status');
     Route::put('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
         ->middleware('role:admin');
+});
+
+// Purchase Order Pengadaan Bahan Baku (UC-27, FR-27: Khusus Admin)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
+    Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
+    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
 });
 
 Route::middleware('auth')->group(function () {
