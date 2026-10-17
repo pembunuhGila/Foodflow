@@ -51,11 +51,28 @@
                         <span class="text-xs text-gray-400 uppercase tracking-wider block">Nomor Pesanan</span>
                         <span class="text-xl font-mono font-extrabold text-gray-900">{{ $order->order_number }}</span>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs text-gray-500">Status Pesanan:</span>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $order->status_badge_class }}">
-                            {{ $order->status_label }}
-                        </span>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-gray-500">Status Pesanan:</span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $order->status_badge_class }}">
+                                {{ $order->status_label }}
+                            </span>
+                        </div>
+                        @if (Auth::user()?->isAdmin())
+                            <form method="POST" action="{{ route('catering-orders.update-status', $order) }}" class="inline-flex items-center gap-1.5">
+                                @csrf
+                                @method('PATCH')
+                                <select name="status"
+                                        onchange="this.form.submit()"
+                                        class="text-xs font-medium rounded-lg border-gray-300 py-1 pl-2 pr-7 text-gray-700 bg-white hover:border-emerald-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-2xs transition">
+                                    <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="confirmed" {{ $order->status === 'confirmed' ? 'selected' : '' }}>Dikonfirmasi</option>
+                                    <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Diproses</option>
+                                    <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Selesai</option>
+                                    <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                                </select>
+                            </form>
+                        @endif
                     </div>
                 </div>
 
