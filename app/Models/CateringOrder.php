@@ -136,16 +136,32 @@ class CateringOrder extends Model
     }
 
     /**
+     * Dapatkan total porsi dari seluruh rincian menu dalam pesanan ini.
+     */
+    public function getTotalPortionsAttribute(): int
+    {
+        if (isset($this->attributes['total_portions'])) {
+            return (int) $this->attributes['total_portions'];
+        }
+
+        if ($this->relationLoaded('details')) {
+            return (int) $this->details->sum('quantity');
+        }
+
+        return (int) $this->details()->sum('quantity');
+    }
+
+    /**
      * Dapatkan label status bahasa Indonesia.
      */
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
-            'confirmed' => 'Terkonfirmasi',
-            'processing' => 'Sedang Diproses',
-            'delivered' => 'Terkirim',
+            'confirmed' => 'Dikonfirmasi',
+            'processing' => 'Diproses',
+            'delivered' => 'Selesai',
             'cancelled' => 'Dibatalkan',
-            default => 'Menunggu Konfirmasi',
+            default => 'Pending',
         };
     }
 
