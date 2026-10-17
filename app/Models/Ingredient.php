@@ -25,7 +25,6 @@ class Ingredient extends Model
         'unit',
         'current_stock',
         'minimum_stock',
-        'current_stock',
         'calories',
         'protein',
         'fat',
@@ -44,7 +43,6 @@ class Ingredient extends Model
         return [
             'current_stock' => 'decimal:2',
             'minimum_stock' => 'decimal:2',
-            'current_stock' => 'decimal:2',
             'calories' => 'decimal:2',
             'protein' => 'decimal:2',
             'fat' => 'decimal:2',
@@ -196,8 +194,14 @@ class Ingredient extends Model
     }
 
     /**
-     * Mengambil nilai stok gudang saat ini (mengembalikan null jika belum tercatat/tidak tersedia).
+
+     * Determine if this ingredient's unit allows decimal quantities (weight/volume).
      */
+    public function allowsDecimalQuantity(): bool
+    {
+        return in_array(strtolower($this->unit), ['kg', 'g', 'gram', 'l', 'liter', 'ml']);
+    }
+    
     public function getCurrentStock(): ?float
     {
         return $this->current_stock !== null ? (float) $this->current_stock : null;

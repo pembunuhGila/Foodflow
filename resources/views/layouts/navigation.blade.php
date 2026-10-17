@@ -38,6 +38,12 @@
                         </x-nav-link>
                     @endif
 
+                    @if (Auth::user()->isAdmin())
+                        <x-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
+                            {{ __('Purchase Order') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                             {{ __('Pelanggan') }}
@@ -135,6 +141,12 @@
             @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                 <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                     {{ __('Supplier') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if (Auth::user()->isAdmin())
+                <x-responsive-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
+                    {{ __('Purchase Order') }}
                 </x-responsive-nav-link>
             @endif
 
