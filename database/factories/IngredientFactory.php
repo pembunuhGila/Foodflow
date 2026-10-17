@@ -33,7 +33,7 @@ class IngredientFactory extends Factory
             'category' => fake()->randomElement(['Karbohidrat', 'Protein Hewani', 'Protein Nabati', 'Sayuran', 'Bumbu & Minyak']),
             'unit' => fake()->randomElement(['kg', 'gram', 'liter', 'ml', 'pcs', 'butir', 'ikat']),
             'minimum_stock' => fake()->randomFloat(2, 5, 50),
-            'current_stock' => fake()->randomFloat(2, 0, 100),
+            'current_stock' => fake()->randomFloat(2, 10, 100),
             'calories' => fake()->randomFloat(2, 50, 400),
             'protein' => fake()->randomFloat(2, 1, 30),
             'fat' => fake()->randomFloat(2, 0.5, 20),

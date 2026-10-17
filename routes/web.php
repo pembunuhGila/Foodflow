@@ -214,10 +214,20 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:admin,produksi')
         ->name('production-plans.store');
 
+    // 2.1 Preview kalkulasi kebutuhan bahan baku (simulasi interaktif)
+    Route::post('/production-plans/calculate-preview', [ProductionPlanController::class, 'calculatePreview'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('production-plans.calculate-preview');
+
     // 3. Rute detail view (semua 4 role)
     Route::get('/production-plans/{productionPlan}', [ProductionPlanController::class, 'show'])
         ->middleware('role:admin,produksi,gudang,owner')
         ->name('production-plans.show');
+
+    // 3.1 Rute lembar kebutuhan bahan baku & logistik dapur (semua 4 role)
+    Route::get('/production-plans/{productionPlan}/ingredients', [ProductionPlanController::class, 'ingredients'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('production-plans.ingredients');
 
     // 4. Edit, update, destroy (khusus Admin & Produksi)
     Route::middleware('role:admin,produksi')->group(function () {

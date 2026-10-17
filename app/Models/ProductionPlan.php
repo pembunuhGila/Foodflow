@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProductionPlanStatus;
+use App\Services\ProductionIngredientCalculator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -89,6 +90,20 @@ class ProductionPlan extends Model
     public function totalPlannedQuantity(): int
     {
         return (int) $this->details->sum('planned_quantity');
+    }
+
+    /**
+     * Menghitung kalkulasi otomatis seluruh kebutuhan bahan baku dan ketersediaan stok gudang.
+     *
+     * @return array{
+     *     items: list<array<string, mixed>>,
+     *     summary: array<string, mixed>,
+     *     missing_recipes: list<Product>
+     * }
+     */
+    public function calculateIngredientRequirements(): array
+    {
+        return app(ProductionIngredientCalculator::class)->calculateForPlan($this);
     }
 
     /**

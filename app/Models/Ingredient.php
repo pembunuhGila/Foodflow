@@ -25,6 +25,7 @@ class Ingredient extends Model
         'unit',
         'current_stock',
         'minimum_stock',
+        'current_stock',
         'calories',
         'protein',
         'fat',
@@ -43,6 +44,7 @@ class Ingredient extends Model
         return [
             'current_stock' => 'decimal:2',
             'minimum_stock' => 'decimal:2',
+            'current_stock' => 'decimal:2',
             'calories' => 'decimal:2',
             'protein' => 'decimal:2',
             'fat' => 'decimal:2',
@@ -191,5 +193,29 @@ class Ingredient extends Model
     public function recipeItems(): HasMany
     {
         return $this->hasMany(ProductIngredient::class);
+    }
+
+    /**
+     * Mengambil nilai stok gudang saat ini (mengembalikan null jika belum tercatat/tidak tersedia).
+     */
+    public function getCurrentStock(): ?float
+    {
+        return $this->current_stock !== null ? (float) $this->current_stock : null;
+    }
+
+    /**
+     * Format nilai stok gudang dengan satuan (strip '-' jika data tidak tersedia).
+     */
+    public function formattedCurrentStock(): string
+    {
+        $stock = $this->getCurrentStock();
+
+        if ($stock === null) {
+            return '-';
+        }
+
+        $amount = rtrim(rtrim(number_format($stock, 2, ',', '.'), '0'), ',');
+
+        return "{$amount} {$this->unit}";
     }
 }
