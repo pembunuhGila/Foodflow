@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CateringOrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
@@ -224,6 +225,27 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/production-plans/{productionPlan}', [ProductionPlanController::class, 'update'])->name('production-plans.update');
         Route::delete('/production-plans/{productionPlan}', [ProductionPlanController::class, 'destroy'])->name('production-plans.destroy');
     });
+});
+
+// Pesanan Katering (UC-07, FR-14: Input oleh Admin, Lihat oleh Admin, Produksi, Gudang, Owner)
+Route::middleware(['auth'])->group(function () {
+    // 1. Rute list (semua 4 role)
+    Route::get('/catering-orders', [CateringOrderController::class, 'index'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('catering-orders.index');
+
+    // 2. Form create & store (khusus Admin) - sebelum wildcard {cateringOrder}
+    Route::get('/catering-orders/create', [CateringOrderController::class, 'create'])
+        ->middleware('role:admin')
+        ->name('catering-orders.create');
+    Route::post('/catering-orders', [CateringOrderController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('catering-orders.store');
+
+    // 3. Rute detail view (semua 4 role)
+    Route::get('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'show'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('catering-orders.show');
 });
 
 Route::middleware('auth')->group(function () {
