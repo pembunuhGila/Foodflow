@@ -246,6 +246,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'show'])
         ->middleware('role:admin,produksi,gudang,owner')
         ->name('catering-orders.show');
+
+    // 4. Aksi perubahan status cepat (khusus Admin: kelola penuh, Owner: read-only)
+    Route::patch('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
+        ->middleware('role:admin')
+        ->name('catering-orders.update-status');
+    Route::put('/catering-orders/{cateringOrder}/status', [CateringOrderController::class, 'updateStatus'])
+        ->middleware('role:admin');
+    Route::patch('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'update'])
+        ->middleware('role:admin')
+        ->name('catering-orders.update');
 });
 
 Route::middleware('auth')->group(function () {

@@ -21,8 +21,10 @@ class CateringOrderController extends Controller
     {
         $query = CateringOrder::query()
             ->with(['customer', 'creator', 'details.product'])
+            ->withSum('details as total_portions', 'quantity')
             ->withCount('details');
 
+        // 1. Pencarian: No order atau nama pelanggan / nomor telepon
         if ($request->filled('search')) {
             $search = trim((string) $request->input('search'));
             $query->where(function ($q) use ($search) {
@@ -34,13 +36,56 @@ class CateringOrderController extends Controller
             });
         }
 
+        // 2. Filter Status Pesanan (Mendukung kode status sistem maupun istilah bahasa Indonesia)
         if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
+            $statusInput = strtolower(trim((string) $request->input('status')));
+            $statusMap = [
+                'pending' => 'pending',
+                'menunggu konfirmasi' => 'pending',
+                'confirmed' => 'confirmed',
+                'dikonfirmasi' => 'confirmed',
+                'processing' => 'processing',
+                'diproses' => 'processing',
+                'delivered' => 'delivered',
+                'selesai' => 'delivered',
+                'terkirim' => 'delivered',
+                'cancelled' => 'cancelled',
+                'dibatalkan' => 'cancelled',
+            ];
+
+            if (isset($statusMap[$statusInput])) {
+                $query->where('status', $statusMap[$statusInput]);
+            }
         }
 
-        if ($request->filled('delivery_date')) {
-            $query->whereDate('delivery_date', $request->input('delivery_date'));
+        // 3. Filter Rentang Tanggal Kirim
+        $startDate = $request->input('start_date') ?? $request->input('date_from');
+        $endDate = $request->input('end_date') ?? $request->input('date_to');
+
+        if (! empty($startDate)) {
+            $query->whereDate('delivery_date', '>=', $startDate);
         }
+
+        if (! empty($endDate)) {
+            $query->whereDate('delivery_date', '<=', $endDate);
+        }
+
+        // Backward compatibility jika tanggal dikirim dalam parameter delivery_date tunggal
+        if ($request->filled('delivery_date') && empty($startDate) && empty($endDate)) {
+            $query->whereDate('delivery_date', $request->input('delivery_date'));
+            $startDate = $request->input('delivery_date');
+            $endDate = $request->input('delivery_date');
+        }
+
+        // Ringkasan jumlah pesanan per status
+        $statusCounts = [
+            'all' => CateringOrder::count(),
+            'pending' => CateringOrder::where('status', 'pending')->count(),
+            'confirmed' => CateringOrder::where('status', 'confirmed')->count(),
+            'processing' => CateringOrder::where('status', 'processing')->count(),
+            'delivered' => CateringOrder::where('status', 'delivered')->count(),
+            'cancelled' => CateringOrder::where('status', 'cancelled')->count(),
+        ];
 
         $orders = $query->orderByDesc('delivery_date')
             ->orderByDesc('id')
@@ -49,8 +94,11 @@ class CateringOrderController extends Controller
 
         return view('catering-orders.index', [
             'orders' => $orders,
+            'statusCounts' => $statusCounts,
             'currentSearch' => $request->input('search'),
             'currentStatus' => $request->input('status'),
+            'startDate' => $startDate,
+            'endDate' => $endDate,
             'currentDate' => $request->input('delivery_date'),
         ]);
     }
@@ -153,5 +201,53 @@ class CateringOrderController extends Controller
         return view('catering-orders.show', [
             'order' => $cateringOrder,
         ]);
+    }
+
+    /**
+     * Memperbarui status pesanan katering secara cepat.
+     * Hanya role Admin yang berwenang (kelola penuh).
+     */
+    public function updateStatus(Request $request, CateringOrder $cateringOrder): RedirectResponse
+    {
+        // Normalisasi input status jika dikirim dalam bahasa Indonesia atau lowercase
+        $statusInput = strtolower(trim((string) $request->input('status')));
+        $statusMap = [
+            'pending' => 'pending',
+            'menunggu konfirmasi' => 'pending',
+            'confirmed' => 'confirmed',
+            'dikonfirmasi' => 'confirmed',
+            'processing' => 'processing',
+            'diproses' => 'processing',
+            'delivered' => 'delivered',
+            'selesai' => 'delivered',
+            'terkirim' => 'delivered',
+            'cancelled' => 'cancelled',
+            'dibatalkan' => 'cancelled',
+        ];
+
+        if (isset($statusMap[$statusInput])) {
+            $request->merge(['status' => $statusMap[$statusInput]]);
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:pending,confirmed,processing,delivered,cancelled'],
+        ]);
+
+        $oldStatusLabel = $cateringOrder->status_label;
+        $cateringOrder->update([
+            'status' => $validated['status'],
+        ]);
+
+        $newStatusLabel = $cateringOrder->fresh()->status_label;
+
+        return back()->with('success', "Status pesanan {$cateringOrder->order_number} berhasil diperbarui dari \"{$oldStatusLabel}\" menjadi \"{$newStatusLabel}\".");
+    }
+
+    /**
+     * Alias untuk pembaruan pesanan katering.
+     */
+    public function update(Request $request, CateringOrder $cateringOrder): RedirectResponse
+    {
+        return $this->updateStatus($request, $cateringOrder);
     }
 }
