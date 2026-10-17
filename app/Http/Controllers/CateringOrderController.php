@@ -244,10 +244,40 @@ class CateringOrderController extends Controller
     }
 
     /**
-     * Alias untuk pembaruan pesanan katering.
+     * Menampilkan formulir edit pesanan katering (FR-14 & UC-07).
+     * Khusus role Admin.
+     */
+    public function edit(CateringOrder $cateringOrder): View
+    {
+        $cateringOrder->load(['customer', 'creator', 'details.product']);
+        $customers = Customer::query()->active()->orderBy('name')->get();
+
+        return view('catering-orders.edit', [
+            'order' => $cateringOrder,
+            'customers' => $customers,
+        ]);
+    }
+
+    /**
+     * Memperbarui informasi pesanan katering atau status pesanan.
      */
     public function update(Request $request, CateringOrder $cateringOrder): RedirectResponse
     {
+        if ($request->has('delivery_date') || $request->has('notes') || $request->has('customer_id')) {
+            $validated = $request->validate([
+                'customer_id' => ['sometimes', 'required', 'exists:customers,id'],
+                'delivery_date' => ['sometimes', 'required', 'date'],
+                'status' => ['sometimes', 'required', 'string', 'in:pending,confirmed,processing,delivered,cancelled'],
+                'notes' => ['nullable', 'string', 'max:1000'],
+            ]);
+
+            $cateringOrder->update($validated);
+
+            return redirect()
+                ->route('catering-orders.show', $cateringOrder)
+                ->with('success', "Pesanan katering {$cateringOrder->order_number} berhasil diperbarui.");
+        }
+
         return $this->updateStatus($request, $cateringOrder);
     }
 }
