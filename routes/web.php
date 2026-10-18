@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductRecipeController;
@@ -282,6 +283,35 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
     Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
     Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+});
+
+// Pengajuan Permintaan Bahan Dapur & Verifikasi Stok Keluar Gudang (URUTAN 13, BR-05)
+Route::middleware(['auth'])->group(function () {
+    // 1. Tampilan daftar seluruh permintaan bahan (semua 4 role)
+    Route::get('/material-requests', [MaterialRequestController::class, 'index'])
+        ->middleware('role:admin,gudang,produksi,owner')
+        ->name('material-requests.index');
+
+    // 2. Formulir & submit permintaan bahan dapur (khusus Admin & Produksi)
+    Route::get('/material-requests/create', [MaterialRequestController::class, 'create'])
+        ->middleware('role:admin,produksi')
+        ->name('material-requests.create');
+    Route::post('/material-requests', [MaterialRequestController::class, 'store'])
+        ->middleware('role:admin,produksi')
+        ->name('material-requests.store');
+    Route::post('/production-plans/{productionPlan}/material-requests', [MaterialRequestController::class, 'storeFromPlan'])
+        ->middleware('role:admin,produksi')
+        ->name('production-plans.material-requests.store');
+
+    // 3. Detail permintaan bahan (semua 4 role)
+    Route::get('/material-requests/{materialRequest}', [MaterialRequestController::class, 'show'])
+        ->middleware('role:admin,gudang,produksi,owner')
+        ->name('material-requests.show');
+
+    // 4. Verifikasi Permintaan Bahan & Transaksi Stok Keluar (KHUSUS Gudang & Admin - BR-05)
+    Route::post('/material-requests/{materialRequest}/verify', [MaterialRequestController::class, 'verify'])
+        ->middleware('role:admin,gudang')
+        ->name('material-requests.verify');
 });
 
 Route::middleware('auth')->group(function () {

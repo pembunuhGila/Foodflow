@@ -25,6 +25,43 @@
             </div>
 
             <div class="flex items-center space-x-2">
+                @if (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
+                    @php
+                        $pendingMR = $plan->materialRequests->where('status', 'pending')->first()
+                            ?? $plan->materialRequests->where('status', 'Pending')->first();
+                        $approvedMR = $plan->materialRequests->where('status', 'approved')->first()
+                            ?? $plan->materialRequests->where('status', 'Approved')->first();
+                    @endphp
+
+                    @if ($pendingMR)
+                        <a href="{{ route('material-requests.show', $pendingMR) }}"
+                           class="inline-flex items-center px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-white me-1.5 animate-pulse"></span>
+                            Menunggu Gudang (#MR-{{ str_pad($pendingMR->id, 4, '0', STR_PAD_LEFT) }})
+                        </a>
+                    @elseif ($approvedMR)
+                        <a href="{{ route('material-requests.show', $approvedMR) }}"
+                           class="inline-flex items-center px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm">
+                            <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Stok Dikeluarkan (#MR-{{ str_pad($approvedMR->id, 4, '0', STR_PAD_LEFT) }})
+                        </a>
+                    @else
+                        <form method="POST" action="{{ route('production-plans.material-requests.store', $plan) }}" class="inline-block">
+                            @csrf
+                            <button type="submit"
+                                    onclick="return confirm('Kirimkan daftar kebutuhan bahan baku rencana produksi ini ke bagian gudang untuk diverifikasi & dikeluarkan?');"
+                                    class="inline-flex items-center px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm">
+                                <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                                Ajukan Bahan ke Gudang
+                            </button>
+                        </form>
+                    @endif
+                @endif
+
                 <a href="{{ route('production-plans.ingredients', $plan) }}"
                    target="_blank"
                    class="inline-flex items-center px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-700 uppercase tracking-widest hover:bg-emerald-100 transition shadow-sm">
@@ -106,6 +143,76 @@
                     </div>
                 </div>
             @endif
+
+            <!-- Kartu Status Alur Permintaan Bahan ke Gudang (URUTAN 13) -->
+            @php
+                $planPendingMR = $plan->materialRequests->where('status', 'pending')->first()
+                    ?? $plan->materialRequests->where('status', 'Pending')->first();
+                $planApprovedMR = $plan->materialRequests->where('status', 'approved')->first()
+                    ?? $plan->materialRequests->where('status', 'Approved')->first();
+            @endphp
+            <div class="bg-gradient-to-r from-amber-50 via-white to-emerald-50 rounded-xl border border-amber-200 p-4 sm:p-5 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-start gap-3">
+                        <div class="p-2.5 bg-amber-100 text-amber-700 rounded-lg shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-gray-900">Alur Bahan Baku Gudang (URUTAN 13)</h4>
+                                @if ($planPendingMR)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                        Menunggu Verifikasi Gudang (#MR-{{ str_pad($planPendingMR->id, 4, '0', STR_PAD_LEFT) }})
+                                    </span>
+                                @elseif ($planApprovedMR)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                        Sudah Diserahkan & Stok Keluar Dicatat (#MR-{{ str_pad($planApprovedMR->id, 4, '0', STR_PAD_LEFT) }})
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+                                        Belum Diajukan ke Gudang
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-gray-600 mt-1">
+                                @if ($planPendingMR)
+                                    Permintaan bahan telah terkirim ke modul Gudang. Petugas gudang sedang memeriksa ketersediaan stok fisik untuk diserahkan ke dapur.
+                                @elseif ($planApprovedMR)
+                                    Bahan baku telah disetujui dan diserahkan oleh petugas gudang. Transaksi stok keluar (Stok OUT - BR-05) telah selesai dicatat.
+                                @else
+                                    Dapur belum mengirimkan permintaan bahan baku resmi untuk rencana masak ini. Klik tombol di samping untuk mengajukan ke gudang secara otomatis berdasarkan racikan resep menu.
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="shrink-0">
+                        @if ($planPendingMR)
+                            <a href="{{ route('material-requests.show', $planPendingMR) }}" class="inline-flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                                Pantau Verifikasi Gudang &rarr;
+                            </a>
+                        @elseif ($planApprovedMR)
+                            <a href="{{ route('material-requests.show', $planApprovedMR) }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                                Lihat Bukti Serah Terima &rarr;
+                            </a>
+                        @elseif (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
+                            <form method="POST" action="{{ route('production-plans.material-requests.store', $plan) }}">
+                                @csrf
+                                <button type="submit"
+                                        onclick="return confirm('Kirimkan daftar kebutuhan bahan rencana produksi ini ke bagian gudang?');"
+                                        class="inline-flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider rounded-lg transition shadow-sm">
+                                    <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    Ajukan ke Gudang Sekarang
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
             <!-- Ringkasan Rencana Header Info -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">

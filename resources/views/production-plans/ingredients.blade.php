@@ -27,6 +27,43 @@
             </div>
 
             <div class="flex items-center gap-2 shrink-0">
+                @if (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
+                    @php
+                        $pendingMR = $plan->materialRequests->where('status', 'pending')->first()
+                            ?? $plan->materialRequests->where('status', 'Pending')->first();
+                        $approvedMR = $plan->materialRequests->where('status', 'approved')->first()
+                            ?? $plan->materialRequests->where('status', 'Approved')->first();
+                    @endphp
+
+                    @if ($pendingMR)
+                        <a href="{{ route('material-requests.show', $pendingMR) }}"
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm whitespace-nowrap">
+                            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                            <span>Menunggu Gudang (#MR-{{ str_pad($pendingMR->id, 4, '0', STR_PAD_LEFT) }})</span>
+                        </a>
+                    @elseif ($approvedMR)
+                        <a href="{{ route('material-requests.show', $approvedMR) }}"
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Stok Dikeluarkan (#MR-{{ str_pad($approvedMR->id, 4, '0', STR_PAD_LEFT) }})</span>
+                        </a>
+                    @else
+                        <form method="POST" action="{{ route('production-plans.material-requests.store', $plan) }}" class="inline-block">
+                            @csrf
+                            <button type="submit"
+                                    onclick="return confirm('Kirimkan seluruh daftar kebutuhan bahan lembar kerja ini ke bagian gudang untuk diverifikasi & dikeluarkan?');"
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm cursor-pointer whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                                <span>Ajukan ke Gudang</span>
+                            </button>
+                        </form>
+                    @endif
+                @endif
+
                 <button type="button"
                         onclick="window.print()"
                         class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm cursor-pointer whitespace-nowrap">

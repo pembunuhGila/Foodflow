@@ -194,14 +194,33 @@ class Ingredient extends Model
     }
 
     /**
+     * Riwayat transaksi pergerakan stok bahan baku.
+     *
+     * @return HasMany<IngredientStockTransaction, $this>
+     */
+    public function stockTransactions(): HasMany
+    {
+        return $this->hasMany(IngredientStockTransaction::class, 'ingredient_id');
+    }
 
+    /**
+     * Rincian permintaan bahan baku yang melibatkan bahan ini.
+     *
+     * @return HasMany<MaterialRequestDetail, $this>
+     */
+    public function materialRequestDetails(): HasMany
+    {
+        return $this->hasMany(MaterialRequestDetail::class, 'ingredient_id');
+    }
+
+    /**
      * Determine if this ingredient's unit allows decimal quantities (weight/volume).
      */
     public function allowsDecimalQuantity(): bool
     {
         return in_array(strtolower($this->unit), ['kg', 'g', 'gram', 'l', 'liter', 'ml']);
     }
-    
+
     public function getCurrentStock(): ?float
     {
         return $this->current_stock !== null ? (float) $this->current_stock : null;
