@@ -38,6 +38,12 @@
                         </x-nav-link>
                     @endif
 
+                    @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'produksi'], true))
+                        <x-nav-link :href="route('material-requests.index')" :active="request()->routeIs('material-requests.*')">
+                            {{ __('Permintaan Bahan') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (Auth::user()->isAdmin())
                         <x-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
                             {{ __('Purchase Order') }}
@@ -141,6 +147,12 @@
             @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                 <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                     {{ __('Supplier') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'produksi'], true))
+                <x-responsive-nav-link :href="route('material-requests.index')" :active="request()->routeIs('material-requests.*')">
+                    {{ __('Permintaan Bahan') }}
                 </x-responsive-nav-link>
             @endif
 

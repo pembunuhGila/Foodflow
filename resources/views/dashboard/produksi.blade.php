@@ -17,14 +17,20 @@
                 <p class="text-gray-600">Anda login sebagai <strong>Staff Produksi / Ahli Gizi</strong>. Sesuai PRD FoodFlow, Anda memiliki hak akses untuk:</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <div class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50">
-                        <div class="font-semibold text-emerald-900 mb-1">Rencana Produksi</div>
+                    <a href="{{ route('production-plans.index') }}" class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50 hover:bg-emerald-100/80 transition block group">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="font-semibold text-emerald-900 group-hover:text-emerald-950">Rencana Produksi</div>
+                            <span class="text-emerald-700 text-xs font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                        </div>
                         <p class="text-sm text-gray-600">Susun rencana produksi berdasarkan pesanan, tentukan jumlah porsi, dan hitung kebutuhan bahan.</p>
-                    </div>
-                    <div class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50">
-                        <div class="font-semibold text-emerald-900 mb-1">Permintaan Bahan</div>
-                        <p class="text-sm text-gray-600">Ajukan permintaan bahan baku ke gudang sesuai kebutuhan rencana produksi.</p>
-                    </div>
+                    </a>
+                    <a href="{{ route('material-requests.index') }}" class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50 hover:bg-emerald-100/80 transition block group">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="font-semibold text-emerald-900 group-hover:text-emerald-950">Permintaan Bahan</div>
+                            <span class="text-emerald-700 text-xs font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Ajukan permintaan bahan baku ke gudang sesuai kebutuhan rencana produksi & pantau status serah terima.</p>
+                    </a>
                     <div class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50">
                         <div class="font-semibold text-emerald-900 mb-1">Realisasi & Data Gizi</div>
                         <p class="text-sm text-gray-600">Catat produksi aktual, pemakaian bahan riil, dan kelola informasi kandungan gizi menu.</p>

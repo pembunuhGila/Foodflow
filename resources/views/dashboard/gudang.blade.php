@@ -142,10 +142,13 @@
                         <div class="font-semibold text-amber-900 mb-1">Stok & Transaksi</div>
                         <p class="text-sm text-gray-600">Catat transaksi stok masuk (IN), stok keluar (OUT), dan penyesuaian (ADJUSTMENT).</p>
                     </div>
-                    <div class="border border-amber-200 rounded-lg p-4 bg-amber-50/50">
-                        <div class="font-semibold text-amber-900 mb-1">Verifikasi Permintaan</div>
-                        <p class="text-sm text-gray-600">Periksa dan verifikasi permintaan bahan dari bagian produksi.</p>
-                    </div>
+                    <a href="{{ route('material-requests.index') }}" class="border border-amber-200 rounded-lg p-4 bg-amber-50/50 hover:bg-amber-100/80 transition block group">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="font-semibold text-amber-900 group-hover:text-amber-950">Verifikasi Permintaan</div>
+                            <span class="text-amber-700 text-xs font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Periksa dan verifikasi permintaan bahan dari bagian produksi serta catat stok keluar.</p>
+                    </a>
                 </div>
             </div>
         </div>

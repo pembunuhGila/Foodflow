@@ -73,6 +73,16 @@ class ProductionPlan extends Model
     }
 
     /**
+     * Permintaan bahan yang dibuat untuk rencana produksi ini.
+     *
+     * @return HasMany<MaterialRequest, $this>
+     */
+    public function materialRequests(): HasMany
+    {
+        return $this->hasMany(MaterialRequest::class, 'production_plan_id');
+    }
+
+    /**
      * Relasi many-to-many ke produk menu melalui tabel detail rencana produksi.
      *
      * @return BelongsToMany<Product, $this>

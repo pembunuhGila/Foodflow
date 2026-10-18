@@ -224,8 +224,11 @@ class ProductionPlanController extends Controller
         // Cek jika sudah memiliki relasi ke pelaksanaan produksi fisik atau pengeluaran bahan
         $hasExecutions = false;
 
-        if (Schema::hasTable('productions') && DB::table('productions')->where('production_plan_id', $productionPlan->id)->exists()) {
-            $hasExecutions = true;
+        if (Schema::hasTable('productions')) {
+            $detailIds = $productionPlan->details()->pluck('id');
+            if ($detailIds->isNotEmpty() && DB::table('productions')->whereIn('production_plan_detail_id', $detailIds)->exists()) {
+                $hasExecutions = true;
+            }
         }
 
         if (Schema::hasTable('material_requests') && DB::table('material_requests')->where('production_plan_id', $productionPlan->id)->exists()) {
