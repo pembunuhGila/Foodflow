@@ -14,7 +14,7 @@ return new class extends Migration
         if (Schema::hasTable('ingredients')) {
             Schema::table('ingredients', function (Blueprint $table) {
                 if (! Schema::hasColumn('ingredients', 'current_stock')) {
-                    $table->decimal('current_stock', 12, 2)->default(0)->after('minimum_stock');
+                    $table->decimal('current_stock', 12, 2)->nullable()->default(null)->after('minimum_stock');
                 }
             });
         }
