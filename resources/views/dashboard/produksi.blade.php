@@ -31,10 +31,13 @@
                         </div>
                         <p class="text-sm text-gray-600">Ajukan permintaan bahan baku ke gudang sesuai kebutuhan rencana produksi & pantau status serah terima.</p>
                     </a>
-                    <div class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50">
-                        <div class="font-semibold text-emerald-900 mb-1">Realisasi & Data Gizi</div>
-                        <p class="text-sm text-gray-600">Catat produksi aktual, pemakaian bahan riil, dan kelola informasi kandungan gizi menu.</p>
-                    </div>
+                    <a href="{{ route('productions.index') }}" class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50 hover:bg-emerald-100/80 transition block group">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="font-semibold text-emerald-900 group-hover:text-emerald-950">Realisasi Masak Dapur</div>
+                            <span class="text-emerald-700 text-xs font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Catat porsi matang aktual per menu pada jadwal masak berjalan dan selesaikan rencana produksi.</p>
+                    </a>
                 </div>
             </div>
         </div>
