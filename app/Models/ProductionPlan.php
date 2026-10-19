@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Carbon;
 
 class ProductionPlan extends Model
@@ -95,11 +96,54 @@ class ProductionPlan extends Model
     }
 
     /**
+     * Catatan realisasi masak seluruh menu hidangan untuk rencana produksi ini.
+     *
+     * @return HasManyThrough<Production, ProductionPlanDetail, $this>
+     */
+    public function productions(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Production::class,
+            ProductionPlanDetail::class,
+            'production_plan_id',
+            'production_plan_detail_id',
+            'id',
+            'id'
+        );
+    }
+
+    /**
      * Menghitung total porsi yang direncanakan dalam rencana produksi ini.
      */
     public function totalPlannedQuantity(): int
     {
         return (int) $this->details->sum('planned_quantity');
+    }
+
+    /**
+     * Menghitung total porsi yang sudah berhasil direalisasikan (dimasak).
+     */
+    public function totalActualQuantity(): int
+    {
+        return (int) $this->details->sum(function (ProductionPlanDetail $detail) {
+            return (int) ($detail->production?->actual_quantity ?? 0);
+        });
+    }
+
+    /**
+     * Memeriksa apakah seluruh menu hidangan pada rencana produksi telah memenuhi target porsi rencana.
+     */
+    public function isAllItemsCompleted(): bool
+    {
+        if ($this->details->isEmpty()) {
+            return false;
+        }
+
+        return $this->details->every(function (ProductionPlanDetail $detail) {
+            $production = $detail->production;
+
+            return $production !== null && $production->actual_quantity >= $detail->planned_quantity;
+        });
     }
 
     /**

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ProductionPlanDetail extends Model
 {
@@ -59,5 +61,25 @@ class ProductionPlanDetail extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    /**
+     * Catatan realisasi masak untuk rincian menu ini.
+     *
+     * @return HasOne<Production, $this>
+     */
+    public function production(): HasOne
+    {
+        return $this->hasOne(Production::class, 'production_plan_detail_id')->latestOfMany();
+    }
+
+    /**
+     * Seluruh catatan riwayat realisasi masak untuk rincian menu ini.
+     *
+     * @return HasMany<Production, $this>
+     */
+    public function productions(): HasMany
+    {
+        return $this->hasMany(Production::class, 'production_plan_detail_id');
     }
 }

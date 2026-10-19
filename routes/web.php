@@ -8,6 +8,7 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionPlanController;
+use App\Http\Controllers\ProductionRealizationController;
 use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
@@ -312,6 +313,18 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/material-requests/{materialRequest}/verify', [MaterialRequestController::class, 'verify'])
         ->middleware('role:admin,gudang')
         ->name('material-requests.verify');
+});
+
+// Pencatatan Realisasi Porsi Masak & Status Selesai Rencana Produksi (URUTAN 14, FR-33, FR-34, UC-17)
+Route::middleware(['auth', 'role:admin,produksi'])->group(function () {
+    Route::get('/productions', [ProductionRealizationController::class, 'index'])
+        ->name('productions.index');
+    Route::get('/productions/create', [ProductionRealizationController::class, 'create'])
+        ->name('productions.create');
+    Route::get('/production-plans/{productionPlan}/realization', [ProductionRealizationController::class, 'create'])
+        ->name('production-plans.realization.create');
+    Route::post('/production-plans/{productionPlan}/realization', [ProductionRealizationController::class, 'store'])
+        ->name('production-plans.realization.store');
 });
 
 Route::middleware('auth')->group(function () {
