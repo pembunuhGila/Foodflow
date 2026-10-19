@@ -62,6 +62,16 @@
                     @endif
                 @endif
 
+                @if (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true) && ($plan->status instanceof \App\Enums\ProductionPlanStatus ? $plan->status->value : $plan->status) === 'in_progress')
+                    <a href="{{ route('production-plans.realization.create', $plan) }}"
+                       class="inline-flex items-center px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm">
+                        <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Catat Realisasi Masak
+                    </a>
+                @endif
+
                 <a href="{{ route('production-plans.ingredients', $plan) }}"
                    target="_blank"
                    class="inline-flex items-center px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-700 uppercase tracking-widest hover:bg-emerald-100 transition shadow-sm">
@@ -213,6 +223,67 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Kartu Status Alur Realisasi Masak Dapur (URUTAN 14) -->
+            @php
+                $planStatusVal = $plan->status instanceof \App\Enums\ProductionPlanStatus ? $plan->status->value : $plan->status;
+                $totPlanned = $plan->totalPlannedQuantity();
+                $totActual = $plan->totalActualQuantity();
+                $isPlanDone = $planStatusVal === 'completed';
+                $isPlanCooking = $planStatusVal === 'in_progress';
+                $realizePercent = $totPlanned > 0 ? min(100, round(($totActual / $totPlanned) * 100)) : 0;
+            @endphp
+            @if ($isPlanCooking || $isPlanDone)
+                <div class="bg-gradient-to-r {{ $isPlanDone ? 'from-emerald-50 via-white to-emerald-50 border-emerald-300' : 'from-amber-50 via-white to-orange-50 border-amber-300' }} rounded-xl border p-4 sm:p-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2.5 {{ $isPlanDone ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }} rounded-lg shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-sm font-bold text-gray-900">Realisasi Masak Dapur (URUTAN 14)</h4>
+                                    @if ($isPlanDone)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                            Seluruh Menu Telah Selesai Dimasak ({{ $totActual }}/{{ $totPlanned }} Porsi)
+                                        </span>
+                                    @elseif ($totActual > 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                            Sedang Dimasak Parsial ({{ $totActual }}/{{ $totPlanned }} Porsi &bull; {{ $realizePercent }}%)
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+                                            Belum Dicatat Realisasinya
+                                        </span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    @if ($isPlanDone)
+                                        Seluruh menu hidangan pada rencana masak ini telah selesai dimasak memenuhi target. Rencana produksi telah berstatus selesai.
+                                    @elseif ($totActual > 0)
+                                        Dapur telah mencatat sebagian hasil masakan matang. Masih ada menu yang belum memenuhi target penyelesaian.
+                                    @else
+                                        Rencana produksi berstatus Sedang Dimasak. Petugas dapur dapat menginput porsi matang aktual per menu.
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+
+                        @if ($isPlanCooking && in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
+                            <div class="shrink-0">
+                                <a href="{{ route('production-plans.realization.create', $plan) }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                                    <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    {{ $totActual > 0 ? 'Perbarui Realisasi Dapur' : 'Input Realisasi Masak' }} &rarr;
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             <!-- Ringkasan Rencana Header Info -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
