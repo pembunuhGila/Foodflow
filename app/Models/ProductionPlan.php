@@ -89,6 +89,10 @@ class ProductionPlan extends Model
      */
     public function totalPlannedQuantity(): int
     {
+        if (isset($this->total_portions)) {
+            return (int) $this->total_portions;
+        }
+
         return (int) $this->details->sum('planned_quantity');
     }
 
