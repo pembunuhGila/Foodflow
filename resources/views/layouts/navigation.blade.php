@@ -28,9 +28,11 @@
                         {{ __('Pesanan Katering') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
-                        {{ __('Rencana Produksi') }}
-                    </x-nav-link>
+                    @if (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
+                        <x-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
+                            {{ __('Rencana Produksi') }}
+                        </x-nav-link>
+                    @endif
 
                     @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                         <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
@@ -128,9 +130,11 @@
                 {{ __('Pesanan Katering') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
-                {{ __('Rencana Produksi') }}
-            </x-responsive-nav-link>
+            @if (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
+                <x-responsive-nav-link :href="route('production-plans.index')" :active="request()->routeIs('production-plans.*')">
+                    {{ __('Rencana Produksi') }}
+                </x-responsive-nav-link>
+            @endif
 
             @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                 <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
