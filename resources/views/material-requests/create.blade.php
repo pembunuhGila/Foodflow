@@ -17,7 +17,7 @@
         </div>
     </x-slot>
 
-    <div class="py-10">
+    <div class="py-10" x-data="{ selectedMethod: 'plan' }" x-cloak>
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             @if ($errors->any())
@@ -31,7 +31,7 @@
                 </div>
             @endif
 
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6" x-show="selectedMethod === 'plan'" x-cloak>
                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2">
                     Metode 1: Ajukan Berdasarkan Rencana Produksi (Rekomendasi)
                 </h3>
