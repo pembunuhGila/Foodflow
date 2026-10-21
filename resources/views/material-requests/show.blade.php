@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center space-x-3">
-                <a href="{{ route('material-requests.index') }}" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                <a href="{{ url()->previous() ?: route('material-requests.index') }}" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
@@ -251,7 +251,7 @@
                             </div>
 
                             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-                                <a href="{{ route('material-requests.index') }}"
+                                <a href="{{ url()->previous() ?: route('material-requests.index') }}"
                                    class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-50 transition">
                                     &larr; Kembali ke Daftar Permintaan
                                 </a>
@@ -435,7 +435,7 @@
                     @endif
 
                     <div class="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                        <a href="{{ route('material-requests.index') }}"
+                        <a href="{{ url()->previous() ?: route('material-requests.index') }}"
                            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-50 transition">
                             &larr; Kembali ke Daftar Permintaan
                         </a>

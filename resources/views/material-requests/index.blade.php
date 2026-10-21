@@ -160,11 +160,11 @@
                                         <td class="py-3.5 px-4 text-center">
                                             @if ($req->isPending())
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                                                    Pending
+                                                    Menunggu Verifikasi Gudang
                                                 </span>
                                             @elseif ($req->isApproved())
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                                    Approved
+                                                    Selesai Diverifikasi
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
