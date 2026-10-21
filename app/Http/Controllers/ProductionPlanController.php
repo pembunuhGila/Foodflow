@@ -19,26 +19,68 @@ use Illuminate\View\View;
 class ProductionPlanController extends Controller
 {
     /**
-     * Menampilkan daftar seluruh rencana produksi.
+     * Menampilkan daftar seluruh rencana produksi dapur dan jadwal memasak.
      */
     public function index(Request $request): View
     {
+        $statusMap = [
+            'scheduled' => 'scheduled',
+            'in_progress' => 'in_progress',
+            'completed' => 'completed',
+            'draft' => 'draft',
+            'cancelled' => 'cancelled',
+            'dijadwalkan' => 'scheduled',
+            'sedang dimasak' => 'in_progress',
+            'selesai' => 'completed',
+            'dibatalkan' => 'cancelled',
+        ];
+
+        $filterWarning = null;
+        $productionDate = $request->input('production_date');
+        $statusInput = $request->input('status');
+
         $query = ProductionPlan::query()
             ->with(['creator', 'details.product'])
-            ->withCount('details');
+            ->withCount('details')
+            ->withSum('details as total_portions', 'planned_quantity');
 
         if ($request->filled('search')) {
-            $search = trim($request->input('search'));
+            $search = trim((string) $request->input('search'));
             $query->where('plan_number', 'LIKE', "%{$search}%");
         }
 
-        if ($request->filled('status')) {
-            $query->status($request->input('status'));
+        if ($request->filled('production_date')) {
+            try {
+                $parsedDate = Carbon::createFromFormat('Y-m-d', (string) $productionDate);
+                if ($parsedDate && $parsedDate->format('Y-m-d') === $productionDate) {
+                    $query->productionDate($productionDate);
+                } else {
+                    $filterWarning = 'Format tanggal produksi tidak valid. Gunakan format YYYY-MM-DD.';
+                }
+            } catch (\Throwable) {
+                $filterWarning = 'Format tanggal produksi tidak valid. Gunakan format YYYY-MM-DD.';
+            }
         }
 
-        if ($request->filled('production_date')) {
-            $query->productionDate($request->input('production_date'));
+        $activeStatus = null;
+        if ($request->filled('status')) {
+            $normalizedStatus = strtolower(str_replace(['-', ' '], '_', trim((string) $statusInput)));
+            if (isset($statusMap[$normalizedStatus])) {
+                $activeStatus = $statusMap[$normalizedStatus];
+                $query->where('status', $activeStatus);
+            } else {
+                $filterWarning = $filterWarning
+                    ? $filterWarning.' Status rencana yang dipilih tidak valid.'
+                    : 'Status rencana produksi yang dipilih tidak valid.';
+            }
         }
+
+        $statusCounts = [
+            'all' => ProductionPlan::count(),
+            'scheduled' => ProductionPlan::where('status', ProductionPlanStatus::Scheduled->value)->count(),
+            'in_progress' => ProductionPlan::where('status', ProductionPlanStatus::InProgress->value)->count(),
+            'completed' => ProductionPlan::where('status', ProductionPlanStatus::Completed->value)->count(),
+        ];
 
         $plans = $query->orderByDesc('production_date')
             ->orderByDesc('id')
@@ -48,9 +90,11 @@ class ProductionPlanController extends Controller
         return view('production-plans.index', [
             'plans' => $plans,
             'statuses' => ProductionPlanStatus::cases(),
+            'statusCounts' => $statusCounts,
             'currentSearch' => $request->input('search'),
-            'currentStatus' => $request->input('status'),
-            'currentDate' => $request->input('production_date'),
+            'currentStatus' => $activeStatus ?? $request->input('status'),
+            'currentDate' => $productionDate,
+            'filterWarning' => $filterWarning,
         ]);
     }
 

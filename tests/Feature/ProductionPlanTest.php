@@ -59,7 +59,7 @@ class ProductionPlanTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-    public function test_all_authenticated_roles_can_view_production_plans_index(): void
+    public function test_admin_and_produksi_can_view_production_plans_index(): void
     {
         $plan = ProductionPlan::create([
             'plan_number' => 'PLN-20261015-0001',
@@ -69,10 +69,15 @@ class ProductionPlanTest extends TestCase
             'created_by' => $this->produksi->id,
         ]);
 
-        foreach ([$this->admin, $this->produksi, $this->gudang, $this->owner] as $user) {
+        foreach ([$this->admin, $this->produksi] as $user) {
             $response = $this->actingAs($user)->get(route('production-plans.index'));
             $response->assertOk();
             $response->assertSee('PLN-20261015-0001');
+        }
+
+        foreach ([$this->gudang, $this->owner] as $user) {
+            $response = $this->actingAs($user)->get(route('production-plans.index'));
+            $response->assertForbidden();
         }
     }
 

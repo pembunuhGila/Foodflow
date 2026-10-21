@@ -204,9 +204,9 @@ Route::middleware(['auth'])->group(function () {
 
 // Perencanaan Produksi & Jadwal Masak (UC-14, UC-15, FR-18)
 Route::middleware(['auth'])->group(function () {
-    // 1. Rute list (semua 4 role)
+    // 1. Rute list (khusus Admin & Produksi)
     Route::get('/production-plans', [ProductionPlanController::class, 'index'])
-        ->middleware('role:admin,produksi,gudang,owner')
+        ->middleware('role:admin,produksi')
         ->name('production-plans.index');
 
     // 2. Form create & store (khusus Admin & Produksi) - sebelum wildcard {productionPlan}
