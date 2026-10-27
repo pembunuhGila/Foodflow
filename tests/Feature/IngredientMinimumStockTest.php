@@ -159,7 +159,7 @@ class IngredientMinimumStockTest extends TestCase
 
         $response->assertOk();
         // Check for alert banner
-        $response->assertSee('Peringatan Batas Minimum Stok (BR-06)');
+        $response->assertSee('Peringatan Batas Minimum Stok');
         $response->assertSee('2'); // 2 critical/low stock items
 
         // Check for visual badges

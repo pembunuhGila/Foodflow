@@ -9,9 +9,16 @@
                     {{ $order->order_number }}
                 </p>
             </div>
-            <div>
+            <div class="flex items-center space-x-2">
+                <button type="button" onclick="window.print()"
+                        class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm print:hidden">
+                    <svg class="w-4 h-4 me-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Cetak Surat PO
+                </button>
                 <a href="{{ route('purchase-orders.index') }}"
-                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm">
+                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm print:hidden">
                     &larr; Kembali ke Daftar
                 </a>
             </div>
@@ -40,11 +47,30 @@
                         </svg>
                         <span>Informasi Purchase Order</span>
                     </h3>
-                    @if ($order->status)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold border {{ $order->status->badgeClass() }}">
-                            {{ $order->status->label() }}
-                        </span>
-                    @endif
+                    <div class="flex items-center space-x-3">
+                        @if ($order->status)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold border {{ $order->status->badgeClass() }}">
+                                {{ $order->status->label() }}
+                            </span>
+                        @endif
+
+                        @if (Auth::user()->isAdmin())
+                            <form method="POST" action="{{ route('purchase-orders.update-status', $order) }}" class="inline-flex items-center space-x-1.5 print:hidden">
+                                @csrf
+                                @method('PATCH')
+                                <select name="status" class="text-xs rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 py-1 pe-8">
+                                    @foreach (\App\Enums\PurchaseOrderStatus::cases() as $st)
+                                        <option value="{{ $st->value }}" {{ $order->status === $st ? 'selected' : '' }}>
+                                            Ubah ke: {{ $st->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="px-3 py-1 bg-gray-800 hover:bg-gray-900 text-white text-xs font-semibold rounded-lg transition">
+                                    Simpan
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">

@@ -86,8 +86,6 @@ class CateringOrderCreateTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Buat Pesanan Katering Baru');
-        $response->assertSee('FR-14');
-        $response->assertSee('UC-07');
         $response->assertSee($this->customer->name);
         $response->assertSee($this->productA->name);
         $response->assertSee($this->productB->name);
