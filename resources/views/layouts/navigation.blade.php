@@ -52,7 +52,7 @@
                         </x-nav-link>
                     @endif
 
-                    @if (Auth::user()->isAdmin())
+                    @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                         <x-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
                             {{ __('Purchase Order') }}
                         </x-nav-link>
@@ -172,7 +172,7 @@
                 </x-responsive-nav-link>
             @endif
 
-            @if (Auth::user()->isAdmin())
+            @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                 <x-responsive-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
                     {{ __('Purchase Order') }}
                 </x-responsive-nav-link>

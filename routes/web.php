@@ -278,12 +278,23 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:admin');
 });
 
-// Purchase Order Pengadaan Bahan Baku (UC-27, FR-27: Khusus Admin)
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
-    Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
-    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
-    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+// Purchase Order Pengadaan Bahan Baku (UC-27, FR-20, FR-27)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('purchase-orders.index');
+    Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])
+        ->middleware('role:admin')
+        ->name('purchase-orders.create');
+    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('purchase-orders.store');
+    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('purchase-orders.show');
+    Route::patch('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])
+        ->middleware('role:admin')
+        ->name('purchase-orders.update-status');
 });
 
 // Pengajuan Permintaan Bahan Dapur & Verifikasi Stok Keluar Gudang (URUTAN 13, BR-05)
