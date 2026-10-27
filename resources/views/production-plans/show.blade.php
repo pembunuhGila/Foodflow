@@ -72,6 +72,14 @@
                     </a>
                 @endif
 
+                <a href="{{ route('production-plans.material-usages.show', $plan) }}"
+                   class="inline-flex items-center px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-sm">
+                    <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Pemakaian Bahan Riil
+                </a>
+
                 <a href="{{ route('production-plans.ingredients', $plan) }}"
                    target="_blank"
                    class="inline-flex items-center px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-700 uppercase tracking-widest hover:bg-emerald-100 transition shadow-sm">
