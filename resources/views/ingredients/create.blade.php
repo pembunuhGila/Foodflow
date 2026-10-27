@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Tambah Bahan Baku Baru') }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Form pendaftaran bahan baku mentah, satuan ukuran, dan batas stok minimum (UC-04).</p>
+                <p class="text-sm text-gray-500 mt-1">Form pendaftaran bahan baku mentah, satuan ukuran, dan batas stok minimum.</p>
             </div>
             <a href="{{ route('ingredients.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

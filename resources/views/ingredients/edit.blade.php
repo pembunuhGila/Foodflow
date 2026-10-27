@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Edit Bahan Baku') }}: {{ $ingredient->name }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Perbarui data bahan baku, satuan ukuran, dan batas minimum stok (UC-04).</p>
+                <p class="text-sm text-gray-500 mt-1">Perbarui data bahan baku, satuan ukuran, dan batas minimum stok.</p>
             </div>
             <a href="{{ route('ingredients.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

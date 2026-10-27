@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Master Data Bahan Baku') }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Kelola data bahan makanan mentah, satuan unit, dan batas minimum stok persediaan (UC-04).</p>
+                <p class="text-sm text-gray-500 mt-1">Kelola data bahan makanan mentah, satuan unit, dan batas minimum stok persediaan.</p>
             </div>
             @if (in_array(auth()->user()->role?->value, ['admin', 'gudang'], true))
                 <a href="{{ route('ingredients.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
@@ -53,7 +53,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-amber-900">Peringatan Batas Minimum Stok (BR-06)</h4>
+                            <h4 class="text-sm font-bold text-amber-900">Peringatan Batas Minimum Stok</h4>
                             <p class="text-xs text-amber-800 mt-0.5">
                                 Terdapat <strong>{{ $criticalCount }}</strong> bahan baku yang berada pada batas kritis atau di bawah stok minimum.
                             </p>
@@ -107,7 +107,7 @@
 
                     <!-- Filter Kontrol Stok (BR-06) -->
                     <div>
-                        <label for="stock_status" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-1">Kondisi Stok (BR-06)</label>
+                        <label for="stock_status" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-1">Kondisi Stok</label>
                         <select name="stock_status" id="stock_status" class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
                             <option value="">-- Semua Kondisi Stok --</option>
                             <option value="low_stock" {{ ($filters['stock_status'] ?? '') === 'low_stock' ? 'selected' : '' }}>Kritis / Menipis (&le; Batas Min)</option>
