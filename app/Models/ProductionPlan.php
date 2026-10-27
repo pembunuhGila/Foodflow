@@ -84,6 +84,16 @@ class ProductionPlan extends Model
     }
 
     /**
+     * Catatan pemakaian bahan riil yang dihabiskan saat proses memasak di dapur (FR-35).
+     *
+     * @return HasMany<ProductionMaterialUsage, $this>
+     */
+    public function materialUsages(): HasMany
+    {
+        return $this->hasMany(ProductionMaterialUsage::class, 'production_plan_id');
+    }
+
+    /**
      * Relasi many-to-many ke produk menu melalui tabel detail rencana produksi.
      *
      * @return BelongsToMany<Product, $this>
