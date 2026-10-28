@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductionDashboardController;
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
@@ -73,11 +74,13 @@ Route::middleware(['auth', 'role:gudang'])->prefix('gudang')->name('gudang.')->g
 });
 
 // 3. Staff Produksi / Ahli Gizi
-Route::middleware(['auth', 'role:produksi'])->prefix('produksi')->name('produksi.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.produksi');
-    })->name('dashboard');
-});
+Route::middleware(['auth', 'role:produksi'])
+    ->prefix('produksi')
+    ->name('produksi.')
+    ->group(function () {
+        Route::get('/dashboard', ProductionDashboardController::class)
+            ->name('dashboard');
+    });
 
 // 4. Owner / Manager
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
