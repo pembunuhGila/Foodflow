@@ -88,19 +88,19 @@
                         <!-- Makronutrisi -->
                         <div class="divide-y divide-white/10 text-sm mt-3">
                             <div class="flex justify-between py-2.5">
-                                <span class="font-medium text-white/90">🍗 Protein</span>
+                                <span class="font-medium text-white/90"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Protein</span>
                                 <span class="font-bold text-white">{{ number_format($product->protein, 1) }} g</span>
                             </div>
                             <div class="flex justify-between py-2.5">
-                                <span class="font-medium text-white/90">🥑 Lemak Total</span>
+                                <span class="font-medium text-white/90"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Lemak Total</span>
                                 <span class="font-bold text-white">{{ number_format($product->fat, 1) }} g</span>
                             </div>
                             <div class="flex justify-between py-2.5">
-                                <span class="font-medium text-white/90">🍚 Karbohidrat Total</span>
+                                <span class="font-medium text-white/90"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Karbohidrat Total</span>
                                 <span class="font-bold text-white">{{ number_format($product->carbohydrates, 1) }} g</span>
                             </div>
                             <div class="flex justify-between py-2.5">
-                                <span class="font-medium text-white/80 pl-4 text-xs">🥦 Serat Pangan</span>
+                                <span class="font-medium text-white/80 pl-4 text-xs"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Serat Pangan</span>
                                 <span class="font-medium text-white/90 text-xs">{{ number_format($product->dietary_fiber, 1) }} g</span>
                             </div>
                         </div>
@@ -118,7 +118,7 @@
                 <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                            <span>🧂</span> Komposisi Resep Bahan Baku
+                            <span><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span> Komposisi Resep Bahan Baku
                         </h3>
                         <p class="text-xs text-gray-500 mt-1">
                             Rincian takaran bahan baku mentah untuk menghasilkan 1 {{ $product->unit ?? 'porsi' }} menu ini.
