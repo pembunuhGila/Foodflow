@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProductionDashboardController;
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
@@ -8,8 +7,10 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MaterialReceiptController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\Owner\ProductionMonitoringController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductionDashboardController;
 use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionRealizationController;
@@ -84,9 +85,13 @@ Route::middleware(['auth', 'role:produksi'])
 
 // 4. Owner / Manager
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.owner');
-    })->name('dashboard');
+    Route::get('/dashboard', [ProductionMonitoringController::class, 'index'])->name('dashboard');
+});
+
+// Dashboard Monitoring Live Capaian Produksi Owner (URUTAN 17, FR-37, UC-10: Khusus Owner & Admin)
+Route::middleware(['auth', 'role:admin,owner'])->group(function () {
+    Route::get('/owner/production-monitoring', [ProductionMonitoringController::class, 'index'])
+        ->name('owner.production-monitoring.index');
 });
 
 // Monitoring Evaluasi Gizi Menu & Fasilitas Cetak Laporan PDF Owner (URUTAN 18, FR-39, FR-40, UC-11, UC-12)

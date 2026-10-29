@@ -67,6 +67,10 @@
                     @endif
 
                     @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
+                        <x-nav-link :href="route('owner.production-monitoring.index')" :active="request()->routeIs('owner.production-monitoring.*')">
+                            {{ __('Monitoring Produksi') }}
+                        </x-nav-link>
+
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                             {{ __('Pelanggan') }}
                         </x-nav-link>
@@ -203,6 +207,10 @@
             @endif
 
             @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
+                <x-responsive-nav-link :href="route('owner.production-monitoring.index')" :active="request()->routeIs('owner.production-monitoring.*')">
+                    {{ __('Monitoring Produksi') }}
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                     {{ __('Pelanggan') }}
                 </x-responsive-nav-link>
