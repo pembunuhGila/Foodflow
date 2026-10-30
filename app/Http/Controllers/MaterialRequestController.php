@@ -6,7 +6,6 @@ use App\Enums\ProductionPlanStatus;
 use App\Models\Ingredient;
 use App\Models\IngredientStockTransaction;
 use App\Models\MaterialRequest;
-use App\Models\MaterialRequestDetail;
 use App\Models\ProductionPlan;
 use App\Services\ProductionIngredientCalculator;
 use Illuminate\Http\RedirectResponse;
@@ -140,7 +139,7 @@ class MaterialRequestController extends Controller
 
         return redirect()
             ->route('material-requests.show', $materialRequest)
-            ->with('success', "Permintaan bahan baku #MR-".str_pad($materialRequest->id, 4, '0', STR_PAD_LEFT)." untuk rencana produksi {$productionPlan->plan_number} berhasil diajukan ke bagian gudang! Petugas gudang dapat langsung memeriksa ketersediaan stok fisik dan melakukan verifikasi penyerahan.");
+            ->with('success', 'Permintaan bahan baku #MR-'.str_pad($materialRequest->id, 4, '0', STR_PAD_LEFT)." untuk rencana produksi {$productionPlan->plan_number} berhasil diajukan ke bagian gudang! Petugas gudang dapat langsung memeriksa ketersediaan stok fisik dan melakukan verifikasi penyerahan.");
     }
 
     /**
@@ -215,7 +214,7 @@ class MaterialRequestController extends Controller
 
         return redirect()
             ->route('material-requests.show', $materialRequest)
-            ->with('success', "Permintaan bahan baku #MR-".str_pad($materialRequest->id, 4, '0', STR_PAD_LEFT).' berhasil diajukan ke Gudang! Petugas gudang dapat langsung memverifikasi penyerahan.');
+            ->with('success', 'Permintaan bahan baku #MR-'.str_pad($materialRequest->id, 4, '0', STR_PAD_LEFT).' berhasil diajukan ke Gudang! Petugas gudang dapat langsung memverifikasi penyerahan.');
     }
 
     /**
