@@ -44,7 +44,7 @@
                     </div>
 
                     <a href="{{ route('production-plans.create') }}"
-                       class="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-md shadow-purple-200 transition-all flex items-center gap-2">
+                        class="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-md shadow-purple-200 transition-all flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
@@ -57,7 +57,7 @@
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Card 1: Rencana Produksi Aktif (Purple) -->
                 <a href="{{ route('production-plans.index') }}"
-                   class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-purple-200 flex flex-col justify-between group">
+                    class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-purple-200 flex flex-col justify-between group">
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
@@ -80,7 +80,7 @@
 
                 <!-- Card 2: Target Porsi Hari Ini (Indigo) -->
                 <a href="{{ route('production-plans.index') }}"
-                   class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 flex flex-col justify-between group">
+                    class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 flex flex-col justify-between group">
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
@@ -106,7 +106,7 @@
 
                 <!-- Card 3: Realisasi Porsi (Emerald) -->
                 <a href="{{ route('productions.index') }}"
-                   class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-emerald-200 flex flex-col justify-between group">
+                    class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-emerald-200 flex flex-col justify-between group">
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
@@ -132,7 +132,7 @@
 
                 <!-- Card 4: Permintaan Bahan Pending (Amber) -->
                 <a href="{{ route('material-requests.index') }}"
-                   class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-amber-200 flex flex-col justify-between group">
+                    class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md hover:border-amber-200 flex flex-col justify-between group">
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
@@ -244,20 +244,20 @@
                     <!-- Status Text Alert Ringkas -->
                     <div class="mt-4 pt-3 border-t border-gray-50">
                         @if ($todayTarget === 0)
-                            <div class="p-2.5 rounded-xl bg-gray-50 border border-gray-200/80 text-xs text-gray-500 text-center">
-                                Belum ada target jadwal produksi hari ini.
-                            </div>
+                        <div class="p-2.5 rounded-xl bg-gray-50 border border-gray-200/80 text-xs text-gray-500 text-center">
+                            Belum ada target jadwal produksi hari ini.
+                        </div>
                         @elseif ($todayActual >= $todayTarget)
-                            <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium text-center flex items-center justify-center gap-1.5">
-                                <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Target porsi hari ini telah terpenuhi!</span>
-                            </div>
+                        <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium text-center flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Target porsi hari ini telah terpenuhi!</span>
+                        </div>
                         @else
-                            <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 text-center">
-                                Sisa <strong>{{ number_format($todayTarget - $todayActual, 0, ',', '.') }} porsi</strong> lagi untuk mencapai target.
-                            </div>
+                        <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 text-center">
+                            Sisa <strong>{{ number_format($todayTarget - $todayActual, 0, ',', '.') }} porsi</strong> lagi untuk mencapai target.
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -277,7 +277,7 @@
                     </div>
 
                     <a href="{{ route('production-plans.index') }}"
-                       class="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-800 transition-colors self-start sm:self-auto">
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-800 transition-colors self-start sm:self-auto">
                         <span>Lihat Semua Rencana</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -286,80 +286,80 @@
                 </div>
 
                 @if ($activePlans->isEmpty())
-                    <div class="py-12 text-center">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center mx-auto mb-3 shadow-xs">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                        <h4 class="font-bold text-gray-900 text-sm">Belum Ada Rencana Produksi Aktif</h4>
-                        <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
-                            Rencana produksi yang dijadwalkan atau sedang dimasak akan tampil secara otomatis di tabel ini.
-                        </p>
-                        <a href="{{ route('production-plans.create') }}"
-                           class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl shadow-sm transition-all">
-                            <span>+ Buat Rencana Baru</span>
-                        </a>
+                <div class="py-12 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center mx-auto mb-3 shadow-xs">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
                     </div>
+                    <h4 class="font-bold text-gray-900 text-sm">Belum Ada Rencana Produksi Aktif</h4>
+                    <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                        Rencana produksi yang dijadwalkan atau sedang dimasak akan tampil secara otomatis di tabel ini.
+                    </p>
+                    <a href="{{ route('production-plans.create') }}"
+                        class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl shadow-sm transition-all">
+                        <span>+ Buat Rencana Baru</span>
+                    </a>
+                </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-100 text-sm">
-                            <thead class="bg-gray-50/70 text-gray-400 font-bold uppercase tracking-wider text-xs">
-                                <tr>
-                                    <th scope="col" class="py-3 px-4 text-left rounded-l-xl">Nomor Rencana</th>
-                                    <th scope="col" class="py-3 px-4 text-left">Tanggal Masak</th>
-                                    <th scope="col" class="py-3 px-4 text-left">Menu Hidangan</th>
-                                    <th scope="col" class="py-3 px-4 text-right">Target</th>
-                                    <th scope="col" class="py-3 px-4 text-right">Realisasi</th>
-                                    <th scope="col" class="py-3 px-4 text-center">Status</th>
-                                    <th scope="col" class="py-3 px-4 text-center rounded-r-xl">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50 bg-white">
-                                @foreach ($activePlans as $plan)
-                                    <tr class="hover:bg-purple-50/30 transition-colors">
-                                        <td class="whitespace-nowrap py-3.5 px-4">
-                                            <a href="{{ route('production-plans.show', $plan) }}" class="font-mono font-bold text-gray-900 hover:text-purple-600 transition-colors">
-                                                {{ $plan->plan_number }}
-                                            </a>
-                                        </td>
-                                        <td class="whitespace-nowrap py-3.5 px-4 text-xs text-gray-600">
-                                            {{ $plan->production_date?->translatedFormat('d M Y') ?? '-' }}
-                                        </td>
-                                        <td class="py-3.5 px-4">
-                                            <div class="font-semibold text-gray-800 text-xs">
-                                                {{ $plan->details->count() }} menu masakan
-                                            </div>
-                                            <div class="text-[11px] text-gray-400 truncate max-w-xs mt-0.5">
-                                                {{ $plan->details->pluck('product.name')->filter()->join(', ') ?: 'Belum ada menu' }}
-                                            </div>
-                                        </td>
-                                        <td class="whitespace-nowrap py-3.5 px-4 text-right font-mono font-bold text-gray-900 text-xs">
-                                            {{ number_format($plan->totalPlannedQuantity(), 0, ',', '.') }}
-                                        </td>
-                                        <td class="whitespace-nowrap py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-xs">
-                                            {{ number_format($plan->totalActualQuantity(), 0, ',', '.') }}
-                                        </td>
-                                        <td class="whitespace-nowrap py-3.5 px-4 text-center">
-                                            <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold {{ $plan->status->badgeClass() }}">
-                                                {{ $plan->status->label() }}
-                                            </span>
-                                        </td>
-                                        <td class="whitespace-nowrap py-3.5 px-4 text-center">
-                                            <a href="{{ route('production-plans.show', $plan) }}"
-                                               title="Lihat Detail Rencana"
-                                               class="inline-flex items-center justify-center p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-all">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-100 text-sm">
+                        <thead class="bg-gray-50/70 text-gray-400 font-bold uppercase tracking-wider text-xs">
+                            <tr>
+                                <th scope="col" class="py-3 px-4 text-left rounded-l-xl">Nomor Rencana</th>
+                                <th scope="col" class="py-3 px-4 text-left">Tanggal Masak</th>
+                                <th scope="col" class="py-3 px-4 text-left">Menu Hidangan</th>
+                                <th scope="col" class="py-3 px-4 text-right">Target</th>
+                                <th scope="col" class="py-3 px-4 text-right">Realisasi</th>
+                                <th scope="col" class="py-3 px-4 text-center">Status</th>
+                                <th scope="col" class="py-3 px-4 text-center rounded-r-xl">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50 bg-white">
+                            @foreach ($activePlans as $plan)
+                            <tr class="hover:bg-purple-50/30 transition-colors">
+                                <td class="whitespace-nowrap py-3.5 px-4">
+                                    <a href="{{ route('production-plans.show', $plan) }}" class="font-mono font-bold text-gray-900 hover:text-purple-600 transition-colors">
+                                        {{ $plan->plan_number }}
+                                    </a>
+                                </td>
+                                <td class="whitespace-nowrap py-3.5 px-4 text-xs text-gray-600">
+                                    {{ $plan->production_date?->translatedFormat('d M Y') ?? '-' }}
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-semibold text-gray-800 text-xs">
+                                        {{ $plan->details->count() }} menu masakan
+                                    </div>
+                                    <div class="text-[11px] text-gray-400 truncate max-w-xs mt-0.5">
+                                        {{ $plan->details->pluck('product.name')->filter()->join(', ') ?: 'Belum ada menu' }}
+                                    </div>
+                                </td>
+                                <td class="whitespace-nowrap py-3.5 px-4 text-right font-mono font-bold text-gray-900 text-xs">
+                                    {{ number_format($plan->totalPlannedQuantity(), 0, ',', '.') }}
+                                </td>
+                                <td class="whitespace-nowrap py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-xs">
+                                    {{ number_format($plan->totalActualQuantity(), 0, ',', '.') }}
+                                </td>
+                                <td class="whitespace-nowrap py-3.5 px-4 text-center">
+                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold {{ $plan->status->badgeClass() }}">
+                                        {{ $plan->status->label() }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap py-3.5 px-4 text-center">
+                                    <a href="{{ route('production-plans.show', $plan) }}"
+                                        title="Lihat Detail Rencana"
+                                        class="inline-flex items-center justify-center p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 @endif
             </section>
 
@@ -377,7 +377,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Pintasan 1: Rencana Produksi -->
                     <a href="{{ route('production-plans.index') }}"
-                       class="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-purple-200 hover:shadow-md cursor-pointer flex flex-col justify-between">
+                        class="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-purple-200 hover:shadow-md cursor-pointer flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-3">
                                 <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 group-hover:bg-purple-600 group-hover:text-white transition-colors">
@@ -386,7 +386,9 @@
                                     </svg>
                                 </div>
                                 <span class="text-gray-300 group-hover:text-purple-600 group-hover:translate-x-1 transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
                                 </span>
                             </div>
                             <h4 class="font-bold text-gray-900 text-sm group-hover:text-purple-600 transition-colors">Rencana Produksi</h4>
@@ -398,7 +400,7 @@
 
                     <!-- Pintasan 2: Permintaan Bahan -->
                     <a href="{{ route('material-requests.index') }}"
-                       class="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-purple-200 hover:shadow-md cursor-pointer flex flex-col justify-between">
+                        class="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-purple-200 hover:shadow-md cursor-pointer flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-3">
                                 <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-colors">
@@ -407,7 +409,9 @@
                                     </svg>
                                 </div>
                                 <span class="text-gray-300 group-hover:text-amber-600 group-hover:translate-x-1 transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
                                 </span>
                             </div>
                             <h4 class="font-bold text-gray-900 text-sm group-hover:text-amber-600 transition-colors">Permintaan Bahan</h4>
@@ -419,7 +423,7 @@
 
                     <!-- Pintasan 3: Realisasi Masak -->
                     <a href="{{ route('productions.index') }}"
-                       class="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-purple-200 hover:shadow-md cursor-pointer flex flex-col justify-between">
+                        class="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-purple-200 hover:shadow-md cursor-pointer flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-3">
                                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -428,7 +432,9 @@
                                     </svg>
                                 </div>
                                 <span class="text-gray-300 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
                                 </span>
                             </div>
                             <h4 class="font-bold text-gray-900 text-sm group-hover:text-emerald-600 transition-colors">Realisasi Masak</h4>
@@ -446,7 +452,7 @@
     <!-- Script Chart.js CDN & Inisialisasi Grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Data dari backend
             const weeklyData = @json($weeklyChart);
             const labels = weeklyData.map(item => item.label + ' (' + item.date + ')');
@@ -460,8 +466,7 @@
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
+                        datasets: [{
                                 label: 'Target Porsi',
                                 data: targetData,
                                 backgroundColor: '#8B5CF6',
@@ -490,8 +495,13 @@
                             },
                             tooltip: {
                                 backgroundColor: '#1E293B',
-                                titleFont: { size: 12, weight: 'bold' },
-                                bodyFont: { size: 12 },
+                                titleFont: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 12
+                                },
                                 padding: 10,
                                 cornerRadius: 8,
                                 displayColors: true,
@@ -508,7 +518,9 @@
                                     display: false
                                 },
                                 ticks: {
-                                    font: { size: 11 },
+                                    font: {
+                                        size: 11
+                                    },
                                     color: '#64748B'
                                 }
                             },
@@ -520,7 +532,9 @@
                                     color: '#F1F5F9'
                                 },
                                 ticks: {
-                                    font: { size: 11 },
+                                    font: {
+                                        size: 11
+                                    },
                                     color: '#64748B',
                                     precision: 0
                                 }
@@ -533,7 +547,8 @@
             // 2. Inisialisasi Donut Chart (Progres Hari Ini)
             const progressCtx = document.getElementById('todayProgressChart');
             if (progressCtx) {
-                const rate = {{ min(100, (float) $completionRate) }};
+                // PERBAIKAN: sebelumnya `min(100, (float) $completionRate)` (sintaks PHP di dalam JS)
+                const rate = Math.min(100, @json((float) $completionRate));
                 const remainder = Math.max(0, 100 - rate);
 
                 new Chart(progressCtx, {
@@ -552,8 +567,12 @@
                         maintainAspectRatio: false,
                         cutout: '75%',
                         plugins: {
-                            legend: { display: false },
-                            tooltip: { enabled: false }
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: false
+                            }
                         }
                     }
                 });
