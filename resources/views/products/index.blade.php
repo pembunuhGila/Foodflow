@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-blue-900 leading-tight">
                     {{ __('Master Menu Makanan & Rekap Gizi') }}
                 </h2>
                 <p class="text-sm text-gray-500 mt-1">Kelola data menu masakan katering sehat beserta harga jual dan informasi kandungan nutrisi/gizi per porsi (UC-23 & FR-11, FR-12).</p>
             </div>
             @if (in_array(auth()->user()->role?->value, ['admin', 'produksi'], true))
-                <a href="{{ route('products.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                <a href="{{ route('products.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -50,13 +50,13 @@
                     <!-- Search Input -->
                     <div class="md:col-span-2">
                         <label for="search" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-1">Cari Nama Menu / Deskripsi</label>
-                        <input type="text" name="search" id="search" value="{{ $filters['search'] ?? '' }}" placeholder="Ketik nama menu masakan, lauk, sup..." class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                        <input type="text" name="search" id="search" value="{{ $filters['search'] ?? '' }}" placeholder="Ketik nama menu masakan, lauk, sup..." class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     </div>
 
                     <!-- Filter Status -->
                     <div>
                         <label for="status" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-1">Status Ketersediaan</label>
-                        <select name="status" id="status" class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                        <select name="status" id="status" class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             <option value="">-- Semua Status --</option>
                             <option value="active" {{ ($filters['status'] ?? '') === 'active' ? 'selected' : '' }}>Menu Aktif</option>
                             <option value="inactive" {{ ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' }}>Nonaktif / Arsip</option>
@@ -88,8 +88,8 @@
                                 <tr class="hover:bg-gray-50 transition">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-base flex-shrink-0 mr-3">
-                                                🥗
+                                            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mr-3"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4h.01"/></svg></div>
+                                                
                                             </div>
                                             <div>
                                                 <a href="{{ route('products.show', $product) }}" class="font-medium text-gray-900 hover:text-emerald-600">
@@ -98,7 +98,7 @@
                                                 <div class="flex items-center gap-2 mt-0.5">
                                                     @if ($product->recipe_items_count > 0)
                                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                            🧂 {{ $product->recipe_items_count }} bahan
+                                                            {{ $product->recipe_items_count }} bahan
                                                         </span>
                                                     @else
                                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">

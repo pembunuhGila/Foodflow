@@ -3,6 +3,10 @@ $user = auth()->user();
 $role = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
 $groups = config('menu.' . $role, []);
 
+<<<<<<< HEAD
+=======
+// Pilih nama route pertama yang benar-benar ada. null = belum tersedia.
+>>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
 $resolve = function ($candidates) {
 foreach ((array) $candidates as $name) {
 if (\Illuminate\Support\Facades\Route::has($name)) {
@@ -12,6 +16,7 @@ return $name;
 return null;
 };
 
+// Menu aktif: dashboard harus persis sama, selain itu cocokkan seluruh prefix resource-nya.
 $isActive = function (?string $name) {
 if (! $name) {
 return false;
@@ -24,14 +29,14 @@ return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*'
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 flex w-[260px] -translate-x-full flex-col border-r border-line bg-white/60 backdrop-blur-md transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:self-start lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 flex w-[260px] -translate-x-full flex-col border-r border-line bg-primary/5 transition-transform duration-200 lg:static lg:translate-x-0"
     :class="{ '!translate-x-0': sidebarOpen }"
     aria-label="Navigasi utama">
 
     {{-- Logo --}}
     <div class="flex items-center justify-between px-5 pb-4 pt-6">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-            <x-brand-logo class="h-10 w-14" />
+            <img src="{{ asset('images/logo.svg') }}" alt="FoodFlow" class="h-10 w-10">
             <div class="leading-tight">
                 <div class="font-display text-h3 text-ink">FoodFlow</div>
                 <div class="text-small text-muted">Versi 0.1</div>
@@ -110,10 +115,13 @@ return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*'
         </a>
         @endif
 
-        <button type="button" @click="sidebarOpen = false; $dispatch('open-logout')"
-            class="flex w-full items-center gap-3 rounded-full bg-transparent px-3 py-2.5 text-left font-sans text-body text-danger-text hover:bg-danger-bg">
-            <x-icon name="logout" />
-            <span>Keluar</span>
-        </button>
+        <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Yakin ingin keluar?')">
+            @csrf
+            <button type="submit"
+                class="flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-body text-danger-text hover:bg-danger-bg">
+                <x-icon name="logout" />
+                <span>Keluar</span>
+            </button>
+        </form>
     </div>
 </aside>
