@@ -28,8 +28,8 @@
             <div class="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-tertiary/40 blur-3xl"></div>
 
             <div class="relative flex items-center gap-3">
-                <span class="flex h-11 w-11 items-center justify-center rounded-input bg-white p-1.5">
-                    <img src="{{ asset('images/logo.svg') }}" alt="" class="h-full w-full object-contain">
+                <span class="flex h-11 w-16 items-center justify-center rounded-input bg-white p-1.5">
+                    <x-brand-logo class="h-full w-full" />
                 </span>
                 <span class="font-display text-h2 italic">FoodFlow</span>
             </div>
@@ -78,7 +78,7 @@
 
                 {{-- Logo untuk layar kecil --}}
                 <div class="mb-8 flex items-center gap-3 lg:hidden">
-                    <img src="{{ asset('images/logo.svg') }}" alt="" class="h-10 w-10 object-contain">
+                    <x-brand-logo class="h-10 w-16" />
                     <span class="font-display text-h2 text-ink">FoodFlow</span>
                 </div>
 
