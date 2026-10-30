@@ -1,23 +1,40 @@
 @php
-/**
- * Sidebar component for the Production module & general application navigation.
- *
- * Permanent / static vertical sidebar on the left.
- */
+$user = auth()->user();
+$role = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
+$groups = config('menu.' . $role, []);
+
+$resolve = function ($candidates) {
+foreach ((array) $candidates as $name) {
+if (\Illuminate\Support\Facades\Route::has($name)) {
+return $name;
+}
+}
+return null;
+};
+
+$isActive = function (?string $name) {
+if (! $name) {
+return false;
+}
+if (! str_contains($name, '.')) {
+return request()->routeIs($name);
+}
+return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*');
+};
 @endphp
 
-<aside class="flex flex-col h-screen w-64 min-w-[260px] bg-[#f8f7ff] border-r border-purple-100/80 fixed top-0 left-0 z-30 select-none">
-    {{-- Header / Branding --}}
-    <div class="px-6 pt-6 pb-4">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-            <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-md shadow-purple-200 group-hover:bg-purple-700 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            </div>
-            <div>
-                <h1 class="text-lg font-bold text-gray-900 tracking-tight leading-none group-hover:text-purple-700 transition">FoodFlow</h1>
-                <p class="text-xs text-purple-600/80 font-medium mt-1">Versi 0.1</p>
+<aside
+    class="fixed inset-y-0 left-0 z-40 flex w-[260px] -translate-x-full flex-col border-r border-line bg-white/60 backdrop-blur-md transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:self-start lg:translate-x-0"
+    :class="{ '!translate-x-0': sidebarOpen }"
+    aria-label="Navigasi utama">
+
+    {{-- Logo --}}
+    <div class="flex items-center justify-between px-5 pb-4 pt-6">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+            <x-brand-logo class="h-10 w-14" />
+            <div class="leading-tight">
+                <div class="font-display text-h3 text-ink">FoodFlow</div>
+                <div class="text-small text-muted">Versi 0.1</div>
             </div>
         </a>
     </div>
@@ -94,44 +111,26 @@
             </ul>
         </div>
 
-        {{-- PESANAN --}}
-        <div>
-            <h3 class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-2 px-3">PESANAN</h3>
-            <ul class="space-y-1">
-                <li>
-                    <x-sidebar-link href="{{ route('catering-orders.index') }}" :active="request()->routeIs('catering-orders.*')">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span>Pesanan Katering</span>
-                    </x-sidebar-link>
-                </li>
-            </ul>
-        </div>
-    </div>
+    {{-- Bawah: ganti password + keluar --}}
+    <div class="shrink-0 space-y-0.5 border-t border-line px-3 py-4">
+        <a href="{{ url('/') }}" target="_blank" rel="noopener"
+            class="flex items-center gap-3 rounded-full px-3 py-2.5 text-body text-ink hover:bg-primary/10">
+            <x-icon name="external" />
+            <span>Lihat Website</span>
+        </a>
 
-    {{-- Bottom Sticky Actions --}}
-    <div class="px-4 py-4 mt-auto border-t border-purple-100 bg-[#f8f7ff]">
-        <ul class="space-y-1">
-            <li>
-                <x-sidebar-link href="{{ route('profile.edit') }}" :active="request()->routeIs('profile.edit')">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    <span>Ganti Password</span>
-                </x-sidebar-link>
-            </li>
-            <li>
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
-                    <button type="submit" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-red-700 hover:bg-red-50/80 transition duration-150 ease-in-out">
-                        <svg class="w-5 h-5 shrink-0 text-gray-500 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        <span>Keluar</span>
-                    </button>
-                </form>
-            </li>
-        </ul>
+        @if (\Illuminate\Support\Facades\Route::has('profile.edit'))
+        <a href="{{ route('profile.edit') }}"
+            class="flex items-center gap-3 rounded-full px-3 py-2.5 text-body text-ink hover:bg-primary/10">
+            <x-icon name="key" />
+            <span>Ganti Password</span>
+        </a>
+        @endif
+
+        <button type="button" @click="sidebarOpen = false; $dispatch('open-logout')"
+            class="flex w-full items-center gap-3 rounded-full bg-transparent px-3 py-2.5 text-left font-sans text-body text-danger-text hover:bg-danger-bg">
+            <x-icon name="logout" />
+            <span>Keluar</span>
+        </button>
     </div>
 </aside>
