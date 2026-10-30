@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Detail Pelanggan') }}: {{ $customer->name }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Rincian profil pemesan katering, alamat pengantaran, dan status langganan (UC-26 & FR-10).</p>
+                <p class="text-sm text-gray-500 mt-1">Rincian profil pemesan katering, alamat pengantaran, dan status langganan.</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('customers.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-md uppercase tracking-wider transition">
