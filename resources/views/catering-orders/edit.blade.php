@@ -4,7 +4,6 @@
             <div>
                 <div class="flex items-center space-x-2">
                     <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        FR-14 & UC-07
                     </span>
                     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                         {{ __('Edit Pesanan Katering') }} &mdash; <span class="font-mono text-emerald-700">{{ $order->order_number }}</span>

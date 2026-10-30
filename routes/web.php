@@ -11,7 +11,6 @@ use App\Http\Controllers\Owner\ProductionMonitoringController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionDashboardController;
-use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionRealizationController;
 use App\Http\Controllers\ProductRecipeController;
