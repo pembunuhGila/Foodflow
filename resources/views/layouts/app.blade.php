@@ -14,23 +14,27 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <body class="font-sans antialiased bg-gray-50 text-gray-900">
+        <!-- Main Layout Wrapper with Flexbox -->
+        <div class="flex min-h-screen">
+            <!-- Permanent / Static Sidebar (Fixed w-64) -->
+            <x-sidebar />
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            <!-- Main Content Area with static ml-64 offset -->
+            <div class="flex-1 flex flex-col min-w-0 ml-64 bg-gray-50/50">
+                @isset($header)
+                    <header class="bg-white border-b border-gray-200/80 sticky top-0 z-20 shadow-xs">
+                        <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <!-- Page Content -->
+                <main class="flex-1">
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
 
         @stack('scripts')
