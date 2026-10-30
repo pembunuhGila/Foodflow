@@ -24,6 +24,7 @@
     $user = auth()->user();
     $roleValue = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
     $roleLabel = ['admin' => 'Admin', 'gudang' => 'Staf Gudang', 'produksi' => 'Staf Produksi', 'owner' => 'Owner'][$roleValue] ?? ucfirst($roleValue);
+    $unreadNotifications = 0;
     @endphp
 
     <div x-data="{ sidebarOpen: false }" class="flex min-h-screen">
@@ -37,29 +38,18 @@
         <div class="flex min-w-0 flex-1 flex-col">
 
             {{-- Topbar --}}
-<<<<<<< HEAD
             <header class="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line bg-white/70 px-6 py-3 backdrop-blur-md">
-=======
-            <header class="flex items-center justify-between gap-4 border-b border-line bg-white/80 px-6 py-3 backdrop-blur">
->>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
                 <div class="flex items-center gap-3">
                     <button type="button" class="rounded-full p-2 text-ink hover:bg-primary/10 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
                         <x-icon name="menu" class="h-6 w-6" />
                     </button>
-<<<<<<< HEAD
                     <div class="hidden items-center gap-2 text-body text-ink md:flex">
                         <x-icon name="calendar" class="h-4 w-4 text-muted" />
                         <span>{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
-=======
-                    <div class="flex items-center gap-2 text-body text-ink">
-                        <x-icon name="calendar" class="h-4 w-4 text-muted" />
-                        <span class="hidden sm:inline">{{ now()->translatedFormat('l, d F Y') }}</span>
->>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3">
-<<<<<<< HEAD
                     {{-- Notifikasi --}}
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false" @keydown.escape.window="open = false">
                         <button type="button" @click="open = !open"
@@ -85,14 +75,6 @@
                         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-display text-body font-semibold text-white">
                             {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($user->name, 0, 1)) }}
                         </div>
-=======
-                    <div class="text-right leading-tight">
-                        <div class="text-body font-medium text-ink">{{ $user->name }}</div>
-                        <div class="text-small text-muted">{{ $roleLabel }}</div>
-                    </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-display text-h3 text-primary">
-                        {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($user->name, 0, 1)) }}
->>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
                     </div>
                 </div>
             </header>
@@ -107,12 +89,9 @@
             </main>
         </div>
     </div>
-<<<<<<< HEAD
 
     <x-confirm-modal />
     <x-logout-modal />
-=======
->>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
 </body>
 
 </html>

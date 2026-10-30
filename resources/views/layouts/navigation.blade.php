@@ -67,13 +67,9 @@
                     @endif
 
                     @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
-<<<<<<< HEAD
-=======
                         <x-nav-link :href="route('owner.production-monitoring.index')" :active="request()->routeIs('owner.production-monitoring.*')">
                             {{ __('Monitoring Produksi') }}
                         </x-nav-link>
-
->>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                             {{ __('Pelanggan') }}
                         </x-nav-link>

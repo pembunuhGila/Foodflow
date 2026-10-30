@@ -85,9 +85,13 @@ Route::middleware(['auth', 'role:produksi'])
 
 // 4. Owner / Manager
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.owner');
-    })->name('dashboard');
+    Route::get('/dashboard', [ProductionMonitoringController::class, 'index'])->name('dashboard');
+});
+
+// Dashboard Monitoring Live Capaian Produksi Owner (URUTAN 17, FR-37, UC-10: Khusus Owner & Admin)
+Route::middleware(['auth', 'role:admin,owner'])->group(function () {
+    Route::get('/owner/production-monitoring', [ProductionMonitoringController::class, 'index'])
+        ->name('owner.production-monitoring.index');
 });
 
 // Monitoring Evaluasi Gizi Menu & Fasilitas Cetak Laporan PDF Owner (URUTAN 18, FR-39, FR-40, UC-11, UC-12)

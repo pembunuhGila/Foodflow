@@ -3,10 +3,7 @@ $user = auth()->user();
 $role = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
 $groups = config('menu.' . $role, []);
 
-<<<<<<< HEAD
-=======
 // Pilih nama route pertama yang benar-benar ada. null = belum tersedia.
->>>>>>> 6a865e60564c8278ab388bac1e0319796319b452
 $resolve = function ($candidates) {
 foreach ((array) $candidates as $name) {
 if (\Illuminate\Support\Facades\Route::has($name)) {
