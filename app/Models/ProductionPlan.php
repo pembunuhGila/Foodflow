@@ -64,6 +64,16 @@ class ProductionPlan extends Model
     }
 
     /**
+     * Pesanan katering yang menjadi acuan rencana produksi (jika ada).
+     *
+     * @return BelongsTo<CateringOrder, $this>
+     */
+    public function cateringOrder(): BelongsTo
+    {
+        return $this->belongsTo(CateringOrder::class, 'catering_order_id');
+    }
+
+    /**
      * Rincian menu hidangan yang direncanakan.
      *
      * @return HasMany<ProductionPlanDetail, $this>
@@ -81,6 +91,16 @@ class ProductionPlan extends Model
     public function materialRequests(): HasMany
     {
         return $this->hasMany(MaterialRequest::class, 'production_plan_id');
+    }
+
+    /**
+     * Catatan pemakaian bahan riil yang dihabiskan saat proses memasak di dapur (FR-35).
+     *
+     * @return HasMany<ProductionMaterialUsage, $this>
+     */
+    public function materialUsages(): HasMany
+    {
+        return $this->hasMany(ProductionMaterialUsage::class, 'production_plan_id');
     }
 
     /**

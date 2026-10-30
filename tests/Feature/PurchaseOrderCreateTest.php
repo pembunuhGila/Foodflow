@@ -93,10 +93,13 @@ class PurchaseOrderCreateTest extends TestCase
     /** @test */
     public function test_non_admin_roles_are_forbidden_from_index(): void
     {
-        foreach ([$this->gudang, $this->produksi, $this->owner] as $user) {
-            $response = $this->actingAs($user)->get(route('purchase-orders.index'));
-            $response->assertForbidden();
-        }
+        // Role produksi tetap dilarang mengakses index PO
+        $response = $this->actingAs($this->produksi)->get(route('purchase-orders.index'));
+        $response->assertForbidden();
+
+        // Role gudang & owner diizinkan melihat data (read-only)
+        $this->actingAs($this->gudang)->get(route('purchase-orders.index'))->assertOk();
+        $this->actingAs($this->owner)->get(route('purchase-orders.index'))->assertOk();
     }
 
     /** @test */

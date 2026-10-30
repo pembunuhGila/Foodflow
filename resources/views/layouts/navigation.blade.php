@@ -52,15 +52,35 @@
                         </x-nav-link>
                     @endif
 
-                    @if (Auth::user()->isAdmin())
+                    @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                         <x-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
                             {{ __('Purchase Order') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('material-receipts.index')" :active="request()->routeIs('material-receipts.*')">
+                            {{ __('Penerimaan Bahan') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('stock-cards.index')" :active="request()->routeIs('stock-cards.*') || request()->routeIs('stock-adjustments.*')">
+                            {{ __('Kartu Stok') }}
                         </x-nav-link>
                     @endif
 
                     @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
+                        <x-nav-link :href="route('owner.production-monitoring.index')" :active="request()->routeIs('owner.production-monitoring.*')">
+                            {{ __('Monitoring Produksi') }}
+                        </x-nav-link>
+
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                             {{ __('Pelanggan') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('owner.nutrition.index')" :active="request()->routeIs('owner.nutrition.*')">
+                            {{ __('Evaluasi Gizi') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('owner.reports.index')" :active="request()->routeIs('owner.reports.*')">
+                            {{ __('Laporan Eksekutif') }}
                         </x-nav-link>
                     @endif
 
@@ -172,15 +192,35 @@
                 </x-responsive-nav-link>
             @endif
 
-            @if (Auth::user()->isAdmin())
+            @if (in_array(Auth::user()->role?->value, ['admin', 'gudang', 'owner'], true))
                 <x-responsive-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
                     {{ __('Purchase Order') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('material-receipts.index')" :active="request()->routeIs('material-receipts.*')">
+                    {{ __('Penerimaan Bahan') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('stock-cards.index')" :active="request()->routeIs('stock-cards.*') || request()->routeIs('stock-adjustments.*')">
+                    {{ __('Kartu Stok') }}
                 </x-responsive-nav-link>
             @endif
 
             @if (in_array(Auth::user()->role?->value, ['admin', 'owner'], true))
+                <x-responsive-nav-link :href="route('owner.production-monitoring.index')" :active="request()->routeIs('owner.production-monitoring.*')">
+                    {{ __('Monitoring Produksi') }}
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                     {{ __('Pelanggan') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('owner.nutrition.index')" :active="request()->routeIs('owner.nutrition.*')">
+                    {{ __('Evaluasi Gizi') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('owner.reports.index')" :active="request()->routeIs('owner.reports.*')">
+                    {{ __('Laporan Eksekutif') }}
                 </x-responsive-nav-link>
             @endif
 

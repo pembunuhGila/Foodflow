@@ -1,4 +1,4 @@
-@php
+ @php
     $criticalIngredients = $criticalIngredients ?? \App\Models\Ingredient::active()->lowStock()->orderBy('current_stock')->get();
     $criticalCount = $criticalCount ?? $criticalIngredients->count();
 @endphp

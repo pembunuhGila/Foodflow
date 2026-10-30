@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use Illuminate\View\View;
@@ -30,7 +31,12 @@ class PurchaseOrderController extends Controller
 
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
-            $query->where('order_number', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('order_number', 'LIKE', "%{$search}%")
+                    ->orWhereHas('vendor', function ($vendorQuery) use ($search) {
+                        $vendorQuery->where('name', 'LIKE', "%{$search}%");
+                    });
+            });
         }
 
         if ($request->filled('status')) {
@@ -183,5 +189,23 @@ class PurchaseOrderController extends Controller
         return view('purchase-orders.show', [
             'order' => $purchaseOrder,
         ]);
+    }
+
+    /**
+     * Memperbarui status purchase order pengadaan (FR-20).
+     */
+    public function updateStatus(Request $request, PurchaseOrder $purchaseOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', Rule::enum(PurchaseOrderStatus::class)],
+        ]);
+
+        $purchaseOrder->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', "Status Purchase Order {$purchaseOrder->order_number} berhasil diubah menjadi {$purchaseOrder->status->label()}.");
     }
 }

@@ -5,7 +5,10 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\MaterialReceiptController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\Owner\ProductionMonitoringController;
+use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionDashboardController;
 use App\Http\Controllers\ProductionPlanController;
@@ -13,6 +16,7 @@ use App\Http\Controllers\ProductionRealizationController;
 use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\StockCardController;
 use App\Http\Controllers\SupplierController;
 use App\Models\Ingredient;
 use App\Models\User;
@@ -80,9 +84,25 @@ Route::middleware(['auth', 'role:produksi'])
 
 // 4. Owner / Manager
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.owner');
-    })->name('dashboard');
+    Route::get('/dashboard', [ProductionMonitoringController::class, 'index'])->name('dashboard');
+});
+
+// Dashboard Monitoring Live Capaian Produksi Owner (URUTAN 17, FR-37, UC-10: Khusus Owner & Admin)
+Route::middleware(['auth', 'role:admin,owner'])->group(function () {
+    Route::get('/owner/production-monitoring', [ProductionMonitoringController::class, 'index'])
+        ->name('owner.production-monitoring.index');
+});
+
+// Monitoring Evaluasi Gizi Menu & Fasilitas Cetak Laporan PDF Owner (URUTAN 18, FR-39, FR-40, UC-11, UC-12)
+Route::middleware(['auth', 'role:admin,owner'])->group(function () {
+    Route::get('/owner/nutrition-monitoring', [OwnerReportController::class, 'nutrition'])
+        ->name('owner.nutrition.index');
+    Route::get('/owner/reports', [OwnerReportController::class, 'index'])
+        ->name('owner.reports.index');
+    Route::get('/owner/reports/production', [OwnerReportController::class, 'production'])
+        ->name('owner.reports.production');
+    Route::get('/owner/reports/inventory', [OwnerReportController::class, 'inventory'])
+        ->name('owner.reports.inventory');
 });
 
 // Master Bahan Baku (UC-04: Kelola oleh Admin & Gudang, Lihat oleh Produksi & Owner)
@@ -281,12 +301,39 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:admin');
 });
 
-// Purchase Order Pengadaan Bahan Baku (UC-27, FR-27: Khusus Admin)
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
-    Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
-    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
-    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+// Purchase Order Pengadaan Bahan Baku (UC-27, FR-20, FR-27)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('purchase-orders.index');
+    Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])
+        ->middleware('role:admin')
+        ->name('purchase-orders.create');
+    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('purchase-orders.store');
+    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('purchase-orders.show');
+    Route::patch('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])
+        ->middleware('role:admin')
+        ->name('purchase-orders.update-status');
+});
+
+// Penerimaan Bahan Baku Supplier & Pemeriksaan Fisik (URUTAN 11 & 12, FR-21, FR-22, FR-23, BR-04)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/material-receipts', [MaterialReceiptController::class, 'index'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('material-receipts.index');
+    Route::get('/material-receipts/create', [MaterialReceiptController::class, 'create'])
+        ->middleware('role:admin,gudang')
+        ->name('material-receipts.create');
+    Route::post('/material-receipts', [MaterialReceiptController::class, 'store'])
+        ->middleware('role:admin,gudang')
+        ->name('material-receipts.store');
+    Route::get('/material-receipts/{materialReceipt}', [MaterialReceiptController::class, 'show'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('material-receipts.show');
 });
 
 // Pengajuan Permintaan Bahan Dapur & Verifikasi Stok Keluar Gudang (URUTAN 13, BR-05)
@@ -328,6 +375,32 @@ Route::middleware(['auth', 'role:admin,produksi'])->group(function () {
         ->name('production-plans.realization.create');
     Route::post('/production-plans/{productionPlan}/realization', [ProductionRealizationController::class, 'store'])
         ->name('production-plans.realization.store');
+});
+
+// Pencatatan Pemakaian Riil Bahan Masak Dapur (URUTAN 15, FR-35, UC-18)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/production-plans/{productionPlan}/material-usages', [ProductionMaterialUsageController::class, 'show'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('production-plans.material-usages.show');
+    Route::get('/production-plans/{productionPlan}/material-usages/create', [ProductionMaterialUsageController::class, 'create'])
+        ->middleware('role:admin,produksi')
+        ->name('production-plans.material-usages.create');
+    Route::post('/production-plans/{productionPlan}/material-usages', [ProductionMaterialUsageController::class, 'store'])
+        ->middleware('role:admin,produksi')
+        ->name('production-plans.material-usages.store');
+});
+
+// Buku Kartu Mutasi Stok Bahan & Penyesuaian Fisik / Stock Adjustment (URUTAN 16, FR-24, FR-26, FR-29, UC-09)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/stock-cards', [StockCardController::class, 'index'])
+        ->middleware('role:admin,gudang,owner')
+        ->name('stock-cards.index');
+    Route::get('/stock-adjustments/create', [StockCardController::class, 'createAdjustment'])
+        ->middleware('role:admin,gudang')
+        ->name('stock-adjustments.create');
+    Route::post('/stock-adjustments', [StockCardController::class, 'storeAdjustment'])
+        ->middleware('role:admin,gudang')
+        ->name('stock-adjustments.store');
 });
 
 Route::middleware('auth')->group(function () {
