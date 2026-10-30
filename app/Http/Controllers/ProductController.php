@@ -51,7 +51,11 @@ class ProductController extends Controller
             }
         }
 
-        $products = $query->withCount('recipeItems')->orderBy('name')->paginate(10)->withQueryString();
+        $products = $query->withCount('recipeItems')
+            ->with(['recipeItems.ingredient'])
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('products.index', [
             'products' => $products,
