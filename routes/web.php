@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProductionDashboardController;
 use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
@@ -8,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductionDashboardController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionRealizationController;
 use App\Http\Controllers\ProductRecipeController;
