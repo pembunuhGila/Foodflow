@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Tambah Supplier Baru') }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Form pendaftaran vendor pemasok bahan baku katering (UC-25 & FR-09).</p>
+                <p class="text-sm text-gray-500 mt-1">Form pendaftaran vendor pemasok bahan baku katering.</p>
             </div>
             <a href="{{ route('suppliers.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
