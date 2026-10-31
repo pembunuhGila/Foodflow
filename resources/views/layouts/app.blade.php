@@ -24,9 +24,8 @@
     $user = auth()->user();
     $roleValue = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
     $roleLabel = ['admin' => 'Admin', 'gudang' => 'Staf Gudang', 'produksi' => 'Staf Produksi', 'owner' => 'Owner'][$roleValue] ?? ucfirst($roleValue);
-
     $unreadNotifications = 0;
-@endphp
+    @endphp
 
     <div x-data="{ sidebarOpen: false }" class="flex min-h-screen">
 

@@ -70,7 +70,6 @@
                         <x-nav-link :href="route('owner.production-monitoring.index')" :active="request()->routeIs('owner.production-monitoring.*')">
                             {{ __('Monitoring Produksi') }}
                         </x-nav-link>
-
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
                             {{ __('Pelanggan') }}
                         </x-nav-link>

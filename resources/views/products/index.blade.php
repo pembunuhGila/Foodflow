@@ -215,10 +215,10 @@
                                         @endif
                                     </td>
 
-                                    {{-- Kolom Aksi (Dedicated Pages + Modal Konfirmasi Saja) --}}
+                                    {{-- Kolom Aksi (Dedicated Pages + Modal Konfirmasi) --}}
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <div class="inline-flex items-center gap-1.5 justify-center">
-                                            {{-- 1. Dedicated Page: Detail (Ikon Mata) --}}
+                                            {{-- 1. Detail --}}
                                             <a href="{{ route('products.show', $product) }}" class="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl border border-transparent hover:border-purple-200/60 transition shadow-2xs" title="Lihat Halaman Detail Menu">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -227,28 +227,28 @@
                                             </a>
 
                                             @if (in_array(auth()->user()->role?->value, ['admin', 'produksi'], true))
-                                                {{-- 2. Dedicated Page: Resep (Ikon Klip Dokumen / Recipe Builder) --}}
+                                                {{-- 2. Resep --}}
                                                 <a href="{{ route('products.recipe.edit', $product) }}" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl border border-transparent hover:border-indigo-200/60 transition shadow-2xs" title="Buka Recipe Builder (Komposisi Bahan)">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                     </svg>
                                                 </a>
 
-                                                {{-- 3. Dedicated Page: Edit (Ikon Pensil) --}}
+                                                {{-- 3. Edit --}}
                                                 <a href="{{ route('products.edit', $product) }}" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl border border-transparent hover:border-emerald-200/60 transition shadow-2xs" title="Edit Data Menu & Gizi">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </a>
 
-                                                {{-- 4. Modal Konfirmasi: Ubah Status (Ikon Tukar Status) --}}
+                                                {{-- 4. Status Toggle Modal --}}
                                                 <button type="button" @click="confirmToggle({{ json_encode($productPayload) }}, '{{ route('products.toggle-status', $product) }}')" class="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl border border-transparent hover:border-amber-200/60 transition shadow-2xs" title="{{ $product->isActive() ? 'Nonaktifkan Menu' : 'Aktifkan Menu' }}">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                                     </svg>
                                                 </button>
 
-                                                {{-- 5. Modal Konfirmasi: Hapus Menu (Ikon Tempat Sampah) --}}
+                                                {{-- 5. Delete Modal --}}
                                                 <button type="button" @click="confirmDelete({{ json_encode($productPayload) }}, '{{ route('products.destroy', $product) }}')" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl border border-transparent hover:border-red-200/60 transition shadow-2xs" title="Hapus Menu">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -284,9 +284,7 @@
 
         </div>
 
-        {{-- ======================================================== --}}
-        {{-- MODAL KONFIRMASI STATUS (NONAKTIFKAN / AKTIFKAN)         --}}
-        {{-- ======================================================== --}}
+        {{-- MODAL KONFIRMASI STATUS --}}
         <div x-show="showToggleModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div x-show="showToggleModal" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity" @click="showToggleModal = false"></div>
@@ -329,9 +327,7 @@
             </div>
         </div>
 
-        {{-- ======================================================== --}}
-        {{-- MODAL KONFIRMASI HAPUS (DANGER MODAL - REFACTORED)       --}}
-        {{-- ======================================================== --}}
+        {{-- MODAL KONFIRMASI HAPUS --}}
         <div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div x-show="showDeleteModal"
                  x-transition:enter="ease-out duration-200"
@@ -346,7 +342,7 @@
                     @csrf
                     @method('DELETE')
 
-                    <!-- Icon Tong Sampah Melayang -->
+                    <!-- Icon Tong Sampah -->
                     <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto mb-4 shadow-sm">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -355,32 +351,21 @@
 
                     <!-- Judul & Teks Utama -->
                     <h3 class="text-lg font-bold text-gray-900 mb-1">Hapus Menu Makanan</h3>
-                    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
-                        Apakah Anda yakin ingin menghapus menu <strong class="text-gray-900 font-semibold" x-text="selectedProduct.name"></strong>?
+                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                        Apakah Anda yakin ingin menghapus menu <strong class="text-gray-900 font-semibold" x-text="selectedProduct.name"></strong>? Tindakan ini tidak dapat dibatalkan.
                     </p>
 
-                    <!-- Alert Box Note Warning -->
-                    <div class="bg-rose-50/50 border border-rose-100/80 rounded-2xl p-3.5 mb-6 text-left flex items-start gap-3">
-                        <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="text-xs text-rose-800/80 leading-relaxed">
-                            <strong>Catatan:</strong> Jika menu sudah pernah terikat pesanan katering, sistem akan mengarsipkannya untuk menjaga riwayat transaksi.
-                        </p>
-                    </div>
-
-                    <!-- Footer Tombol Aksi Sejajar (2 Kolom) -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" @click="showDeleteModal = false" class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-xl transition-all">
+                    <!-- Tombol Aksi Modal -->
+                    <div class="flex items-center justify-center gap-3">
+                        <button type="button" @click="showDeleteModal = false" class="w-1/2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs uppercase tracking-wider rounded-xl transition">
                             Batal
                         </button>
-                        <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-rose-200 transition-all">
-                            Ya, Hapus Menu
+                        <button type="submit" class="w-1/2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-rose-200 transition">
+                            Ya, Hapus
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
 </x-app-layout>
