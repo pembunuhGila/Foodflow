@@ -1,14 +1,11 @@
 <?php
-
-/*
- * Menu sidebar per role.
- * - 'route' boleh string atau array nama route. Sidebar memakai nama pertama yang ADA.
- * - Jika tidak ada satu pun route yang ada, menu tampil redup "Segera hadir".
- * - Cek nama route asli dengan: php artisan route:list
- * - 'group' => null berarti grup "Utama" (selalu terbuka).
- */
-
 $dashboard = ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'grid'];
+
+$kartuStok = ['label' => 'Kartu Stok', 'route' => ['stock-cards.index'], 'icon' => 'bar'];
+$purchaseOrder = ['label' => 'Purchase Order', 'route' => ['purchase-orders.index', 'purchase-orders.create'], 'icon' => 'file'];
+$penerimaan = ['label' => 'Penerimaan Bahan', 'route' => ['material-receipts.index'], 'icon' => 'inbox'];
+$monitoring = ['label' => 'Monitoring Produksi', 'route' => ['owner.production-monitoring.index', 'owner.monitoring.index'], 'icon' => 'activity'];
+$laporan = ['label' => 'Cetak Laporan', 'route' => ['owner.reports.index'], 'icon' => 'printer'];
 
 return [
 
@@ -23,60 +20,44 @@ return [
         ['title' => 'Penjualan', 'items' => [
             ['label' => 'Pesanan Catering', 'route' => ['catering-orders.index', 'orders.index'], 'icon' => 'cart'],
         ]],
-        ['title' => 'Pengadaan', 'items' => [
-            ['label' => 'Purchase Order', 'route' => ['purchase-orders.index', 'purchase-orders.create'], 'icon' => 'file'],
-            ['label' => 'Penerimaan Bahan', 'route' => ['material-receipts.index'], 'icon' => 'inbox'],
-        ]],
+        ['title' => 'Pengadaan', 'items' => [$purchaseOrder, $penerimaan, $kartuStok]],
         ['title' => 'Pengguna', 'items' => [
             ['label' => 'Kelola Staf', 'route' => ['admin.users.index'], 'icon' => 'users'],
             ['label' => 'Reset Password', 'route' => ['admin.password-resets.index', 'admin.password-reset-requests.index'], 'icon' => 'key'],
         ]],
-        ['title' => 'Pemantauan', 'items' => [
-            ['label' => 'Monitoring Produksi', 'route' => ['owner.production-monitoring.index'], 'icon' => 'activity'],
-            ['label' => 'Gizi & Laporan', 'route' => ['owner.reports.index'], 'icon' => 'printer'],
-        ]],
+        ['title' => 'Pemantauan', 'items' => [$monitoring, $laporan]],
     ],
 
     'gudang' => [
         ['title' => 'Utama', 'items' => [$dashboard]],
         ['title' => 'Persediaan', 'items' => [
             ['label' => 'Bahan Baku', 'route' => ['ingredients.index'], 'icon' => 'package'],
-            ['label' => 'Kartu Stok', 'route' => ['stock-cards.index'], 'icon' => 'bar'],
+            $kartuStok,
         ]],
         ['title' => 'Permintaan', 'items' => [
             ['label' => 'Verifikasi Permintaan Bahan', 'route' => ['material-requests.index'], 'icon' => 'check'],
         ]],
-        ['title' => 'Pengadaan', 'items' => [
-            ['label' => 'Penerimaan Bahan', 'route' => ['material-receipts.index'], 'icon' => 'inbox'],
-            ['label' => 'Purchase Order', 'route' => ['purchase-orders.index'], 'icon' => 'file'],
-        ]],
+        ['title' => 'Pengadaan', 'items' => [$penerimaan, $purchaseOrder]],
     ],
 
     'produksi' => [
         ['title' => 'Utama', 'items' => [$dashboard]],
         ['title' => 'Dapur', 'items' => [
-            ['label' => 'Jadwal Produksi', 'route' => ['production-plans.index'], 'icon' => 'clock'],
-            ['label' => 'Pemakaian Bahan Aktual', 'route' => ['production-material-usage.index'], 'icon' => 'clipboard'],
+            ['label' => 'Rencana Produksi', 'route' => ['production-plans.index'], 'icon' => 'clock'],
+            ['label' => 'Realisasi Masak', 'route' => ['productions.index'], 'icon' => 'clipboard'],
         ]],
         ['title' => 'Resep', 'items' => [
             ['label' => 'Menu & Nilai Gizi', 'route' => ['products.index'], 'icon' => 'book'],
         ]],
         ['title' => 'Permintaan', 'items' => [
-            ['label' => 'Permintaan Bahan', 'route' => ['material-requests.index'], 'icon' => 'clipboard'],
+            ['label' => 'Permintaan Bahan', 'route' => ['material-requests.index'], 'icon' => 'check'],
         ]],
     ],
 
     'owner' => [
         ['title' => 'Utama', 'items' => [$dashboard]],
-        ['title' => 'Pemantauan', 'items' => [
-            ['label' => 'Monitoring Produksi', 'route' => ['owner.production-monitoring.index'], 'icon' => 'activity'],
-            ['label' => 'Monitoring Gizi', 'route' => ['owner.nutrition.index'], 'icon' => 'heart'],
-            ['label' => 'Kartu Stok', 'route' => ['stock-cards.index'], 'icon' => 'bar'],
-            ['label' => 'Purchase Order', 'route' => ['purchase-orders.index'], 'icon' => 'file'],
-        ]],
-        ['title' => 'Laporan', 'items' => [
-            ['label' => 'Cetak Laporan', 'route' => ['owner.reports.index'], 'icon' => 'printer'],
-        ]],
+        ['title' => 'Pemantauan', 'items' => [$monitoring, $kartuStok, $purchaseOrder]],
+        ['title' => 'Laporan', 'items' => [$laporan]],
     ],
 
 ];
