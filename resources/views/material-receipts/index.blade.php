@@ -1,147 +1,132 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Penerimaan Bahan Baku Supplier') }}
-                </h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    Pencatatan barang tiba dari supplier, verifikasi kondisi fisik (Baik/Rusak), dan mutasi stok masuk otomatis.
-                </p>
-            </div>
-            @if (in_array(Auth::user()->role?->value, ['admin', 'gudang'], true))
-                <a href="{{ route('material-receipts.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white text-xs font-semibold uppercase tracking-widest rounded-lg hover:bg-emerald-700 transition shadow-sm">
-                    <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Catat Penerimaan Baru
-                </a>
+    @php
+        $canManage = in_array(Auth::user()->role?->value, ['admin', 'gudang'], true);
+        $hasFilter = $currentSearch || $currentDate;
+
+        $inputClass = 'block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+    @endphp
+
+    <x-page-header eyebrow="Pengadaan" :title="__('Penerimaan Bahan Baku Supplier')"
+                   subtitle="Pencatatan barang tiba dari supplier, verifikasi kondisi fisik (Baik/Rusak), dan mutasi stok masuk otomatis.">
+        <x-slot name="actions">
+            @if ($canManage)
+            <x-button :href="route('material-receipts.create')">
+                <x-icon name="plus" class="h-4 w-4" />
+                Catat Penerimaan Baru
+            </x-button>
             @endif
+        </x-slot>
+    </x-page-header>
+
+    <div class="space-y-6">
+
+        <!-- Session Alert -->
+        @if (session('success'))
+        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary" role="status">
+            <x-icon name="check" class="h-5 w-5 shrink-0" />
+            <span>{{ session('success') }}</span>
         </div>
-    </x-slot>
+        @endif
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        @if (session('error'))
+        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text" role="alert">
+            {{ session('error') }}
+        </div>
+        @endif
 
-            @if (session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg shadow-sm flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    <p class="text-sm text-emerald-800 font-medium">{{ session('success') }}</p>
+        <!-- Filter: pencarian + tanggal terima -->
+        <x-card>
+            <form method="GET" action="{{ route('material-receipts.index') }}"
+                  class="grid grid-cols-1 items-end gap-4 md:grid-cols-[1fr_12rem_auto]">
+                <div>
+                    <label for="search" class="mb-1.5 block text-label uppercase text-muted">Cari No. Penerimaan / No. PO</label>
+                    <input id="search" type="text" name="search" value="{{ $currentSearch }}"
+                           placeholder="Cari RC-2026... atau PO-2026..." class="{{ $inputClass }}">
                 </div>
-            @endif
 
-            {{-- Filter & Search --}}
-            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                <form method="GET" action="{{ route('material-receipts.index') }}" class="flex flex-col sm:flex-row gap-3 items-end">
-                    <div class="flex-1">
-                        <label for="search" class="block text-xs font-medium text-gray-600 mb-1">Cari No. Penerimaan / No. PO</label>
-                        <input type="text"
-                               name="search"
-                               id="search"
-                               value="{{ $currentSearch }}"
-                               placeholder="Cari RC-2026... atau PO-2026..."
-                               class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring focus:ring-emerald-200">
-                    </div>
-                    <div class="w-full sm:w-48">
-                        <label for="date" class="block text-xs font-medium text-gray-600 mb-1">Tanggal Terima</label>
-                        <input type="date"
-                               name="date"
-                               id="date"
-                               value="{{ $currentDate }}"
-                               class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring focus:ring-emerald-200">
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit"
-                                class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition">
-                            Filter
-                        </button>
-                        <a href="{{ route('material-receipts.index') }}"
-                           class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">
-                            Reset
-                        </a>
-                    </div>
-                </form>
-            </div>
+                <div>
+                    <label for="date" class="mb-1.5 block text-label uppercase text-muted">Tanggal Terima</label>
+                    <input id="date" type="date" name="date" value="{{ $currentDate }}"
+                           onchange="this.form.submit()" class="{{ $inputClass }}">
+                </div>
 
-            {{-- Table --}}
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                @if ($receipts->isEmpty())
-                    <div class="p-12 text-center">
-                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                        </svg>
-                        <p class="text-gray-500 text-sm">Belum ada data penerimaan bahan yang dicatat.</p>
-                        @if (in_array(Auth::user()->role?->value, ['admin', 'gudang'], true))
-                            <a href="{{ route('material-receipts.create') }}"
-                               class="mt-4 inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-800">
-                                Catat penerimaan bahan pertama &rarr;
-                            </a>
-                        @endif
-                    </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-100">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No. Tanda Terima</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tgl Terima</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Referensi PO</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Supplier</th>
-                                    <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Jml Item</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Penerima</th>
-                                    <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @foreach ($receipts as $receipt)
-                                    <tr class="hover:bg-gray-50/70 transition">
-                                        <td class="px-4 py-3 text-sm font-mono font-semibold text-gray-800">
-                                            {{ $receipt->receipt_number }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">
-                                            {{ $receipt->receipt_date?->format('d/m/Y') ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm">
-                                            @if ($receipt->purchaseOrder)
-                                                <a href="{{ route('purchase-orders.show', $receipt->purchaseOrder) }}" class="font-mono text-blue-600 hover:underline">
-                                                    {{ $receipt->purchaseOrder->order_number }}
-                                                </a>
-                                            @else
-                                                <span class="text-xs text-gray-400 italic">Penerimaan Langsung</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">
-                                            {{ $receipt->purchaseOrder?->vendor?->name ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-center font-medium text-gray-700">
-                                            {{ $receipt->details_count }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">
-                                            {{ $receipt->receiver?->name ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-right">
-                                            <a href="{{ route('material-receipts.show', $receipt) }}"
-                                               class="inline-flex items-center text-xs font-medium text-emerald-600 hover:text-emerald-800 transition">
-                                                Rincian &rarr;
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    @if ($receipts->hasPages())
-                        <div class="px-4 py-3 border-t border-gray-100">
-                            {{ $receipts->links() }}
-                        </div>
+                <div class="flex items-center gap-4 md:h-[2.625rem]">
+                    @if ($hasFilter)
+                    <a href="{{ route('material-receipts.index') }}"
+                       class="text-small font-medium text-primary hover:text-primary-dark">Reset</a>
                     @endif
-                @endif
+                </div>
+
+                {{-- Enter pada kolom pencarian tetap mengirim form --}}
+                <button type="submit" class="sr-only">Cari</button>
+            </form>
+        </x-card>
+
+        <!-- Tabel Penerimaan -->
+        <x-card :padding="false" class="overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-body">
+                    <thead class="bg-primary/5">
+                        <tr>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">No. Tanda Terima</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Tgl Terima</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Referensi PO</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Supplier</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Jml Item</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Penerima</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-line bg-white">
+                        @forelse ($receipts as $receipt)
+                        <tr class="transition hover:bg-primary/5">
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <a href="{{ route('material-receipts.show', $receipt) }}" class="font-medium text-primary transition hover:text-primary-dark">
+                                    {{ $receipt->receipt_number }}
+                                </a>
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-ink">{{ $receipt->receipt_date?->format('d/m/Y') ?? '-' }}</td>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                @if ($receipt->purchaseOrder)
+                                <a href="{{ route('purchase-orders.show', $receipt->purchaseOrder) }}" class="text-primary transition hover:text-primary-dark">
+                                    {{ $receipt->purchaseOrder->order_number }}
+                                </a>
+                                @else
+                                <span class="text-muted">Penerimaan Langsung</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-ink">{{ $receipt->purchaseOrder?->vendor?->name ?? '-' }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-ink">{{ $receipt->details_count }} item</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-muted">{{ $receipt->receiver?->name ?? '-' }}</td>
+
+                            <!-- Aksi (teks, bukan tombol) -->
+                            <td class="whitespace-nowrap px-6 py-4 text-right text-small font-medium">
+                                <a href="{{ route('material-receipts.show', $receipt) }}" class="text-primary transition hover:text-primary-dark">Rincian</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-muted">
+                                <p class="font-medium text-ink">Belum ada data penerimaan bahan yang dicatat.</p>
+                                @if ($hasFilter)
+                                <a href="{{ route('material-receipts.index') }}" class="mt-1 inline-block text-small font-medium text-primary hover:text-primary-dark">Reset filter</a>
+                                @elseif ($canManage)
+                                <a href="{{ route('material-receipts.create') }}" class="mt-1 inline-block text-small font-medium text-primary hover:text-primary-dark">Catat penerimaan bahan pertama</a>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-        </div>
+            <!-- Pagination -->
+            @if ($receipts->hasPages())
+            <div class="border-t border-line bg-primary/5 px-6 py-4">
+                {{ $receipts->links() }}
+            </div>
+            @endif
+        </x-card>
+
     </div>
 </x-app-layout>

@@ -1,295 +1,243 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Pencatatan Penerimaan Bahan & Pemeriksaan Fisik') }}
-                </h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    Periksa kondisi bahan yang tiba dari supplier (BR-04: Hanya bahan 'Baik' yang menambah stok gudang).
-                </p>
+    @php
+    $inputClass = 'block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+    $labelClass = 'mb-1.5 block text-label uppercase text-muted';
+
+    $poDataForJs = $purchaseOrders->mapWithKeys(function ($po) {
+    return [
+    $po->id => [
+    'order_number' => $po->order_number,
+    'vendor_name' => $po->vendor?->name ?? '-',
+    'items' => $po->details->map(function ($d) {
+    return [
+    'ingredient_id' => $d->ingredient_id,
+    'ingredient_name' => $d->ingredient?->name ?? '-',
+    'quantity' => (float) $d->quantity,
+    'unit' => $d->unit,
+    'condition' => 'baik',
+    'notes' => '',
+    ];
+    })->values()->all(),
+    ],
+    ];
+    });
+    @endphp
+
+    {{-- Header --}}
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <nav class="flex items-center gap-2 text-small font-medium" aria-label="Breadcrumb">
+                <a href="{{ route('material-receipts.index') }}" class="text-muted transition hover:text-primary">Daftar Penerimaan</a>
+                <svg class="h-3.5 w-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span class="text-primary">Catat Penerimaan</span>
+            </nav>
+
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl font-semibold text-ink">Pencatatan Penerimaan Bahan &amp; Pemeriksaan Fisik</h1>
             </div>
-            <div>
-                <a href="{{ route('material-receipts.index') }}"
-                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm">
-                    &larr; Kembali ke Daftar
-                </a>
-            </div>
+            <p class="mt-1 text-small text-muted">Periksa kondisi bahan yang tiba dari supplier. Hanya bahan berkondisi baik yang menambah stok gudang.</p>
         </div>
-    </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <a href="{{ route('material-receipts.index') }}"
+            class="inline-flex items-center gap-2 rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-ink transition hover:bg-primary/5">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali ke Daftar
+        </a>
+    </div>
 
-            @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-sm">
-                    <div class="flex items-center mb-1">
-                        <svg class="w-5 h-5 text-red-500 me-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                        <h3 class="text-sm font-semibold text-red-800">Terdapat kesalahan pada isian formulir:</h3>
-                    </div>
-                    <ul class="list-disc list-inside text-xs text-red-700 space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+    <div class="space-y-6">
 
-            @php
-                $poDataForJs = $purchaseOrders->mapWithKeys(function ($po) {
-                    return [
-                        $po->id => [
-                            'order_number' => $po->order_number,
-                            'vendor_name' => $po->vendor?->name ?? '—',
-                            'items' => $po->details->map(function ($d) {
-                                return [
-                                    'ingredient_id' => $d->ingredient_id,
-                                    'ingredient_name' => $d->ingredient?->name ?? '—',
-                                    'quantity' => (float) $d->quantity,
-                                    'unit' => $d->unit,
-                                    'condition' => 'baik',
-                                    'notes' => '',
-                                ];
-                            })->values()->all(),
-                        ]
-                    ];
-                });
-            @endphp
+        @if ($errors->any())
+        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text" role="alert">
+            <p class="mb-2 font-semibold">Terdapat kesalahan pada isian formulir:</p>
+            <ul class="list-inside list-disc space-y-1">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
-            <div x-data="{
-                purchaseOrders: {{ Js::from($poDataForJs) }},
-                ingredients: {{ Js::from($activeIngredients) }},
-                selectedPoId: '{{ old('purchase_order_id', $selectedPoId ?? '') }}',
-                items: {{ Js::from(old('items', [])) }},
+        <div x-data="{
+            purchaseOrders: {{ Js::from($poDataForJs) }},
+            ingredients: {{ Js::from($activeIngredients) }},
+            selectedPoId: '{{ old('purchase_order_id', $selectedPoId ?? '') }}',
+            items: {{ Js::from(old('items', [])) }},
 
-                init() {
-                    if (this.items.length === 0) {
-                        if (this.selectedPoId && this.purchaseOrders[this.selectedPoId]) {
-                            this.loadItemsFromPo();
-                        } else {
-                            this.addItem();
-                        }
-                    }
-                },
-
-                loadItemsFromPo() {
-                    if (!this.selectedPoId || !this.purchaseOrders[this.selectedPoId]) {
-                        return;
-                    }
-                    const poItems = this.purchaseOrders[this.selectedPoId].items;
-                    this.items = poItems.map(item => ({
-                        ingredient_id: item.ingredient_id,
-                        quantity: item.quantity,
-                        unit: item.unit,
-                        condition: 'baik',
-                        notes: ''
-                    }));
-                },
-
-                addItem() {
-                    this.items.push({
-                        ingredient_id: this.ingredients.length > 0 ? this.ingredients[0].id : '',
-                        quantity: 1,
-                        unit: this.ingredients.length > 0 ? this.ingredients[0].unit : 'kg',
-                        condition: 'baik',
-                        notes: ''
-                    });
-                },
-
-                removeItem(index) {
-                    if (this.items.length > 1) {
-                        this.items.splice(index, 1);
-                    }
-                },
-
-                onIngredientChange(index) {
-                    const selectedId = this.items[index].ingredient_id;
-                    const found = this.ingredients.find(i => i.id == selectedId);
-                    if (found) {
-                        this.items[index].unit = found.unit;
+            init() {
+                if (this.items.length === 0) {
+                    if (this.selectedPoId && this.purchaseOrders[this.selectedPoId]) {
+                        this.loadItemsFromPo();
+                    } else {
+                        this.addItem();
                     }
                 }
-            }" class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-6">
+            },
 
-                <form method="POST" action="{{ route('material-receipts.store') }}" class="space-y-6">
-                    @csrf
+            loadItemsFromPo() {
+                if (!this.selectedPoId || !this.purchaseOrders[this.selectedPoId]) {
+                    return;
+                }
+                const poItems = this.purchaseOrders[this.selectedPoId].items;
+                this.items = poItems.map(item => ({
+                    ingredient_id: item.ingredient_id,
+                    quantity: item.quantity,
+                    unit: item.unit,
+                    condition: 'baik',
+                    notes: ''
+                }));
+            },
 
-                    {{-- Informasi Penerimaan --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-gray-100">
+            addItem() {
+                this.items.push({
+                    ingredient_id: this.ingredients.length > 0 ? this.ingredients[0].id : '',
+                    quantity: 1,
+                    unit: this.ingredients.length > 0 ? this.ingredients[0].unit : 'kg',
+                    condition: 'baik',
+                    notes: ''
+                });
+            },
+
+            removeItem(index) {
+                if (this.items.length > 1) {
+                    this.items.splice(index, 1);
+                }
+            },
+
+            onIngredientChange(index) {
+                const selectedId = this.items[index].ingredient_id;
+                const found = this.ingredients.find(i => i.id == selectedId);
+                if (found) {
+                    this.items[index].unit = found.unit;
+                }
+            }
+        }">
+
+            <form method="POST" action="{{ route('material-receipts.store') }}" class="space-y-6">
+                @csrf
+
+                <!-- Bagian 1: Informasi penerimaan -->
+                <x-card class="w-full sm:p-8">
+                    <div class="border-b border-line pb-4">
+                        <h2 class="text-lg font-semibold text-ink">Informasi Penerimaan</h2>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
-                            <label for="purchase_order_id" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                                Rujukan Purchase Order (Opsional)
-                            </label>
-                            <select name="purchase_order_id"
-                                    id="purchase_order_id"
-                                    x-model="selectedPoId"
-                                    @change="loadItemsFromPo()"
-                                    class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
+                            <label for="purchase_order_id" class="{{ $labelClass }}">Rujukan Purchase Order (Opsional)</label>
+                            <select name="purchase_order_id" id="purchase_order_id"
+                                x-model="selectedPoId" @change="loadItemsFromPo()"
+                                class="{{ $inputClass }}">
                                 <option value="">-- Penerimaan Mandiri / Langsung (Tanpa PO) --</option>
                                 @foreach ($purchaseOrders as $po)
-                                    <option value="{{ $po->id }}">
-                                        {{ $po->order_number }} &mdash; {{ $po->vendor?->name }} ({{ $po->status->label() }})
-                                    </option>
+                                <option value="{{ $po->id }}">
+                                    {{ $po->order_number }} &mdash; {{ $po->vendor?->name }} ({{ $po->status->label() }})
+                                </option>
                                 @endforeach
                             </select>
-                            <p class="text-[11px] text-gray-400 mt-1">Memilih PO akan otomatis memuat daftar bahan yang dipesan.</p>
+                            <p class="mt-1 text-small text-muted">Memilih PO akan otomatis memuat daftar bahan yang dipesan.</p>
                         </div>
 
                         <div>
-                            <label for="receipt_date" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                                Tanggal Penerimaan Fisik <span class="text-red-500">*</span>
-                            </label>
-                            <input type="date"
-                                   name="receipt_date"
-                                   id="receipt_date"
-                                   value="{{ old('receipt_date', $today) }}"
-                                   required
-                                   class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
+                            <label for="receipt_date" class="{{ $labelClass }}">Tanggal Penerimaan Fisik <span class="text-danger-text">*</span></label>
+                            <input type="date" name="receipt_date" id="receipt_date"
+                                value="{{ old('receipt_date', $today) }}" required class="{{ $inputClass }}">
                         </div>
 
-                        <div class="sm:col-span-2">
-                            <label for="notes" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                                Catatan Penerimaan / Surat Jalan
-                            </label>
-                            <input type="text"
-                                   name="notes"
-                                   id="notes"
-                                   value="{{ old('notes') }}"
-                                   placeholder="Contoh: Surat Jalan No. SJ-8891 dari kurir..."
-                                   class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
+                        <div class="md:col-span-2">
+                            <label for="notes" class="{{ $labelClass }}">Catatan Penerimaan / Surat Jalan</label>
+                            <input type="text" name="notes" id="notes" value="{{ old('notes') }}"
+                                placeholder="Contoh: Surat Jalan No. SJ-8891 dari kurir..."
+                                class="{{ $inputClass }}">
                         </div>
                     </div>
+                </x-card>
 
-                    {{-- Form Rincian Bahan & Pemeriksaan Fisik --}}
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <div>
-                                <h3 class="text-sm font-bold text-gray-800">Daftar Bahan & Hasil Pemeriksaan Fisik (UC-06)</h3>
-                                <p class="text-xs text-gray-500">Pilih kondisi fisik tiap bahan: hanya bahan berstatus <strong>Baik</strong> yang menambah stok (BR-04).</p>
-                            </div>
-                            <button type="button"
-                                    @click="addItem()"
-                                    class="inline-flex items-center px-3 py-1.5 bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-semibold rounded-lg hover:bg-emerald-100 transition">
-                                <svg class="w-3.5 h-3.5 me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah Baris Bahan
-                            </button>
+                <!-- Bagian 2: Rincian bahan & pemeriksaan -->
+                <x-card class="w-full sm:p-8">
+                    <div class="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-ink">Daftar Bahan &amp; Hasil Pemeriksaan Fisik</h2>
+                            <p class="mt-0.5 text-small text-muted">Pilih kondisi fisik tiap bahan. Hanya bahan berstatus Baik yang menambah stok.</p>
                         </div>
-
-                        <div class="space-y-3">
-                            <template x-for="(item, index) in items" :key="index">
-                                <div class="p-4 rounded-xl border transition"
-                                     :class="item.condition === 'baik' ? 'bg-emerald-50/40 border-emerald-200' : 'bg-red-50/40 border-red-200'">
-                                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
-
-                                        {{-- Bahan --}}
-                                        <div class="sm:col-span-4">
-                                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Bahan Baku</label>
-                                            <select :name="`items[${index}][ingredient_id]`"
-                                                    x-model="item.ingredient_id"
-                                                    @change="onIngredientChange(index)"
-                                                    required
-                                                    class="w-full text-xs rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-                                                <template x-for="ing in ingredients" :key="ing.id">
-                                                    <option :value="ing.id" x-text="`${ing.name} (Stok: ${Number(ing.current_stock || 0)} ${ing.unit})`"></option>
-                                                </template>
-                                            </select>
-                                        </div>
-
-                                        {{-- Jumlah Diterima --}}
-                                        <div class="sm:col-span-2">
-                                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Jumlah</label>
-                                            <input type="number"
-                                                   step="0.001"
-                                                   min="0.001"
-                                                   :name="`items[${index}][quantity]`"
-                                                   x-model="item.quantity"
-                                                   required
-                                                   class="w-full text-xs rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 text-right">
-                                        </div>
-
-                                        {{-- Satuan --}}
-                                        <div class="sm:col-span-1">
-                                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Satuan</label>
-                                            <input type="text"
-                                                   readonly
-                                                   :name="`items[${index}][unit]`"
-                                                   x-model="item.unit"
-                                                   class="w-full text-xs rounded-lg bg-gray-50 border-gray-300 text-gray-600">
-                                        </div>
-
-                                        {{-- Kondisi Fisik (BR-04) --}}
-                                        <div class="sm:col-span-2">
-                                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Kondisi Fisik</label>
-                                            <select :name="`items[${index}][condition]`"
-                                                    x-model="item.condition"
-                                                    required
-                                                    class="w-full text-xs rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 font-medium"
-                                                    :class="item.condition === 'baik' ? 'text-emerald-700' : 'text-red-700 font-bold'">
-                                                @foreach ($conditions as $c)
-                                                    <option value="{{ $c->value }}">{{ $c->label() }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        {{-- Catatan Kerusakan / Keterangan --}}
-                                        <div class="sm:col-span-2">
-                                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Keterangan / Catatan</label>
-                                            <input type="text"
-                                                   :name="`items[${index}][notes]`"
-                                                   x-model="item.notes"
-                                                   placeholder="Misal: Kemasan bocor..."
-                                                   class="w-full text-xs rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-                                        </div>
-
-                                        {{-- Hapus Baris --}}
-                                        <div class="sm:col-span-1 flex items-end justify-center pt-5">
-                                            <button type="button"
-                                                    @click="removeItem(index)"
-                                                    :disabled="items.length === 1"
-                                                    class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-gray-100 transition disabled:opacity-30">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-
-                                    </div>
-
-                                    {{-- Warning Alert jika bukan 'baik' --}}
-                                    <div x-show="item.condition !== 'baik'" class="mt-2 text-[11px] text-red-600 flex items-center space-x-1 font-medium">
-                                        <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span>Item ini ditolak dan TIDAK akan menambahkan saldo stok gudang (BR-04).</span>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    {{-- Submit Buttons --}}
-                    <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
-                        <a href="{{ route('material-receipts.index') }}"
-                           class="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-200 transition">
-                            Batal
-                        </a>
-                        <button type="submit"
-                                class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center space-x-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Simpan & Masukkan Stok Layak</span>
+                        <button type="button" @click="addItem()"
+                            class="inline-flex shrink-0 items-center gap-2 self-start rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-primary transition hover:bg-primary/5">
+                            <x-icon name="plus" class="h-4 w-4" />
+                            Tambah Baris Bahan
                         </button>
                     </div>
 
-                </form>
+                    <div class="mt-6 space-y-4">
+                        <template x-for="(item, index) in items" :key="index">
+                            <div class="rounded-input border p-4 transition"
+                                :class="item.condition === 'baik' ? 'border-line bg-primary/5' : 'border-danger-text/20 bg-danger-bg'">
+                                <div class="mb-3 flex items-center justify-between">
+                                    <span class="text-label uppercase text-muted" x-text="'Bahan #' + (index + 1)"></span>
+                                    <button type="button" x-show="items.length > 1" @click="removeItem(index)"
+                                        class="text-small font-medium text-danger-text transition hover:underline">Hapus</button>
+                                </div>
 
-            </div>
+                                <div class="grid grid-cols-1 items-end gap-4 md:grid-cols-12">
+                                    <div class="md:col-span-4">
+                                        <label class="{{ $labelClass }}">Bahan Baku</label>
+                                        <select :name="`items[${index}][ingredient_id]`"
+                                            x-model="item.ingredient_id" @change="onIngredientChange(index)" required
+                                            class="{{ $inputClass }}">
+                                            <template x-for="ing in ingredients" :key="ing.id">
+                                                <option :value="ing.id" x-text="`${ing.name} (Stok: ${Number(ing.current_stock || 0)} ${ing.unit})`"></option>
+                                            </template>
+                                        </select>
+                                    </div>
 
+                                    <div class="md:col-span-2">
+                                        <label class="{{ $labelClass }}">Jumlah</label>
+                                        <input type="number" step="0.001" min="0.001"
+                                            :name="`items[${index}][quantity]`" x-model="item.quantity" required
+                                            class="{{ $inputClass }} text-right">
+                                    </div>
+
+                                    <div class="md:col-span-1">
+                                        <label class="{{ $labelClass }}">Satuan</label>
+                                        <input type="text" readonly :name="`items[${index}][unit]`" x-model="item.unit"
+                                            class="{{ $inputClass }} cursor-not-allowed bg-gray-100 text-muted">
+                                    </div>
+
+                                    <div class="md:col-span-2">
+                                        <label class="{{ $labelClass }}">Kondisi Fisik</label>
+                                        <select :name="`items[${index}][condition]`" x-model="item.condition" required
+                                            class="{{ $inputClass }}"
+                                            :class="item.condition === 'baik' ? '' : 'font-semibold text-danger-text'">
+                                            @foreach ($conditions as $c)
+                                            <option value="{{ $c->value }}">{{ $c->label() }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="md:col-span-3">
+                                        <label class="{{ $labelClass }}">Keterangan / Catatan</label>
+                                        <input type="text" :name="`items[${index}][notes]`" x-model="item.notes"
+                                            placeholder="Misal: Kemasan bocor..." class="{{ $inputClass }}">
+                                    </div>
+                                </div>
+
+                                <p x-show="item.condition !== 'baik'" class="mt-3 text-small font-medium text-danger-text">
+                                    Item ini ditolak dan tidak akan menambah saldo stok gudang.
+                                </p>
+                            </div>
+                        </template>
+                    </div>
+                </x-card>
+
+                <!-- Tombol Aksi -->
+                <div class="flex items-center justify-end gap-3">
+                    <x-button variant="outline" :href="route('material-receipts.index')">Batal</x-button>
+                    <x-button type="submit">Simpan &amp; Masukkan Stok Layak</x-button>
+                </div>
+            </form>
         </div>
     </div>
 </x-app-layout>
