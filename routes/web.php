@@ -18,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\StockCardController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Models\Ingredient;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -83,8 +84,11 @@ Route::middleware(['auth', 'role:produksi'])
     });
 
 // 4. Owner / Manager
+// 4. Owner / Manager
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', [ProductionMonitoringController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        return view('dashboard.owner');
+    })->name('dashboard');
 });
 
 // Dashboard Monitoring Live Capaian Produksi Owner (URUTAN 17, FR-37, UC-10: Khusus Owner & Admin)
