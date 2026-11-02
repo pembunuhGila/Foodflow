@@ -1,494 +1,337 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print:hidden">
-            <div>
-                <!-- Breadcrumb Interaktif -->
-                <nav class="flex items-center gap-2 text-xs font-medium text-gray-500 mb-1.5">
-                    <a href="{{ route('production-plans.show', $plan) }}" class="inline-flex items-center gap-1 hover:text-purple-600 transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        <span>Kembali ke Detail Rencana</span>
-                    </a>
-                </nav>
+    @php
+        $canManage = in_array(Auth::user()->role?->value, ['admin', 'produksi'], true);
+        $summary = $calculation['summary'];
 
-                <!-- Judul & Status Plan -->
-                <div class="flex flex-wrap items-center gap-3">
-                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
-                        Lembar Kerja Bahan Baku
-                    </h1>
-                    <span class="font-mono text-purple-700 font-bold text-sm bg-purple-50 px-3 py-1 rounded-xl border border-purple-200">
-                        #{{ $plan->plan_number }}
-                    </span>
-                    @php
-                        $statusEnum = $plan->status instanceof \App\Enums\ProductionPlanStatus 
-                            ? $plan->status 
-                            : \App\Enums\ProductionPlanStatus::tryFrom($plan->status);
-                    @endphp
-                    @if ($statusEnum)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border {{ $statusEnum->badgeClass() }}">
-                            {{ $statusEnum->label() }}
-                        </span>
-                    @endif
-                </div>
+        $tones = [
+            'primary' => ['bg-primary/10 text-primary', 'bg-primary'],
+            'warn'    => ['bg-amber-50 text-amber-800', 'bg-amber-500'],
+            'danger'  => ['bg-danger-bg text-danger-text', 'bg-danger-text'],
+            'gray'    => ['bg-gray-100 text-gray-600', 'bg-gray-400'],
+        ];
+        $badge = fn (string $tone, string $text) => '<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-small font-medium ' . $tones[$tone][0] . '"><span class="h-1.5 w-1.5 rounded-full ' . $tones[$tone][1] . '"></span> ' . e($text) . '</span>';
+
+        $planStatus = $plan->status instanceof \BackedEnum ? $plan->status->value : (string) $plan->status;
+        $statusTone = [
+            'scheduled'   => ['primary', 'Dijadwalkan'],
+            'in_progress' => ['warn', 'Sedang Dimasak'],
+            'completed'   => ['gray', 'Selesai'],
+            'draft'       => ['gray', 'Draft'],
+            'cancelled'   => ['danger', 'Dibatalkan'],
+        ];
+        $pt = $statusTone[$planStatus] ?? ['gray', $planStatus];
+
+        $availMap = ['fulfilled' => ['primary', 'Terpenuhi'], 'shortage' => ['danger', 'Kurang']];
+        $endMap = [
+            'safe' => ['primary', 'Aman'],
+            'below_minimum' => ['warn', 'Di Bawah Min'],
+            'at_minimum' => ['warn', 'Tepat Min'],
+            'deficit' => ['danger', 'Defisit'],
+        ];
+        $readyMap = ['ready' => ['primary', 'Siap Produksi'], 'procurement_needed' => ['danger', 'Perlu Pengadaan']];
+        $invMap = ['safe' => ['primary', 'Persediaan Aman'], 'restock_needed' => ['warn', 'Restock Diperlukan'], 'deficit' => ['danger', 'Defisit Stok']];
+
+        $pendingMR = $plan->materialRequests->where('status', 'pending')->first()
+            ?? $plan->materialRequests->where('status', 'Pending')->first();
+        $approvedMR = $plan->materialRequests->where('status', 'approved')->first()
+            ?? $plan->materialRequests->where('status', 'Approved')->first();
+
+        $unverifiedItems = collect($calculation['items'])->filter(
+            fn ($i) => $i['availability_status'] === 'unverified' || $i['current_stock'] === null
+        );
+
+        $mrConfirm = [
+            'formId' => 'mr-store-form',
+            'tone' => 'primary',
+            'eyebrow' => 'Ajukan ke gudang',
+            'title' => 'Ajukan permintaan bahan?',
+            'subjectLabel' => 'Rencana',
+            'subject' => $plan->plan_number,
+            'message' => 'Kirimkan seluruh daftar kebutuhan bahan ini ke gudang untuk diverifikasi dan dikeluarkan?',
+            'detail' => '',
+            'confirmLabel' => 'Ya, Ajukan',
+        ];
+    @endphp
+
+    {{-- Header (disembunyikan saat cetak) --}}
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between print:hidden">
+        <div>
+            <nav class="flex items-center gap-2 text-small font-medium" aria-label="Breadcrumb">
+                <a href="{{ route('production-plans.index') }}" class="text-muted transition hover:text-primary">Rencana Produksi</a>
+                <svg class="h-3.5 w-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <a href="{{ route('production-plans.show', $plan) }}" class="text-muted transition hover:text-primary">Detail Rencana</a>
+                <svg class="h-3.5 w-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span class="text-primary">Lembar Kerja Bahan</span>
+            </nav>
+
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl font-semibold text-ink">Lembar Kerja Bahan Baku</h1>
+                {!! $badge($pt[0], $pt[1]) !!}
             </div>
-
-            <!-- Tombol Aksi Header -->
-            <div class="flex flex-wrap items-center gap-2.5 shrink-0">
-                @if (in_array(Auth::user()->role?->value, ['admin', 'produksi'], true))
-                    @php
-                        $pendingMR = $plan->materialRequests->where('status', 'pending')->first()
-                            ?? $plan->materialRequests->where('status', 'Pending')->first();
-                        $approvedMR = $plan->materialRequests->where('status', 'approved')->first()
-                            ?? $plan->materialRequests->where('status', 'Approved')->first();
-                    @endphp
-
-                    @if ($pendingMR)
-                        <a href="{{ route('material-requests.show', $pendingMR) }}"
-                           class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold transition-all shadow-sm whitespace-nowrap">
-                            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                            <span>Menunggu Gudang (#MR-{{ str_pad($pendingMR->id, 4, '0', STR_PAD_LEFT) }})</span>
-                        </a>
-                    @elseif ($approvedMR)
-                        <a href="{{ route('material-requests.show', $approvedMR) }}"
-                           class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm whitespace-nowrap">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Stok Dikeluarkan (#MR-{{ str_pad($approvedMR->id, 4, '0', STR_PAD_LEFT) }})</span>
-                        </a>
-                    @else
-                        <form method="POST" action="{{ route('production-plans.material-requests.store', $plan) }}" class="inline-block">
-                            @csrf
-                            <button type="submit"
-                                    onclick="return confirm('Kirimkan seluruh daftar kebutuhan bahan lembar kerja ini ke bagian gudang untuk diverifikasi & dikeluarkan?');"
-                                    class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm cursor-pointer whitespace-nowrap">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                </svg>
-                                <span>Ajukan ke Gudang</span>
-                            </button>
-                        </form>
-                    @endif
-                @endif
-
-                <!-- Tombol Cetak / PDF Tunggal -->
-                <button type="button"
-                        onclick="window.print()"
-                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-semibold transition-all shadow-sm cursor-pointer whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    <span>Cetak / Simpan PDF</span>
-                </button>
-            </div>
+            <p class="mt-1 text-small text-muted">No. rencana {{ $plan->plan_number }}</p>
         </div>
-    </x-slot>
 
-    <div class="py-8 print:py-0 print:m-0">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 print:space-y-3 print:px-0 print:max-w-none">
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('production-plans.show', $plan) }}"
+                class="inline-flex items-center gap-2 rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-ink transition hover:bg-primary/5">
+                Kembali ke Detail
+            </a>
 
-            <!-- Kop Formal Khusus Dokumen Cetak / PDF -->
-            <div class="print-header-block border-b-2 border-gray-900 pb-3 mb-3">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h1 class="text-xl font-black tracking-tight text-gray-900 uppercase leading-tight">FOODFLOW CATERING</h1>
-                        <p class="text-[11px] font-bold text-gray-700 uppercase tracking-wide mt-0.5">LEMBAR KERJA BAHAN BAKU PRODUKSI &amp; LOGISTIK GUDANG (MRP)</p>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-sm font-bold font-mono text-gray-900">No. {{ $plan->plan_number }}</div>
-                        <div class="text-[10px] text-gray-500">Tanggal Cetak: {{ now()->translatedFormat('d F Y H:i') }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card Informasi Rencana Produksi (Pastel Soft) -->
-            <div class="plan-info-card bg-white rounded-2xl border border-purple-100 shadow-sm p-5 sm:p-6 print:p-3 print:border print:border-gray-300 print:rounded-md print:shadow-none">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8 text-sm">
-                    <!-- Kolom Kiri -->
-                    <div class="space-y-2.5 print:space-y-1">
-                        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-50 pb-2 print:pb-1">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider print:text-[10px]">No. Rencana</span>
-                            <span class="font-mono font-bold text-gray-900 text-base sm:text-right print:text-xs">{{ $plan->plan_number }}</span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-50 pb-2 print:pb-1">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider print:text-[10px]">Jadwal Masak</span>
-                            <span class="font-bold text-purple-700 text-base sm:text-right print:text-xs print:text-gray-900">
-                                {{ $plan->production_date ? $plan->production_date->translatedFormat('l, d F Y') : '-' }}
-                            </span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-50 pb-2 md:border-b-0 md:pb-0 print:border-b-0 print:pb-0">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider print:text-[10px]">Total Target Porsi</span>
-                            <span class="font-bold text-gray-900 text-base sm:text-right print:text-xs">
-                                {{ number_format($plan->totalPlannedQuantity(), 0, ',', '.') }} Porsi
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Kolom Kanan -->
-                    <div class="space-y-2.5 print:space-y-1">
-                        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-50 pb-2 print:pb-1">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider print:text-[10px]">Penanggung Jawab</span>
-                            <span class="font-bold text-gray-900 text-base sm:text-right print:text-xs">{{ $plan->creator?->name ?? 'Sistem' }}</span>
-                        </div>
-                        <div>
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1 print:text-[10px] print:mb-0.5">Catatan &amp; Instruksi Khusus</span>
-                            <div class="text-xs text-gray-700 bg-gray-50/75 border border-gray-100 rounded-xl p-3 min-h-[42px] print:p-1.5 print:text-[10px] print:min-h-0 print:bg-white print:border-gray-200">
-                                @if ($plan->notes)
-                                    {{ $plan->notes }}
-                                @else
-                                    <span class="text-gray-400 italic">Tidak ada catatan atau instruksi khusus.</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6 Kartu Ringkasan Stok & Kesiapan -->
-            <div class="summary-cards-container grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 print:gap-1.5">
-                <!-- 1. Total Jenis Bahan -->
-                <div class="summary-card bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between print:rounded-md print:shadow-none print:p-2">
-                    <span class="card-label text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wider block leading-tight">Total Bahan</span>
-                    <div class="mt-2 flex items-baseline gap-1">
-                        <span class="card-value text-xl sm:text-2xl font-black font-mono text-gray-900">{{ $calculation['summary']['total_ingredients'] }}</span>
-                        <span class="text-xs font-medium text-gray-400 print:text-[9px]">item</span>
-                    </div>
-                </div>
-
-                <!-- 2. Kebutuhan Terpenuhi -->
-                <div class="summary-card bg-white p-4 rounded-2xl border border-emerald-100 bg-emerald-50/20 shadow-sm flex flex-col justify-between print:rounded-md print:shadow-none print:p-2">
-                    <span class="card-label text-[10px] sm:text-[11px] font-semibold text-emerald-700 uppercase tracking-wider block leading-tight">Terpenuhi</span>
-                    <div class="mt-2 flex items-baseline gap-1">
-                        <span class="card-value text-xl sm:text-2xl font-black font-mono text-emerald-700 print:text-gray-900">{{ $calculation['summary']['fulfilled_count'] }}</span>
-                        <span class="text-xs font-medium text-emerald-600 print:text-[9px] print:text-gray-500">item</span>
-                    </div>
-                </div>
-
-                <!-- 3. Kebutuhan Kurang -->
-                <div class="summary-card bg-white p-4 rounded-2xl border {{ $calculation['summary']['shortage_count'] > 0 ? 'border-rose-200 bg-rose-50/30' : 'border-gray-100' }} shadow-sm flex flex-col justify-between print:rounded-md print:shadow-none print:p-2">
-                    <span class="card-label text-[10px] sm:text-[11px] font-semibold {{ $calculation['summary']['shortage_count'] > 0 ? 'text-rose-700' : 'text-gray-400' }} uppercase tracking-wider block leading-tight">Kurang</span>
-                    <div class="mt-2 flex items-baseline gap-1">
-                        <span class="card-value text-xl sm:text-2xl font-black font-mono {{ $calculation['summary']['shortage_count'] > 0 ? 'text-rose-700 print:text-red-700' : 'text-gray-900' }}">
-                            {{ $calculation['summary']['shortage_count'] }}
-                        </span>
-                        <span class="text-xs font-medium {{ $calculation['summary']['shortage_count'] > 0 ? 'text-rose-600' : 'text-gray-400' }} print:text-[9px]">item</span>
-                    </div>
-                </div>
-
-                <!-- 4. <= Batas Minimum -->
-                <div class="summary-card bg-white p-4 rounded-2xl border {{ $calculation['summary']['below_minimum_count'] > 0 ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100' }} shadow-sm flex flex-col justify-between print:rounded-md print:shadow-none print:p-2">
-                    <span class="card-label text-[10px] sm:text-[11px] font-semibold {{ $calculation['summary']['below_minimum_count'] > 0 ? 'text-amber-800' : 'text-gray-400' }} uppercase tracking-wider block leading-tight">&le; Min Stok</span>
-                    <div class="mt-2 flex items-baseline gap-1">
-                        <span class="card-value text-xl sm:text-2xl font-black font-mono {{ $calculation['summary']['below_minimum_count'] > 0 ? 'text-amber-800' : 'text-gray-900' }}">
-                            {{ $calculation['summary']['below_minimum_count'] }}
-                        </span>
-                        <span class="text-xs font-medium {{ $calculation['summary']['below_minimum_count'] > 0 ? 'text-amber-700' : 'text-gray-400' }} print:text-[9px]">item</span>
-                    </div>
-                </div>
-
-                <!-- 5. Kesiapan Produksi -->
-                <div class="summary-card bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between print:rounded-md print:shadow-none print:p-2">
-                    <span class="card-label text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wider block leading-tight">Kesiapan</span>
-                    <div class="mt-2">
-                        @if ($calculation['summary']['production_readiness']['status'] === 'ready')
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Siap Produksi
-                            </span>
-                        @elseif ($calculation['summary']['production_readiness']['status'] === 'procurement_needed')
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Perlu Pengadaan
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Perlu Verifikasi
-                            </span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- 6. Kondisi Persediaan Akhir -->
-                <div class="summary-card bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between print:rounded-md print:shadow-none print:p-2">
-                    <span class="card-label text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wider block leading-tight">Stok Akhir</span>
-                    <div class="mt-2">
-                        @if ($calculation['summary']['inventory_condition']['status'] === 'safe')
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Persediaan Aman
-                            </span>
-                        @elseif ($calculation['summary']['inventory_condition']['status'] === 'restock_needed')
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Restock Diperlukan
-                            </span>
-                        @elseif ($calculation['summary']['inventory_condition']['status'] === 'deficit')
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Defisit Stok
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200 whitespace-nowrap print:text-[9px] print:px-1.5">
-                                Perlu Verifikasi
-                            </span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Peringatan Operasional (Jika Ada Kebutuhan Tindakan) -->
-            @php
-                $unverifiedItems = collect($calculation['items'])->filter(function ($i) {
-                    return $i['availability_status'] === 'unverified' || $i['current_stock'] === null;
-                });
-            @endphp
-
-            @if ($calculation['summary']['has_shortage'])
-                <div class="print-alert p-4 bg-rose-50/90 border border-rose-200 rounded-2xl text-rose-900 text-xs print:p-2 print:border print:border-rose-300 print:rounded-md">
-                    <div class="font-bold text-xs sm:text-sm text-rose-950 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-rose-600 shrink-0 print:hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                        <span>Peringatan Kekurangan Kebutuhan Produksi (Perlu Pengadaan)</span>
-                    </div>
-                    <p class="mt-1 text-rose-800 leading-relaxed print:text-[10px]">
-                        Terdapat <strong>{{ $calculation['summary']['shortage_count'] }} jenis bahan baku</strong> yang stok aktualnya kurang dari kebutuhan porsi masak. Purchasing &amp; Tim Gudang harus segera melakukan pengadaan bahan sebelum jadwal masak dimulai.
-                    </p>
-                </div>
+            @if ($canManage)
+            @if ($pendingMR)
+            <a href="{{ route('material-requests.show', $pendingMR) }}"
+               class="text-small font-medium text-amber-700 transition hover:underline">Menunggu Gudang (#MR-{{ str_pad($pendingMR->id, 4, '0', STR_PAD_LEFT) }})</a>
+            @elseif ($approvedMR)
+            <a href="{{ route('material-requests.show', $approvedMR) }}"
+               class="text-small font-medium text-primary transition hover:text-primary-dark">Stok Dikeluarkan (#MR-{{ str_pad($approvedMR->id, 4, '0', STR_PAD_LEFT) }})</a>
+            @else
+            <form id="mr-store-form" method="POST" action="{{ route('production-plans.material-requests.store', $plan) }}" class="inline-block">
+                @csrf
+                <button type="button" @click="$dispatch('open-confirm', @js($mrConfirm))"
+                        class="inline-flex items-center gap-2 rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-primary transition hover:bg-primary/5">
+                    Ajukan ke Gudang
+                </button>
+            </form>
+            @endif
             @endif
 
-            @if ($calculation['summary']['has_restock_warning'] && ! $calculation['summary']['has_shortage'])
-                <div class="print-alert p-4 bg-amber-50/90 border border-amber-200 rounded-2xl text-amber-900 text-xs print:p-2 print:border print:border-amber-300 print:rounded-md">
-                    <div class="font-bold text-xs sm:text-sm text-amber-950 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-600 shrink-0 print:hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                        <span>Peringatan Restock Persediaan Gudang (Batas Minimum Tercapai)</span>
-                    </div>
-                    <p class="mt-1 text-amber-800 leading-relaxed print:text-[10px]">
-                        Kebutuhan produksi terpenuhi untuk jadwal masak ini, namun proyeksi stok akhir pada <strong>{{ $calculation['summary']['below_minimum_count'] }} jenis bahan baku</strong> akan mencapai atau berada di bawah batas minimum (safety stock). Segera jadwalkan pembelian ulang.
-                    </p>
-                </div>
-            @endif
-
-            @if ($unverifiedItems->isNotEmpty())
-                <div class="print-alert p-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-800 text-xs print:p-2 print:border print:border-gray-300 print:rounded-md">
-                    <div class="font-bold text-xs sm:text-sm text-gray-900 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-gray-500 shrink-0 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Verifikasi Data Stok Gudang Diperlukan</span>
-                    </div>
-                    <p class="mt-1 text-gray-600 leading-relaxed print:text-[10px]">
-                        Terdapat <strong>{{ $unverifiedItems->count() }} jenis bahan baku</strong> dengan data persediaan yang belum tercatat atau memerlukan verifikasi fisik langsung di gudang sebelum proses serah terima.
-                    </p>
-                </div>
-            @endif
-
-            <!-- Tabel Kebutuhan Bahan Baku (10 Kolom) -->
-            <div class="table-container bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden print:border print:border-gray-300 print:rounded-md print:shadow-none">
-                <div class="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between print:p-2 print:border-b print:border-gray-300">
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm print:text-[11px]">Daftar Kebutuhan Bahan Baku Produksi &amp; Status Stok</h3>
-                        <p class="text-[11px] text-gray-400 print:hidden mt-0.5">Dihitung otomatis berdasarkan resep dan porsi terencana, dibandingkan langsung dengan persediaan gudang.</p>
-                    </div>
-                    <span class="text-xs font-semibold px-3 py-1 bg-gray-50 text-gray-700 rounded-full border border-gray-200 print:text-[9px] print:px-1.5">
-                        {{ $calculation['summary']['total_ingredients'] }} Bahan Terdaftar
-                    </span>
-                </div>
-
-                <div class="overflow-x-auto print:overflow-visible">
-                    <table class="ingredients-table w-full border-collapse text-left text-xs">
-                        <thead class="bg-gray-50/75 font-semibold uppercase tracking-wider text-gray-500 text-[11px] border-b border-gray-100 print:bg-gray-100">
-                            <tr>
-                                <th scope="col" class="col-no px-3 py-3 text-center">No.</th>
-                                <th scope="col" class="col-name px-4 py-3 text-left">Bahan Baku &amp; Kategori</th>
-                                <th scope="col" class="col-req px-3 py-3 text-right">Kebutuhan Total</th>
-                                <th scope="col" class="col-stock px-3 py-3 text-right">Stok Aktual</th>
-                                <th scope="col" class="col-proj px-3 py-3 text-right">Proyeksi Stok Akhir</th>
-                                <th scope="col" class="col-short px-3 py-3 text-right">Kekurangan</th>
-                                <th scope="col" class="col-min px-3 py-3 text-right">Minimum Stok</th>
-                                <th scope="col" class="col-status-req px-3 py-3 text-center">Status Kebutuhan</th>
-                                <th scope="col" class="col-status-end px-3 py-3 text-center">Status Stok Akhir</th>
-                                <th scope="col" class="col-check px-3 py-3 text-center">Cek Fisik</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-50 bg-white">
-                            @forelse ($calculation['items'] as $index => $item)
-                                <tr class="hover:bg-gray-50/60 transition-colors {{ $item['availability_status'] === 'shortage' ? 'bg-rose-50/20' : ($item['ending_stock_status'] === 'below_minimum' || $item['ending_stock_status'] === 'at_minimum' ? 'bg-amber-50/15' : '') }}">
-                                    <!-- No. -->
-                                    <td class="px-3 py-3 text-xs text-gray-400 font-mono text-center align-top">
-                                        {{ $index + 1 }}
-                                    </td>
-                                    <!-- Bahan Baku & Kategori -->
-                                    <td class="px-4 py-3 align-top">
-                                        <div class="font-bold text-gray-900 text-xs sm:text-sm leading-snug print:text-[10px]">{{ $item['ingredient_name'] }}</div>
-                                        <div class="text-[11px] text-gray-500 font-normal mt-0.5 print:text-[9px]">
-                                            Kategori: <span class="font-medium text-gray-700">{{ $item['ingredient_category'] }}</span>
-                                            &bull; Satuan: <span class="font-mono text-gray-700 font-semibold">{{ $item['unit'] }}</span>
-                                        </div>
-                                        @if ($item['has_unit_mismatch'])
-                                            <div class="mt-0.5 inline-flex items-center gap-1 text-[10px] text-amber-700 font-medium print:text-[8px]">
-                                                <svg class="w-3 h-3 text-amber-600 shrink-0 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <span>Satuan resep dikonversi ke satuan stok ({{ $item['unit'] }})</span>
-                                            </div>
-                                        @endif
-                                        <div class="text-[10px] text-gray-400 mt-1 print:hidden space-y-0.5">
-                                            @foreach ($item['menu_breakdown'] as $mb)
-                                                <div class="truncate">&bull; {{ $mb['product_name'] }} ({{ $mb['planned_quantity'] }} porsi &rarr; {{ $mb['display_subtotal'] }})</div>
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <!-- Kebutuhan Total -->
-                                    <td class="px-3 py-3 text-right font-mono tabular-nums font-bold text-gray-900 align-top whitespace-nowrap print:text-[10px]">
-                                        {{ $item['formatted_required'] }}
-                                    </td>
-                                    <!-- Stok Aktual -->
-                                    <td class="px-3 py-3 text-right font-mono tabular-nums font-semibold text-gray-700 align-top whitespace-nowrap print:text-[10px]">
-                                        {{ $item['formatted_current_stock'] }}
-                                    </td>
-                                    <!-- Proyeksi Stok Akhir -->
-                                    <td class="px-3 py-3 text-right font-mono tabular-nums font-bold align-top whitespace-nowrap print:text-[10px]">
-                                        @if ($item['projected_ending_stock'] !== null)
-                                            @if ($item['projected_ending_stock'] > $item['minimum_stock'])
-                                                <span class="text-emerald-700 print:text-gray-900">{{ $item['formatted_projected_ending_stock'] }}</span>
-                                            @elseif ($item['projected_ending_stock'] >= 0)
-                                                <span class="text-amber-700 print:text-gray-900">{{ $item['formatted_projected_ending_stock'] }}</span>
-                                            @else
-                                                <span class="text-rose-700 print:text-red-700">{{ $item['formatted_projected_ending_stock'] }}</span>
-                                            @endif
-                                        @else
-                                            <span class="text-gray-400 font-normal">-</span>
-                                        @endif
-                                    </td>
-                                    <!-- Kekurangan Produksi -->
-                                    <td class="px-3 py-3 text-right font-mono tabular-nums font-bold align-top whitespace-nowrap print:text-[10px]">
-                                        @if ($item['production_shortage'] !== null && $item['production_shortage'] > 0)
-                                            <span class="text-rose-700 print:text-red-700">{{ $item['formatted_production_shortage'] }}</span>
-                                        @elseif ($item['production_shortage'] !== null)
-                                            <span class="text-emerald-700 font-medium print:text-gray-500">0 {{ $item['unit'] }}</span>
-                                        @else
-                                            <span class="text-gray-400 font-normal">-</span>
-                                        @endif
-                                    </td>
-                                    <!-- Minimum Stok -->
-                                    <td class="px-3 py-3 text-right font-mono tabular-nums text-gray-500 font-medium align-top whitespace-nowrap print:text-[10px]">
-                                        {{ $item['formatted_minimum_stock'] }}
-                                    </td>
-                                    <!-- Status Kebutuhan -->
-                                    <td class="px-3 py-3 text-center align-top whitespace-nowrap">
-                                        @if ($item['availability_status'] === 'fulfilled')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                                Terpenuhi
-                                            </span>
-                                        @elseif ($item['availability_status'] === 'shortage')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-800 border border-rose-200 print:text-red-700">
-                                                Kurang
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                                                Perlu Verifikasi
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <!-- Status Stok Akhir -->
-                                    <td class="px-3 py-3 text-center align-top whitespace-nowrap">
-                                        @if ($item['ending_stock_status'] === 'safe')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                                Aman
-                                            </span>
-                                        @elseif ($item['ending_stock_status'] === 'below_minimum')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                                                Di Bawah Min
-                                            </span>
-                                        @elseif ($item['ending_stock_status'] === 'at_minimum')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-900 border border-amber-300">
-                                                Tepat Min
-                                            </span>
-                                        @elseif ($item['ending_stock_status'] === 'deficit')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-800 border border-rose-200 print:text-red-700">
-                                                Defisit
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                                                Perlu Verifikasi
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <!-- Cek Fisik -->
-                                    <td class="px-3 py-3 text-center align-top">
-                                        <div class="flex items-center justify-center">
-                                            <input type="checkbox"
-                                                   class="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer print:w-3.5 print:h-3.5 print:border-gray-500"
-                                                   aria-label="Cek fisik {{ $item['ingredient_name'] }}">
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="10" class="px-4 py-8 text-center text-sm text-gray-400 italic">
-                                        Tidak ada bahan baku yang terdaftar pada menu rencana produksi ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Bagian Tanda Tangan Serah Terima (3 Kolom Sejajar & Rapi) -->
-            <div class="signature-section mt-6 pt-5 border-t border-gray-200 print:mt-4 print:pt-2">
-                <div class="signature-grid grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs text-gray-700">
-                    <div class="sig-box flex flex-col items-center">
-                        <span class="sig-title font-semibold text-gray-800 mb-12 sm:mb-14">Disiapkan Oleh (Staff Gudang):</span>
-                        <div class="sig-line border-b border-gray-400 w-48 max-w-full mb-1.5"></div>
-                        <span class="sig-sub text-gray-400 text-[11px]">(Nama &amp; Tanda Tangan)</span>
-                    </div>
-                    <div class="sig-box flex flex-col items-center">
-                        <span class="sig-title font-semibold text-gray-800 mb-12 sm:mb-14">Diterima Oleh (Tim Dapur):</span>
-                        <div class="sig-line border-b border-gray-400 w-48 max-w-full mb-1.5"></div>
-                        <span class="sig-sub text-gray-400 text-[11px]">(Nama &amp; Tanda Tangan)</span>
-                    </div>
-                    <div class="sig-box flex flex-col items-center">
-                        <span class="sig-title font-semibold text-gray-800 mb-12 sm:mb-14">Disetujui (Kepala Produksi / Ahli Gizi):</span>
-                        <div class="sig-line border-b border-gray-400 w-48 max-w-full mb-1.5"></div>
-                        <span class="sig-name text-gray-900 font-semibold text-[11px]">{{ $plan->creator?->name ?? '(Nama & Tanda Tangan)' }}</span>
-                    </div>
-                </div>
-            </div>
-
+            <button type="button" onclick="window.print()"
+                class="inline-flex items-center gap-2 rounded-input bg-primary px-4 py-2.5 text-label uppercase text-white transition hover:bg-primary-dark">
+                Cetak / Simpan PDF
+            </button>
         </div>
     </div>
 
-    <!-- CSS Khusus Cetak & Dokumen PDF -->
+    <div class="space-y-6 print:space-y-3">
+
+        <!-- Kop formal (hanya saat cetak) -->
+        <div class="print-header-block mb-3 border-b-2 border-gray-900 pb-3">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-xl font-black uppercase leading-tight tracking-tight text-gray-900">FOODFLOW CATERING</h1>
+                    <p class="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-gray-700">LEMBAR KERJA BAHAN BAKU PRODUKSI &amp; LOGISTIK GUDANG (MRP)</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-gray-900">No. {{ $plan->plan_number }}</div>
+                    <div class="text-[10px] text-gray-500">Tanggal Cetak: {{ now()->translatedFormat('d F Y H:i') }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informasi rencana -->
+        <x-card class="plan-info-card w-full sm:p-8">
+            <dl class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">No. Rencana</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $plan->plan_number }}</dd>
+                </div>
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Jadwal Masak</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $plan->production_date ? $plan->production_date->locale('id')->translatedFormat('l, d F Y') : '-' }}</dd>
+                </div>
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Total Target Porsi</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ number_format($plan->totalPlannedQuantity(), 0, ',', '.') }} porsi</dd>
+                </div>
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Penanggung Jawab</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $plan->creator?->name ?? 'Sistem' }}</dd>
+                </div>
+                <div class="rounded-input border border-line bg-primary/5 p-4 md:col-span-2 lg:col-span-4">
+                    <dt class="text-label uppercase text-muted">Catatan &amp; Instruksi Khusus</dt>
+                    <dd class="mt-1.5 whitespace-pre-line text-body font-medium text-ink">{{ $plan->notes ?: 'Tidak ada catatan atau instruksi khusus.' }}</dd>
+                </div>
+            </dl>
+        </x-card>
+
+        <!-- 6 kartu ringkasan -->
+        <div class="summary-cards-container grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div class="summary-card rounded-input border border-line bg-white p-4">
+                <span class="card-label block text-label uppercase text-muted">Total Bahan</span>
+                <div class="card-value mt-2 text-xl font-semibold text-ink">{{ $summary['total_ingredients'] }} <span class="text-small font-normal text-muted">item</span></div>
+            </div>
+            <div class="summary-card rounded-input border border-line bg-white p-4">
+                <span class="card-label block text-label uppercase text-muted">Terpenuhi</span>
+                <div class="card-value mt-2 text-xl font-semibold text-primary">{{ $summary['fulfilled_count'] }} <span class="text-small font-normal text-muted">item</span></div>
+            </div>
+            <div class="summary-card rounded-input border border-line bg-white p-4">
+                <span class="card-label block text-label uppercase text-muted">Kurang</span>
+                <div class="card-value mt-2 text-xl font-semibold {{ $summary['shortage_count'] > 0 ? 'text-danger-text' : 'text-ink' }}">{{ $summary['shortage_count'] }} <span class="text-small font-normal text-muted">item</span></div>
+            </div>
+            <div class="summary-card rounded-input border border-line bg-white p-4">
+                <span class="card-label block text-label uppercase text-muted">&le; Min Stok</span>
+                <div class="card-value mt-2 text-xl font-semibold {{ $summary['below_minimum_count'] > 0 ? 'text-amber-700' : 'text-ink' }}">{{ $summary['below_minimum_count'] }} <span class="text-small font-normal text-muted">item</span></div>
+            </div>
+            <div class="summary-card rounded-input border border-line bg-white p-4">
+                @php $r = $readyMap[$summary['production_readiness']['status']] ?? ['gray', 'Perlu Verifikasi']; @endphp
+                <span class="card-label block text-label uppercase text-muted">Kesiapan</span>
+                <div class="mt-2">{!! $badge($r[0], $r[1]) !!}</div>
+            </div>
+            <div class="summary-card rounded-input border border-line bg-white p-4">
+                @php $r = $invMap[$summary['inventory_condition']['status']] ?? ['gray', 'Perlu Verifikasi']; @endphp
+                <span class="card-label block text-label uppercase text-muted">Stok Akhir</span>
+                <div class="mt-2">{!! $badge($r[0], $r[1]) !!}</div>
+            </div>
+        </div>
+
+        <!-- Peringatan -->
+        @if ($summary['has_shortage'])
+        <div class="print-alert rounded-input border border-danger-text/20 bg-danger-bg p-4 text-danger-text" role="alert">
+            <p class="text-body font-semibold">Kekurangan kebutuhan produksi (perlu pengadaan)</p>
+            <p class="mt-0.5 text-small">
+                Terdapat {{ $summary['shortage_count'] }} jenis bahan baku yang stok aktualnya kurang dari kebutuhan. Tim gudang harus segera melakukan pengadaan sebelum jadwal masak dimulai.
+            </p>
+        </div>
+        @endif
+
+        @if ($summary['has_restock_warning'] && ! $summary['has_shortage'])
+        <div class="print-alert rounded-input border border-amber-200 bg-amber-50 p-4 text-amber-800" role="alert">
+            <p class="text-body font-semibold">Restock persediaan gudang (batas minimum tercapai)</p>
+            <p class="mt-0.5 text-small">
+                Kebutuhan produksi terpenuhi, namun proyeksi stok akhir pada {{ $summary['below_minimum_count'] }} jenis bahan akan mencapai atau berada di bawah batas minimum. Segera jadwalkan pembelian ulang.
+            </p>
+        </div>
+        @endif
+
+        @if ($unverifiedItems->isNotEmpty())
+        <div class="print-alert rounded-input border border-line bg-primary/5 p-4 text-muted" role="alert">
+            <p class="text-body font-semibold text-ink">Verifikasi data stok gudang diperlukan</p>
+            <p class="mt-0.5 text-small">
+                Terdapat {{ $unverifiedItems->count() }} jenis bahan baku dengan data persediaan yang belum tercatat atau perlu diverifikasi fisik di gudang sebelum serah terima.
+            </p>
+        </div>
+        @endif
+
+        <!-- Tabel kebutuhan bahan -->
+        <x-card :padding="false" class="table-container overflow-hidden">
+            <div class="flex items-center justify-between border-b border-line px-6 py-5">
+                <div>
+                    <h2 class="text-lg font-semibold text-ink">Daftar Kebutuhan Bahan Baku Produksi &amp; Status Stok</h2>
+                    <p class="mt-0.5 text-small text-muted print:hidden">Dihitung otomatis berdasarkan resep dan porsi terencana, dibandingkan dengan persediaan gudang.</p>
+                </div>
+                <span class="text-small text-muted"><span class="font-medium text-ink">{{ $summary['total_ingredients'] }}</span> bahan terdaftar</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="ingredients-table min-w-full text-body">
+                    <thead class="bg-primary/5">
+                        <tr>
+                            <th scope="col" class="col-no px-3 py-3.5 text-center text-label uppercase text-muted">No.</th>
+                            <th scope="col" class="col-name px-4 py-3.5 text-left text-label uppercase text-muted">Bahan Baku &amp; Kategori</th>
+                            <th scope="col" class="col-req px-3 py-3.5 text-right text-label uppercase text-muted">Kebutuhan Total</th>
+                            <th scope="col" class="col-stock px-3 py-3.5 text-right text-label uppercase text-muted">Stok Aktual</th>
+                            <th scope="col" class="col-proj px-3 py-3.5 text-right text-label uppercase text-muted">Proyeksi Akhir</th>
+                            <th scope="col" class="col-short px-3 py-3.5 text-right text-label uppercase text-muted">Kekurangan</th>
+                            <th scope="col" class="col-min px-3 py-3.5 text-right text-label uppercase text-muted">Min Stok</th>
+                            <th scope="col" class="col-status-req px-3 py-3.5 text-left text-label uppercase text-muted">Status Kebutuhan</th>
+                            <th scope="col" class="col-status-end px-3 py-3.5 text-left text-label uppercase text-muted">Status Stok Akhir</th>
+                            <th scope="col" class="col-check px-3 py-3.5 text-center text-label uppercase text-muted">Cek Fisik</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-line bg-white">
+                        @forelse ($calculation['items'] as $index => $item)
+                        @php
+                            $av = $availMap[$item['availability_status']] ?? ['gray', 'Perlu Verifikasi'];
+                            $en = $endMap[$item['ending_stock_status']] ?? ['gray', 'Perlu Verifikasi'];
+                        @endphp
+                        <tr class="align-top transition hover:bg-primary/5">
+                            <td class="px-3 py-3 text-center text-small text-muted">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3">
+                                <div class="font-medium text-ink">{{ $item['ingredient_name'] }}</div>
+                                <div class="text-small text-muted">Kategori: {{ $item['ingredient_category'] }} &middot; Satuan: {{ $item['unit'] }}</div>
+                                @if ($item['has_unit_mismatch'])
+                                <div class="text-small text-amber-700">Satuan resep dikonversi ke satuan stok ({{ $item['unit'] }})</div>
+                                @endif
+                                <div class="mt-1 space-y-0.5 text-small text-muted print:hidden">
+                                    @foreach ($item['menu_breakdown'] as $mb)
+                                    <div class="truncate">{{ $mb['product_name'] }} ({{ $mb['planned_quantity'] }} porsi &rarr; {{ $mb['display_subtotal'] }})</div>
+                                    @endforeach
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-3 text-right font-medium text-ink">{{ $item['formatted_required'] }}</td>
+                            <td class="whitespace-nowrap px-3 py-3 text-right text-ink">{{ $item['formatted_current_stock'] }}</td>
+                            <td class="whitespace-nowrap px-3 py-3 text-right font-medium">
+                                @if ($item['projected_ending_stock'] !== null)
+                                @if ($item['projected_ending_stock'] > $item['minimum_stock'])
+                                <span class="text-ink">{{ $item['formatted_projected_ending_stock'] }}</span>
+                                @elseif ($item['projected_ending_stock'] >= 0)
+                                <span class="text-amber-700">{{ $item['formatted_projected_ending_stock'] }}</span>
+                                @else
+                                <span class="text-danger-text">{{ $item['formatted_projected_ending_stock'] }}</span>
+                                @endif
+                                @else
+                                <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-3 text-right font-medium">
+                                @if ($item['production_shortage'] !== null && $item['production_shortage'] > 0)
+                                <span class="text-danger-text">{{ $item['formatted_production_shortage'] }}</span>
+                                @elseif ($item['production_shortage'] !== null)
+                                <span class="text-muted">0 {{ $item['unit'] }}</span>
+                                @else
+                                <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-3 text-right text-muted">{{ $item['formatted_minimum_stock'] }}</td>
+                            <td class="whitespace-nowrap px-3 py-3">{!! $badge($av[0], $av[1]) !!}</td>
+                            <td class="whitespace-nowrap px-3 py-3">{!! $badge($en[0], $en[1]) !!}</td>
+                            <td class="px-3 py-3 text-center">
+                                <input type="checkbox" class="h-4 w-4 rounded border-muted/50 text-primary focus:ring-primary/20"
+                                       aria-label="Cek fisik {{ $item['ingredient_name'] }}">
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="10" class="px-4 py-8 text-center text-muted">Tidak ada bahan baku yang terdaftar pada menu rencana produksi ini.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-card>
+
+        <!-- Tanda tangan serah terima -->
+        <div class="signature-section mt-6 border-t border-line pt-5">
+            <div class="signature-grid grid grid-cols-1 gap-6 text-center text-small text-ink sm:grid-cols-3">
+                <div class="sig-box flex flex-col items-center">
+                    <span class="sig-title mb-12 font-semibold sm:mb-14">Disiapkan Oleh (Staff Gudang):</span>
+                    <div class="sig-line mb-1.5 w-48 max-w-full border-b border-gray-400"></div>
+                    <span class="sig-sub text-muted">(Nama &amp; Tanda Tangan)</span>
+                </div>
+                <div class="sig-box flex flex-col items-center">
+                    <span class="sig-title mb-12 font-semibold sm:mb-14">Diterima Oleh (Tim Dapur):</span>
+                    <div class="sig-line mb-1.5 w-48 max-w-full border-b border-gray-400"></div>
+                    <span class="sig-sub text-muted">(Nama &amp; Tanda Tangan)</span>
+                </div>
+                <div class="sig-box flex flex-col items-center">
+                    <span class="sig-title mb-12 font-semibold sm:mb-14">Disetujui (Kepala Produksi / Ahli Gizi):</span>
+                    <div class="sig-line mb-1.5 w-48 max-w-full border-b border-gray-400"></div>
+                    <span class="sig-name font-semibold text-ink">{{ $plan->creator?->name ?? '(Nama & Tanda Tangan)' }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CSS khusus cetak & PDF (tidak diubah) -->
     <style>
-        .print-header-block {
-            display: none;
-        }
+        .print-header-block { display: none; }
 
         @media print {
-            /* Sembunyikan navigasi web, sidebar, breadcrumb, dan tombol */
-            nav,
-            header,
-            aside,
-            .no-print,
-            button,
-            a[href^="http"]:after,
-            a[href]:after {
+            nav, header, aside, .no-print, button,
+            a[href^="http"]:after, a[href]:after {
                 display: none !important;
                 content: "" !important;
             }
 
-            /* Tampilkan header formal kop surat */
-            .print-header-block {
-                display: block !important;
-            }
+            .print-header-block { display: block !important; }
 
-            /* Halaman Landscape A4 dengan margin yang proporsional */
-            @page {
-                size: A4 landscape;
-                margin: 8mm 10mm 10mm 10mm;
-            }
+            @page { size: A4 landscape; margin: 8mm 10mm 10mm 10mm; }
 
-            /* Pengaturan dasar cetak */
             html, body, .min-h-screen, main {
                 background: #ffffff !important;
                 color: #0f172a !important;
@@ -500,46 +343,29 @@
                 width: 100% !important;
             }
 
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-            /* ── Tata Letak 6 Kartu Ringkasan Cetak ── */
             .summary-cards-container {
                 display: grid !important;
                 grid-template-columns: repeat(6, 1fr) !important;
                 gap: 6px !important;
                 margin-bottom: 6px !important;
             }
-
             .summary-card {
                 padding: 4px 6px !important;
                 border: 1px solid #cbd5e1 !important;
                 border-radius: 4px !important;
                 background-color: #ffffff !important;
             }
+            .summary-card .card-label { font-size: 6.5pt !important; line-height: 1.1 !important; }
+            .summary-card .card-value { font-size: 11pt !important; margin-top: 2px !important; }
 
-            .summary-card .card-label {
-                font-size: 6.5pt !important;
-                line-height: 1.1 !important;
-            }
-
-            .summary-card .card-value {
-                font-size: 11pt !important;
-                margin-top: 2px !important;
-            }
-
-            /* ── Tata Letak Tabel Cetak (Mencegah Scrollbar & Potong Kolom) ── */
             .table-container {
                 overflow: visible !important;
                 border: 1px solid #cbd5e1 !important;
                 border-radius: 4px !important;
             }
-
-            .overflow-x-auto {
-                overflow: visible !important;
-            }
+            .overflow-x-auto { overflow: visible !important; }
 
             .ingredients-table {
                 width: 100% !important;
@@ -547,16 +373,8 @@
                 border-collapse: collapse !important;
                 font-size: 7.5pt !important;
             }
-
-            .ingredients-table thead {
-                display: table-header-group !important;
-            }
-
-            .ingredients-table tr {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-
+            .ingredients-table thead { display: table-header-group !important; }
+            .ingredients-table tr { page-break-inside: avoid !important; break-inside: avoid !important; }
             .ingredients-table th,
             .ingredients-table td {
                 border: 1px solid #cbd5e1 !important;
@@ -565,7 +383,6 @@
                 overflow-wrap: break-word !important;
                 white-space: normal !important;
             }
-
             .ingredients-table th {
                 background-color: #f1f5f9 !important;
                 color: #0f172a !important;
@@ -574,7 +391,6 @@
                 line-height: 1.15 !important;
             }
 
-            /* Proporsi Lebar Kolom 100% */
             .col-no { width: 4% !important; }
             .col-name { width: 25% !important; }
             .col-req { width: 9.5% !important; }
@@ -586,14 +402,12 @@
             .col-status-end { width: 10.5% !important; }
             .col-check { width: 5% !important; }
 
-            /* ── Tata Letak Tanda Tangan ── */
             .signature-section {
                 margin-top: 10px !important;
                 padding-top: 6px !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
-
             .signature-grid {
                 display: flex !important;
                 flex-direction: row !important;
@@ -601,28 +415,10 @@
                 align-items: flex-start !important;
                 gap: 16px !important;
             }
-
-            .sig-box {
-                flex: 1 1 0% !important;
-                text-align: center !important;
-            }
-
-            .sig-title {
-                font-size: 7.5pt !important;
-                margin-bottom: 38px !important;
-                display: block !important;
-            }
-
-            .sig-line {
-                width: 140px !important;
-                margin: 0 auto 3px auto !important;
-                border-bottom: 1px solid #475569 !important;
-            }
-
-            .sig-sub, .sig-name {
-                font-size: 7pt !important;
-                display: block !important;
-            }
+            .sig-box { flex: 1 1 0% !important; text-align: center !important; }
+            .sig-title { font-size: 7.5pt !important; margin-bottom: 38px !important; display: block !important; }
+            .sig-line { width: 140px !important; margin: 0 auto 3px auto !important; border-bottom: 1px solid #475569 !important; }
+            .sig-sub, .sig-name { font-size: 7pt !important; display: block !important; }
         }
     </style>
 </x-app-layout>
