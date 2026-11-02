@@ -1,174 +1,146 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Formulir Penyesuaian Stok Fisik (Stock Adjustment)') }}
-                </h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    Koreksi perbedaan antara saldo sistem dengan hasil stok opname fisik di gudang (FR-26 & BR-03).
-                </p>
+    @php
+        $inputClass = 'block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+        $labelClass = 'mb-1.5 block text-label uppercase text-muted';
+
+        $ingredientsMap = $ingredients->keyBy('id')->map(function ($ing) {
+            return [
+                'id' => $ing->id,
+                'name' => $ing->name,
+                'current_stock' => (float) ($ing->current_stock ?? 0),
+                'unit' => $ing->unit,
+            ];
+        });
+    @endphp
+
+    {{-- Header --}}
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <nav class="flex items-center gap-2 text-small font-medium" aria-label="Breadcrumb">
+                <a href="{{ route('stock-cards.index') }}" class="text-muted transition hover:text-primary">Kartu Stok</a>
+                <svg class="h-3.5 w-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span class="text-primary">Penyesuaian Stok</span>
+            </nav>
+
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl font-semibold text-ink">Penyesuaian Stok Fisik</h1>
             </div>
-            <div>
-                <a href="{{ route('stock-cards.index') }}"
-                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm">
-                    &larr; Kembali ke Buku Kartu Stok
-                </a>
-            </div>
+            <p class="mt-1 text-small text-muted">Koreksi perbedaan antara saldo sistem dengan hasil stok opname fisik di gudang.</p>
         </div>
-    </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+        <a href="{{ route('stock-cards.index') }}"
+            class="inline-flex items-center gap-2 rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-ink transition hover:bg-primary/5">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali ke Kartu Stok
+        </a>
+    </div>
 
-            @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-sm">
-                    <div class="flex items-center mb-1">
-                        <svg class="w-5 h-5 text-red-500 me-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                        <h3 class="text-sm font-semibold text-red-800">Terdapat kesalahan pada isian formulir:</h3>
-                    </div>
-                    <ul class="list-disc list-inside text-xs text-red-700 space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+    <div class="space-y-6">
 
-            @php
-                $ingredientsMap = $ingredients->keyBy('id')->map(function ($ing) {
-                    return [
-                        'id' => $ing->id,
-                        'name' => $ing->name,
-                        'current_stock' => (float) ($ing->current_stock ?? 0),
-                        'unit' => $ing->unit,
-                    ];
-                });
-            @endphp
+        @if ($errors->any())
+        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text" role="alert">
+            <p class="mb-2 font-semibold">Terdapat kesalahan pada isian formulir:</p>
+            <ul class="list-inside list-disc space-y-1">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
-            <div x-data="{
-                ingredients: {{ Js::from($ingredientsMap) }},
-                selectedId: '{{ old('ingredient_id', $ingredients->first()?->id ?? '') }}',
-                physicalCount: '{{ old('physical_count', '') }}',
+        <x-card class="w-full sm:p-8"
+                x-data="{
+                    ingredients: {{ Js::from($ingredientsMap) }},
+                    selectedId: '{{ old('ingredient_id', $ingredients->first()?->id ?? '') }}',
+                    physicalCount: '{{ old('physical_count', '') }}',
 
-                get currentIngredient() {
-                    return this.ingredients[this.selectedId] || { current_stock: 0, unit: '' };
-                },
+                    get currentIngredient() {
+                        return this.ingredients[this.selectedId] || { current_stock: 0, unit: '' };
+                    },
 
-                get difference() {
-                    if (this.physicalCount === '' || isNaN(this.physicalCount)) {
-                        return 0;
+                    get difference() {
+                        if (this.physicalCount === '' || isNaN(this.physicalCount)) {
+                            return 0;
+                        }
+                        return (parseFloat(this.physicalCount) - this.currentIngredient.current_stock).toFixed(3);
                     }
-                    return (parseFloat(this.physicalCount) - this.currentIngredient.current_stock).toFixed(3);
-                }
-            }" class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-6">
+                }">
 
-                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
-                    <p class="text-xs text-amber-900 leading-relaxed">
-                        <strong>Aturan Bisnis (BR-03):</strong> Perubahan saldo stok tidak boleh diedit langsung tanpa jejak mutasi. Formulir ini otomatis menerbitkan record transaksi <code>adjustment</code> pada kartu stok dan menyelaraskan saldo fisik gudang.
-                    </p>
-                </div>
-
-                <form method="POST" action="{{ route('stock-adjustments.store') }}" class="space-y-6">
-                    @csrf
-
-                    <div>
-                        <label for="ingredient_id" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                            Pilih Bahan Baku <span class="text-red-500">*</span>
-                        </label>
-                        <select name="ingredient_id"
-                                id="ingredient_id"
-                                x-model="selectedId"
-                                required
-                                class="w-full text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 font-medium">
-                            @foreach ($ingredients as $ing)
-                                <option value="{{ $ing->id }}">
-                                    {{ $ing->name }} (Saldo Sistem: {{ (float) ($ing->current_stock ?? 0) }} {{ $ing->unit }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Perbandingan Saldo Sistem vs Fisik --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <div>
-                            <span class="text-xs text-gray-500">Saldo Tercatat di Sistem:</span>
-                            <p class="text-lg font-bold text-gray-800 mt-1">
-                                <span x-text="currentIngredient.current_stock"></span>
-                                <span class="text-xs font-normal text-gray-500" x-text="currentIngredient.unit"></span>
-                            </p>
-                        </div>
-                        <div>
-                            <label for="physical_count" class="block text-xs font-semibold text-gray-700 mb-1">
-                                Hasil Hitung Fisik (Opname) <span class="text-red-500">*</span>
-                            </label>
-                            <div class="flex items-center space-x-1">
-                                <input type="number"
-                                       step="0.001"
-                                       min="0"
-                                       name="physical_count"
-                                       id="physical_count"
-                                       x-model="physicalCount"
-                                       required
-                                       placeholder="0.00"
-                                       class="w-full text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 font-bold">
-                                <span class="text-xs text-gray-500 font-semibold" x-text="currentIngredient.unit"></span>
-                            </div>
-                        </div>
-                        <div>
-                            <span class="text-xs text-gray-500">Selisih Penyesuaian:</span>
-                            <p class="text-lg font-extrabold mt-1"
-                               :class="difference > 0 ? 'text-emerald-600' : (difference < 0 ? 'text-rose-600' : 'text-gray-600')">
-                                <span x-text="difference > 0 ? `+${difference}` : difference"></span>
-                                <span class="text-xs font-normal text-gray-500" x-text="currentIngredient.unit"></span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="adjustment_date" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                            Tanggal Penyesuaian <span class="text-red-500">*</span>
-                        </label>
-                        <input type="date"
-                               name="adjustment_date"
-                               id="adjustment_date"
-                               value="{{ old('adjustment_date', $today) }}"
-                               required
-                               class="w-full sm:w-1/2 text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                    </div>
-
-                    <div>
-                        <label for="notes" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                            Alasan Penyesuaian Stok (Wajib Diisi - FR-26) <span class="text-red-500">*</span>
-                        </label>
-                        <textarea name="notes"
-                                  id="notes"
-                                  rows="3"
-                                  required
-                                  placeholder="Contoh: Susut berat pada sayuran segar, perbedaan timbangan supplier, atau koreksi barang tumpah..."
-                                  class="w-full text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500">{{ old('notes') }}</textarea>
-                    </div>
-
-                    <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
-                        <a href="{{ route('stock-cards.index') }}"
-                           class="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-200 transition">
-                            Batal
-                        </a>
-                        <button type="submit"
-                                class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center space-x-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Simpan Penyesuaian Stok</span>
-                        </button>
-                    </div>
-
-                </form>
-
+            <div class="rounded-input border border-line bg-primary/5 p-4 text-small text-muted">
+                <span class="font-semibold text-ink">Aturan bisnis:</span>
+                Perubahan saldo stok tidak boleh diedit langsung tanpa jejak mutasi. Formulir ini otomatis menerbitkan transaksi <code>adjustment</code> pada kartu stok dan menyelaraskan saldo fisik gudang.
             </div>
 
-        </div>
+            <form method="POST" action="{{ route('stock-adjustments.store') }}" class="mt-6 space-y-6">
+                @csrf
+
+                <div>
+                    <label for="ingredient_id" class="{{ $labelClass }}">Pilih Bahan Baku <span class="text-danger-text">*</span></label>
+                    <select name="ingredient_id" id="ingredient_id" x-model="selectedId" required class="{{ $inputClass }}">
+                        @foreach ($ingredients as $ing)
+                        <option value="{{ $ing->id }}">
+                            {{ $ing->name }} (Saldo Sistem: {{ (float) ($ing->current_stock ?? 0) }} {{ $ing->unit }})
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Perbandingan saldo sistem vs fisik --}}
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div class="rounded-input border border-line bg-primary/5 p-4">
+                        <div class="text-label uppercase text-muted">Saldo Tercatat di Sistem</div>
+                        <p class="mt-1.5 text-body font-medium text-ink">
+                            <span x-text="currentIngredient.current_stock"></span>
+                            <span class="text-small font-normal text-muted" x-text="currentIngredient.unit"></span>
+                        </p>
+                    </div>
+
+                    <div class="rounded-input border border-line bg-primary/5 p-4">
+                        <label for="physical_count" class="block text-label uppercase text-muted">
+                            Hasil Hitung Fisik <span class="text-danger-text">*</span>
+                        </label>
+                        <div class="mt-1.5 flex items-center gap-2">
+                            <input type="number" step="0.001" min="0" name="physical_count" id="physical_count"
+                                   x-model="physicalCount" required placeholder="0.00" class="{{ $inputClass }}">
+                            <span class="shrink-0 text-small font-medium text-muted" x-text="currentIngredient.unit"></span>
+                        </div>
+                    </div>
+
+                    <div class="rounded-input border border-line bg-primary/5 p-4">
+                        <div class="text-label uppercase text-muted">Selisih Penyesuaian</div>
+                        <p class="mt-1.5 text-body font-semibold"
+                           :class="difference > 0 ? 'text-primary' : (difference < 0 ? 'text-danger-text' : 'text-muted')">
+                            <span x-text="difference > 0 ? `+${difference}` : difference"></span>
+                            <span class="text-small font-normal text-muted" x-text="currentIngredient.unit"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                        <label for="adjustment_date" class="{{ $labelClass }}">Tanggal Penyesuaian <span class="text-danger-text">*</span></label>
+                        <input type="date" name="adjustment_date" id="adjustment_date"
+                               value="{{ old('adjustment_date', $today) }}" required class="{{ $inputClass }}">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="notes" class="{{ $labelClass }}">Alasan Penyesuaian Stok (Wajib Diisi) <span class="text-danger-text">*</span></label>
+                    <textarea name="notes" id="notes" rows="3" required
+                              placeholder="Contoh: Susut berat pada sayuran segar, perbedaan timbangan supplier, atau koreksi barang tumpah..."
+                              class="{{ $inputClass }}">{{ old('notes') }}</textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 border-t border-line pt-6">
+                    <x-button variant="outline" :href="route('stock-cards.index')">Batal</x-button>
+                    <x-button type="submit">Simpan Penyesuaian Stok</x-button>
+                </div>
+            </form>
+        </x-card>
+
     </div>
 </x-app-layout>
