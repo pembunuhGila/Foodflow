@@ -108,7 +108,7 @@
                     </div>
                     <div class="flex items-center gap-4 text-small text-muted">
                         <span class="inline-flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-primary"></span>Target</span>
-                        <span class="inline-flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-success-text"></span>Realisasi</span>
+                        <span class="inline-flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-accent"></span>Realisasi</span>
                         <span class="inline-flex items-center gap-1.5"><span class="w-4 border-t-2 border-dashed border-muted"></span>Rata-rata realisasi</span>
                     </div>
                 </div>
@@ -197,7 +197,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-line bg-white">
-                        @foreach ($activePlans as $plan)
+                        @foreach ($activePlans->sortBy([['production_date', 'desc'], ['id', 'desc']]) as $plan)
                         @php
                         $st = $plan->status instanceof \BackedEnum ? $plan->status->value : (string) $plan->status;
                         $tone = $statusTone[$st] ?? ['bg-canvas text-muted', 'bg-muted', $st];
@@ -264,7 +264,8 @@
             // Warna chart mengikuti token di tailwind.config.js (Chart.js tidak bisa membaca class Tailwind)
             const C = {
                 primary: '#7C5CE0', // primary
-                success: '#15803D', // success-text
+                accent:     '#06B6D4', // accent (batang)
+                accentDark: '#0891B2', // accent-dark (garis tren)
                 ink:     '#1E1B4B', // ink
                 muted:   '#6B7280', // muted
                 line:    '#ECE8F7', // line
@@ -328,7 +329,7 @@
                                 type: 'line',
                                 label: 'Tren Realisasi',
                                 data: weeklyData.map(i => i.actual),
-                                borderColor: C.success,
+                                borderColor: C.accentDark,
                                 borderWidth: 2.5,
                                 cubicInterpolationMode: 'monotone',
                                 pointRadius: 0,
@@ -363,7 +364,7 @@
                             {
                                 label: 'Realisasi Porsi',
                                 data: weeklyData.map(i => i.actual),
-                                backgroundColor: barGradient(C.success),
+                                backgroundColor: barGradient(C.accent),
                                 borderRadius: { topLeft: 6, topRight: 6 },
                                 borderSkipped: false,
                                 barPercentage: 0.9,
