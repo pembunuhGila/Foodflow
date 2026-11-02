@@ -1,178 +1,141 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <div class="flex items-center space-x-2">
-                    <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    </span>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        {{ __('Edit Pesanan Katering') }} &mdash; <span class="font-mono text-emerald-700">{{ $order->order_number }}</span>
-                    </h2>
-                </div>
-                <p class="text-xs text-gray-500 mt-1">
-                    Perbarui data pelanggan, tanggal pengiriman, status pesanan, dan catatan khusus.
-                </p>
+    @php
+    $inputClass = 'block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+    $currentStatus = old('status', $order->status instanceof \BackedEnum ? $order->status->value : $order->status);
+    @endphp
+
+    {{-- Header --}}
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <nav class="flex items-center gap-2 text-small font-medium" aria-label="Breadcrumb">
+                <a href="{{ route('catering-orders.index') }}" class="text-muted transition hover:text-primary">Daftar Pesanan</a>
+                <svg class="h-3.5 w-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span class="text-primary">Edit Pesanan</span>
+            </nav>
+
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl font-semibold text-ink">Edit Pesanan: {{ $order->order_number }}</h1>
             </div>
-            <div class="flex items-center space-x-2">
-                <a href="{{ route('catering-orders.show', $order) }}"
-                   id="btn-back-to-detail"
-                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm">
-                    &larr; Kembali ke Detail
-                </a>
+            <p class="mt-1 text-small text-muted">Perbarui pelanggan, tanggal pengiriman, status pesanan, dan catatan khusus.</p>
+        </div>
+
+        <a href="{{ route('catering-orders.show', $order) }}" id="btn-back-to-detail"
+            class="inline-flex items-center gap-2 rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-ink transition hover:bg-primary/5">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali ke Detail
+        </a>
+    </div>
+
+    <div class="space-y-6">
+
+        @if ($errors->any())
+        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text" role="alert">
+            <p class="mb-2 font-semibold">Terdapat kesalahan pada input formulir:</p>
+            <ul class="list-inside list-disc space-y-1">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        <form method="POST" action="{{ route('catering-orders.update', $order) }}" class="space-y-6">
+            @csrf
+            @method('PUT')
+
+            <!-- Informasi & Status -->
+            <x-card class="w-full sm:p-8">
+                <div class="border-b border-line pb-4">
+                    <h2 class="text-lg font-semibold text-ink">Informasi &amp; Status Pesanan</h2>
+                </div>
+
+                <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div class="md:col-span-2">
+                        <x-input-label for="customer_id">Pelanggan / Institusi Pemesan <span class="text-danger-text">*</span></x-input-label>
+                        <select id="customer_id" name="customer_id" class="{{ $inputClass }} mt-1.5">
+                            @foreach ($customers as $customer)
+                            <option value="{{ $customer->id }}" {{ old('customer_id', $order->customer_id) == $customer->id ? 'selected' : '' }}>
+                                {{ $customer->name }} ({{ $customer->phone ?? 'No HP: -' }})
+                            </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('customer_id')" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="delivery_date">Tanggal Pengiriman / Acara <span class="text-danger-text">*</span></x-input-label>
+                        <input type="date" id="delivery_date" name="delivery_date" required
+                            value="{{ old('delivery_date', $order->delivery_date?->format('Y-m-d')) }}"
+                            class="{{ $inputClass }} mt-1.5">
+                        <x-input-error :messages="$errors->get('delivery_date')" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="status">Status Pesanan <span class="text-danger-text">*</span></x-input-label>
+                        <select id="status" name="status" class="{{ $inputClass }} mt-1.5">
+                            <option value="pending" {{ $currentStatus === 'pending' ? 'selected' : '' }}>Pending (Menunggu Konfirmasi)</option>
+                            <option value="confirmed" {{ $currentStatus === 'confirmed' ? 'selected' : '' }}>Dikonfirmasi</option>
+                            <option value="processing" {{ $currentStatus === 'processing' ? 'selected' : '' }}>Diproses (Produksi)</option>
+                            <option value="delivered" {{ $currentStatus === 'delivered' ? 'selected' : '' }}>Selesai (Terkirim)</option>
+                            <option value="cancelled" {{ $currentStatus === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                        </select>
+                        <x-input-error :messages="$errors->get('status')" class="mt-1" />
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <x-input-label for="notes" value="Catatan Khusus / Instruksi Tambahan" />
+                        <x-textarea name="notes" id="notes" rows="3" placeholder="Contoh: Pengiriman sebelum jam 11 siang, kemasan ramah lingkungan, sambal dipisah..." class="mt-1.5 block w-full">{{ old('notes', $order->notes) }}</x-textarea>
+                        <x-input-error :messages="$errors->get('notes')" class="mt-1" />
+                    </div>
+                </div>
+            </x-card>
+
+            <!-- Rincian menu (hanya baca) -->
+            <x-card :padding="false" class="overflow-hidden">
+                <div class="border-b border-line px-6 py-5">
+                    <h2 class="text-lg font-semibold text-ink">Rincian Menu Hidangan Saat Ini</h2>
+                    <p class="mt-0.5 text-small text-muted">Rincian menu tidak dapat diubah dari halaman ini.</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-body">
+                        <thead class="bg-primary/5">
+                            <tr>
+                                <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Menu</th>
+                                <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Porsi</th>
+                                <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Harga</th>
+                                <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-line bg-white">
+                            @foreach ($order->details as $item)
+                            <tr>
+                                <td class="px-6 py-4 font-medium text-ink">{{ $item->product?->name ?? 'Produk #' . $item->product_id }}</td>
+                                <td class="px-6 py-4 text-ink">{{ $item->quantity }}</td>
+                                <td class="px-6 py-4 text-right text-ink">Rp {{ number_format((float) $item->unit_price, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 text-right font-medium text-ink">Rp {{ number_format((float) $item->subtotal, 0, ',', '.') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="border-t border-line bg-primary/5">
+                            <tr>
+                                <td colspan="3" class="px-6 py-4 text-right text-label uppercase text-muted">Total Pembayaran</td>
+                                <td class="px-6 py-4 text-right text-lg font-semibold text-primary">{{ $order->formattedTotal() }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </x-card>
+
+            <!-- Tombol Aksi -->
+            <div class="flex items-center justify-end gap-3">
+                <x-button variant="outline" :href="route('catering-orders.show', $order)">Batal</x-button>
+                <x-button type="submit" id="btn-submit-order-edit">Simpan Perubahan</x-button>
             </div>
-        </div>
-    </x-slot>
-
-    <div class="py-10">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            <!-- Validation Errors Banner -->
-            @if ($errors->any())
-                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-sm" role="alert">
-                    <div class="flex items-start">
-                        <svg class="w-5 h-5 text-red-500 me-2 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                        <div>
-                            <h3 class="text-sm font-semibold text-red-800">Terdapat kesalahan pada input formulir:</h3>
-                            <ul class="mt-1 text-xs text-red-700 list-disc list-inside space-y-0.5">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            <form method="POST"
-                  action="{{ route('catering-orders.update', $order) }}"
-                  class="space-y-6">
-                @csrf
-                @method('PUT')
-
-                <!-- Card 1: Informasi Pesanan & Status -->
-                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-5">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                        <h3 class="text-base font-semibold text-gray-900 flex items-center space-x-2">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>Informasi & Status Pesanan</span>
-                        </h3>
-                        <span class="text-xs font-mono font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded">
-                            {{ $order->order_number }}
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Pelanggan -->
-                        <div class="md:col-span-2">
-                            <label for="customer_id" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
-                                Pelanggan / Institusi Pemesan <span class="text-red-500">*</span>
-                            </label>
-                            <select id="customer_id"
-                                    name="customer_id"
-                                    class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-2xs">
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}" {{ old('customer_id', $order->customer_id) == $customer->id ? 'selected' : '' }}>
-                                        {{ $customer->name }} ({{ $customer->phone ?? 'No HP: -' }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Tanggal Pengiriman -->
-                        <div>
-                            <label for="delivery_date" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
-                                Tanggal Pengiriman / Acara <span class="text-red-500">*</span>
-                            </label>
-                            <input type="date"
-                                   id="delivery_date"
-                                   name="delivery_date"
-                                   value="{{ old('delivery_date', $order->delivery_date?->format('Y-m-d')) }}"
-                                   required
-                                   class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-2xs">
-                        </div>
-
-                        <!-- Status Pesanan -->
-                        <div>
-                            <label for="status" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
-                                Status Pesanan <span class="text-red-500">*</span>
-                            </label>
-                            <select id="status"
-                                    name="status"
-                                    class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-2xs">
-                                <option value="pending" {{ old('status', $order->status) === 'pending' ? 'selected' : '' }}>Pending (Menunggu Konfirmasi)</option>
-                                <option value="confirmed" {{ old('status', $order->status) === 'confirmed' ? 'selected' : '' }}>Dikonfirmasi</option>
-                                <option value="processing" {{ old('status', $order->status) === 'processing' ? 'selected' : '' }}>Diproses (Produksi)</option>
-                                <option value="delivered" {{ old('status', $order->status) === 'delivered' ? 'selected' : '' }}>Selesai (Terkirim)</option>
-                                <option value="cancelled" {{ old('status', $order->status) === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                            </select>
-                        </div>
-
-                        <!-- Catatan Khusus -->
-                        <div class="md:col-span-2">
-                            <label for="notes" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
-                                Catatan Khusus / Instruksi Tambahan
-                            </label>
-                            <textarea id="notes"
-                                      name="notes"
-                                      rows="3"
-                                      placeholder="Contoh: Pengiriman sebelum jam 11 siang, kemasan ramah lingkungan, sambal dipisah..."
-                                      class="w-full text-sm rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-2xs">{{ old('notes', $order->notes) }}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Rincian Menu Hidangan (Read Only saat edit info umum) -->
-                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-                    <h3 class="text-base font-semibold text-gray-900 border-b border-gray-100 pb-3">
-                        Rincian Menu Hidangan Saat Ini
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-gray-600">
-                            <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 border-b border-gray-200">
-                                <tr>
-                                    <th class="px-4 py-2.5">Menu</th>
-                                    <th class="px-4 py-2.5 text-center">Porsi</th>
-                                    <th class="px-4 py-2.5 text-right">Harga</th>
-                                    <th class="px-4 py-2.5 text-right">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($order->details as $item)
-                                    <tr>
-                                        <td class="px-4 py-2.5 font-medium text-gray-900">{{ $item->product?->name ?? 'Produk #' . $item->product_id }}</td>
-                                        <td class="px-4 py-2.5 text-center font-bold text-gray-800">{{ $item->quantity }}</td>
-                                        <td class="px-4 py-2.5 text-right">Rp {{ number_format((float) $item->unit_price, 0, ',', '.') }}</td>
-                                        <td class="px-4 py-2.5 text-right font-bold text-gray-900">Rp {{ number_format((float) $item->subtotal, 0, ',', '.') }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="bg-emerald-50/50 border-t border-emerald-200">
-                                <tr>
-                                    <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700 uppercase text-xs">Total Pembayaran:</td>
-                                    <td class="px-4 py-3 text-right font-extrabold text-emerald-700 text-base">{{ $order->formattedTotal() }}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Submit Button Bar -->
-                <div class="flex items-center justify-end space-x-3 pt-2">
-                    <a href="{{ route('catering-orders.show', $order) }}"
-                       class="px-5 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
-                        Batal
-                    </a>
-                    <button type="submit"
-                            id="btn-submit-order-edit"
-                            class="px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition">
-                        Simpan Perubahan
-                    </button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
 </x-app-layout>
