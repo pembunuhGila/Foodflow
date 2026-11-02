@@ -1,164 +1,167 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Daftar Purchase Order') }}
-                </h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    Kelola semua purchase order pengadaan bahan baku ke vendor.
-                </p>
-            </div>
-            @if (Auth::user()->isAdmin())
-                <a href="{{ route('purchase-orders.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-xs font-semibold uppercase tracking-widest rounded-lg hover:bg-blue-700 transition shadow-sm">
-                    <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Buat PO Baru
-                </a>
+    @php
+    $isAdmin = Auth::user()->isAdmin();
+    $hasFilter = $currentSearch || $currentStatus || $currentDate;
+
+    $inputClass = 'block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+
+    // Tab status membawa pencarian dan tanggal pesan
+    $tabLink = fn ($s) => route('purchase-orders.index', array_filter([
+    'search' => $currentSearch,
+    'order_date' => $currentDate,
+    'status' => $s,
+    ]));
+    $total = method_exists($orders, 'total') ? $orders->total() : null;
+
+    // Daftar tab: "Semua" + semua status dari controller
+    $tabs = [['label' => 'Semua', 'value' => '']];
+    foreach ($statuses as $st) {
+    $tabs[] = ['label' => $st->label(), 'value' => $st->value];
+    }
+    foreach ($tabs as $i => $tab) {
+    $tabs[$i]['active'] = (string) $currentStatus === (string) $tab['value'];
+    $tabs[$i]['text'] = $tab['label'] . (($tabs[$i]['active'] && $total !== null) ? ' (' . $total . ')' : '');
+    }
+    @endphp
+
+    <x-page-header eyebrow="Pengadaan" :title="__('Daftar Purchase Order')"
+        subtitle="Kelola semua purchase order pengadaan bahan baku ke vendor.">
+        <x-slot name="actions">
+            @if ($isAdmin)
+            <x-button :href="route('purchase-orders.create')">
+                <x-icon name="plus" class="h-4 w-4" />
+                Buat PO Baru
+            </x-button>
             @endif
+        </x-slot>
+    </x-page-header>
+
+    <div class="space-y-6">
+
+        <!-- Session Alert -->
+        @if (session('success'))
+        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary" role="status">
+            <x-icon name="check" class="h-5 w-5 shrink-0" />
+            <span>{{ session('success') }}</span>
         </div>
-    </x-slot>
+        @endif
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        @if (session('error'))
+        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text" role="alert">
+            {{ session('error') }}
+        </div>
+        @endif
 
-            {{-- Flash Message --}}
-            @if (session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg shadow-sm flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    <p class="text-sm text-emerald-800 font-medium">{{ session('success') }}</p>
-                </div>
-            @endif
+        <!-- Filter: pencarian + tanggal + tab status dalam satu card -->
+        <x-card>
+            <div class="space-y-4">
+                <form method="GET" action="{{ route('purchase-orders.index') }}"
+                    class="grid grid-cols-1 items-end gap-4 md:grid-cols-2 xl:grid-cols-[1fr_12rem_auto]">
+                    <input type="hidden" name="status" value="{{ $currentStatus }}">
 
-            {{-- Filter & Search --}}
-            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                <form method="GET" action="{{ route('purchase-orders.index') }}" class="flex flex-col sm:flex-row gap-3 items-end">
-                    <div class="flex-1">
-                        <label for="search" class="block text-xs font-medium text-gray-600 mb-1">Cari Nomor PO</label>
-                        <input type="text"
-                               name="search"
-                               id="search"
-                               value="{{ $currentSearch }}"
-                               placeholder="Cari nomor PO..."
-                               class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    <div>
+                        <label for="search" class="mb-1.5 block text-label uppercase text-muted">Cari Nomor PO</label>
+                        <input id="search" type="text" name="search" value="{{ $currentSearch }}"
+                            placeholder="Cari nomor PO..." class="{{ $inputClass }}">
                     </div>
-                    <div class="w-full sm:w-44">
-                        <label for="status" class="block text-xs font-medium text-gray-600 mb-1">Status</label>
-                        <select name="status" id="status" class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
-                            <option value="">Semua Status</option>
-                            @foreach ($statuses as $status)
-                                <option value="{{ $status->value }}" {{ $currentStatus === $status->value ? 'selected' : '' }}>
-                                    {{ $status->label() }}
-                                </option>
-                            @endforeach
-                        </select>
+
+                    <div>
+                        <label for="order_date" class="mb-1.5 block text-label uppercase text-muted">Tanggal Pesan</label>
+                        <input id="order_date" type="date" name="order_date" value="{{ $currentDate }}"
+                            onchange="this.form.submit()" class="{{ $inputClass }}">
                     </div>
-                    <div class="w-full sm:w-48">
-                        <label for="order_date" class="block text-xs font-medium text-gray-600 mb-1">Tanggal Pesan</label>
-                        <input type="date"
-                               name="order_date"
-                               id="order_date"
-                               value="{{ $currentDate }}"
-                               class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                            Filter
-                        </button>
+
+                    <div class="flex items-center gap-4 xl:h-[2.625rem]">
+                        @if ($hasFilter)
                         <a href="{{ route('purchase-orders.index') }}"
-                           class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">
-                            Reset
-                        </a>
-                    </div>
-                </form>
-            </div>
-
-            {{-- Table --}}
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                @if ($orders->isEmpty())
-                    <div class="p-12 text-center">
-                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <p class="text-gray-500 text-sm">Belum ada purchase order yang ditemukan.</p>
-                        @if (Auth::user()->isAdmin())
-                            <a href="{{ route('purchase-orders.create') }}"
-                               class="mt-4 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
-                                Buat PO pertama Anda &rarr;
-                            </a>
+                            class="text-small font-medium text-primary hover:text-primary-dark">Reset</a>
                         @endif
                     </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-100">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nomor PO</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Vendor</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tgl Pesan</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tgl Kirim</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Jml Item</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dibuat Oleh</th>
-                                    <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @foreach ($orders as $order)
-                                    <tr class="hover:bg-gray-50/70 transition">
-                                        <td class="px-4 py-3 text-sm font-mono font-semibold text-gray-800">
-                                            {{ $order->order_number }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">
-                                            {{ $order->vendor?->name ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">
-                                            {{ $order->order_date?->format('d/m/Y') ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">
-                                            {{ $order->expected_date?->format('d/m/Y') ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600 text-center">
-                                            {{ $order->details_count }}
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            @if ($order->status)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border {{ $order->status->badgeClass() }}">
-                                                    {{ $order->status->label() }}
-                                                </span>
-                                            @else
-                                                <span class="text-gray-400 text-xs">—</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">
-                                            {{ $order->creator?->name ?? '—' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-right">
-                                            <a href="{{ route('purchase-orders.show', $order) }}"
-                                               class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition">
-                                                Detail &rarr;
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
 
-                    {{-- Pagination --}}
-                    @if ($orders->hasPages())
-                        <div class="px-4 py-3 border-t border-gray-100">
-                            {{ $orders->links() }}
-                        </div>
-                    @endif
-                @endif
+                    {{-- Enter pada kolom pencarian tetap mengirim form --}}
+                    <button type="submit" class="sr-only">Cari</button>
+                </form>
+
+                {{-- Tab status: selebar card --}}
+                <nav class="flex w-full items-center gap-1 overflow-x-auto rounded-full bg-primary/5 p-1" aria-label="Filter status purchase order">
+                    @foreach ($tabs as $tab)
+                    <a href="{{ $tabLink($tab['value']) }}"
+                        class="flex-1 whitespace-nowrap rounded-full px-5 py-2 text-center text-small font-semibold transition {{ $tab['active'] ? 'bg-primary text-white shadow-sm' : 'text-ink hover:text-primary' }}">
+                        {{ $tab['text'] }}
+                    </a>
+                    @endforeach
+                </nav>
+            </div>
+        </x-card>
+
+        <!-- Tabel Purchase Order -->
+        <x-card :padding="false" class="overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-body">
+                    <thead class="bg-primary/5">
+                        <tr>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Nomor PO</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Vendor</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Tgl Pesan</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Tgl Kirim</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Jml Item</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Status</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Dibuat Oleh</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-line bg-white">
+                        @forelse ($orders as $order)
+                        <tr class="transition hover:bg-primary/5">
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <a href="{{ route('purchase-orders.show', $order) }}" class="font-medium text-primary transition hover:text-primary-dark">
+                                    {{ $order->order_number }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 font-medium text-ink">{{ $order->vendor?->name ?? '-' }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-ink">{{ $order->order_date?->format('d/m/Y') ?? '-' }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-ink">{{ $order->expected_date?->format('d/m/Y') ?? '-' }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-ink">{{ $order->details_count }} item</td>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                @if ($order->status)
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-small font-medium text-primary">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                                    {{ $order->status->label() }}
+                                </span>
+                                @else
+                                <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-muted">{{ $order->creator?->name ?? '-' }}</td>
+
+                            <!-- Aksi (teks, bukan tombol) -->
+                            <td class="whitespace-nowrap px-6 py-4 text-right text-small font-medium">
+                                <a href="{{ route('purchase-orders.show', $order) }}" class="text-primary transition hover:text-primary-dark">Detail</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-muted">
+                                <p class="font-medium text-ink">Belum ada purchase order yang ditemukan.</p>
+                                @if ($hasFilter)
+                                <a href="{{ route('purchase-orders.index') }}" class="mt-1 inline-block text-small font-medium text-primary hover:text-primary-dark">Reset filter</a>
+                                @elseif ($isAdmin)
+                                <a href="{{ route('purchase-orders.create') }}" class="mt-1 inline-block text-small font-medium text-primary hover:text-primary-dark">Buat PO pertama Anda</a>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-        </div>
+            <!-- Pagination -->
+            @if ($orders->hasPages())
+            <div class="border-t border-line bg-primary/5 px-6 py-4">
+                {{ $orders->links() }}
+            </div>
+            @endif
+        </x-card>
+
     </div>
 </x-app-layout>

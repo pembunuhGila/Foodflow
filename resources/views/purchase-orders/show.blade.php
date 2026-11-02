@@ -1,177 +1,167 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Detail Purchase Order') }}
-                </h2>
-                <p class="text-xs text-gray-500 mt-1 font-mono">
-                    {{ $order->order_number }}
+    @php
+    $isAdmin = Auth::user()->isAdmin();
+    @endphp
+
+    {{-- Header: breadcrumb + nomor + status, tombol di kanan --}}
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between print:hidden">
+        <div>
+            <nav class="flex items-center gap-2 text-small font-medium" aria-label="Breadcrumb">
+                <a href="{{ route('purchase-orders.index') }}" class="text-muted transition hover:text-primary">Daftar Purchase Order</a>
+                <svg class="h-3.5 w-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span class="text-primary">Detail Purchase Order</span>
+            </nav>
+
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl font-semibold text-ink">{{ $order->order_number }}</h1>
+                @if ($order->status)
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-small font-medium text-primary">
+                    <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                    {{ $order->status->label() }}
+                </span>
+                @endif
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="{{ route('purchase-orders.index') }}"
+                class="inline-flex items-center gap-2 rounded-input border border-line bg-white px-4 py-2.5 text-label uppercase text-ink transition hover:bg-primary/5">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Daftar
+            </a>
+
+            <button type="button" onclick="window.print()"
+                class="inline-flex items-center gap-2 rounded-input bg-primary px-4 py-2.5 text-label uppercase text-white transition hover:bg-primary-dark">
+                Cetak Surat PO
+            </button>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+
+        @if (session('success'))
+        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary print:hidden" role="status">
+            <x-icon name="check" class="h-5 w-5 shrink-0" />
+            <span>{{ session('success') }}</span>
+        </div>
+        @endif
+
+        @if (session('error'))
+        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text print:hidden" role="alert">
+            {{ session('error') }}
+        </div>
+        @endif
+
+        <!-- Informasi PO -->
+        <x-card class="w-full sm:p-8">
+            <div class="flex flex-col gap-3 border-b border-line pb-4 md:flex-row md:items-center md:justify-between">
+                <p class="text-small text-muted">
+                    Dibuat pada
+                    <span class="font-medium text-ink">{{ $order->created_at?->locale('id')->translatedFormat('d F Y, H:i') ?? '-' }}</span>
                 </p>
+
+                {{-- Ubah status (khusus admin) --}}
+                @if ($isAdmin)
+                <form method="POST" action="{{ route('purchase-orders.update-status', $order) }}"
+                    class="flex items-center gap-3 print:hidden">
+                    @csrf
+                    @method('PATCH')
+                    <label for="po-status" class="text-label uppercase text-muted">Ubah Status</label>
+                    <select id="po-status" name="status" onchange="this.form.submit()"
+                        class="rounded-input border border-line bg-white px-3 py-2 text-body text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                        @foreach (\App\Enums\PurchaseOrderStatus::cases() as $st)
+                        <option value="{{ $st->value }}" {{ $order->status === $st ? 'selected' : '' }}>{{ $st->label() }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                @endif
             </div>
-            <div class="flex items-center space-x-2">
-                <button type="button" onclick="window.print()"
-                        class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm print:hidden">
-                    <svg class="w-4 h-4 me-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    Cetak Surat PO
-                </button>
-                <a href="{{ route('purchase-orders.index') }}"
-                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-widest rounded-lg transition shadow-sm print:hidden">
-                    &larr; Kembali ke Daftar
-                </a>
-            </div>
-        </div>
-    </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            {{-- Flash Message --}}
-            @if (session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg shadow-sm flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    <p class="text-sm text-emerald-800 font-medium">{{ session('success') }}</p>
-                </div>
-            @endif
-
-            {{-- Card Header Info --}}
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                <div class="flex items-start justify-between mb-4">
-                    <h3 class="text-base font-semibold text-gray-900 flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>Informasi Purchase Order</span>
-                    </h3>
-                    <div class="flex items-center space-x-3">
-                        @if ($order->status)
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold border {{ $order->status->badgeClass() }}">
-                                {{ $order->status->label() }}
-                            </span>
-                        @endif
-
-                        @if (Auth::user()->isAdmin())
-                            <form method="POST" action="{{ route('purchase-orders.update-status', $order) }}" class="inline-flex items-center space-x-1.5 print:hidden">
-                                @csrf
-                                @method('PATCH')
-                                <select name="status" class="text-xs rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 py-1 pe-8">
-                                    @foreach (\App\Enums\PurchaseOrderStatus::cases() as $st)
-                                        <option value="{{ $st->value }}" {{ $order->status === $st ? 'selected' : '' }}>
-                                            Ubah ke: {{ $st->label() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <button type="submit" class="px-3 py-1 bg-gray-800 hover:bg-gray-900 text-white text-xs font-semibold rounded-lg transition">
-                                    Simpan
-                                </button>
-                            </form>
-                        @endif
-                    </div>
+            <dl class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Nomor PO</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $order->order_number }}</dd>
                 </div>
 
-                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor PO</dt>
-                        <dd class="mt-1 font-mono font-semibold text-gray-800">{{ $order->order_number }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor / Supplier</dt>
-                        <dd class="mt-1 text-gray-800">{{ $order->vendor?->name ?? '—' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pesan</dt>
-                        <dd class="mt-1 text-gray-800">{{ $order->order_date?->translatedFormat('d F Y') ?? '—' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pengiriman Diharapkan</dt>
-                        <dd class="mt-1 text-gray-800">{{ $order->expected_date?->translatedFormat('d F Y') ?? '—' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat Oleh</dt>
-                        <dd class="mt-1 text-gray-800">{{ $order->creator?->name ?? '—' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat Pada</dt>
-                        <dd class="mt-1 text-gray-600">{{ $order->created_at?->translatedFormat('d F Y, H:i') ?? '—' }}</dd>
-                    </div>
-                    @if ($order->notes)
-                        <div class="sm:col-span-2">
-                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Catatan</dt>
-                            <dd class="mt-1 text-gray-700 bg-gray-50 rounded-lg p-3 text-sm leading-relaxed">{{ $order->notes }}</dd>
-                        </div>
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Vendor / Supplier</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $order->vendor?->name ?? '-' }}</dd>
+                </div>
+
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Tanggal Pesan</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $order->order_date?->locale('id')->translatedFormat('d F Y') ?? '-' }}</dd>
+                </div>
+
+                <div class="rounded-input border border-line bg-primary/5 p-4">
+                    <dt class="text-label uppercase text-muted">Tanggal Pengiriman Diharapkan</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $order->expected_date?->locale('id')->translatedFormat('d F Y') ?? '-' }}</dd>
+                </div>
+
+                <div class="rounded-input border border-line bg-primary/5 p-4 md:col-span-2">
+                    <dt class="text-label uppercase text-muted">Dibuat Oleh</dt>
+                    <dd class="mt-1.5 text-body font-medium text-ink">{{ $order->creator?->name ?? '-' }}</dd>
+                </div>
+
+                @if ($order->notes)
+                <div class="rounded-input border border-line bg-primary/5 p-4 md:col-span-2">
+                    <dt class="text-label uppercase text-muted">Catatan</dt>
+                    <dd class="mt-1.5 whitespace-pre-line text-body font-medium text-ink">{{ $order->notes }}</dd>
+                </div>
+                @endif
+            </dl>
+        </x-card>
+
+        <!-- Rincian bahan baku -->
+        <x-card :padding="false" class="overflow-hidden">
+            <div class="border-b border-line px-6 py-5">
+                <h2 class="text-lg font-semibold text-ink">Rincian Bahan Baku yang Dipesan</h2>
+                <p class="mt-0.5 text-small text-muted">Jumlah, satuan, harga, dan subtotal tiap bahan baku.</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-body">
+                    <thead class="bg-primary/5">
+                        <tr>
+                            <th scope="col" class="w-12 px-6 py-3.5 text-center text-label uppercase text-muted">#</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Bahan Baku</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Jumlah</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Satuan</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Harga / Satuan</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-line bg-white">
+                        @forelse ($order->details as $i => $detail)
+                        <tr class="transition hover:bg-primary/5">
+                            <td class="px-6 py-4 text-center text-small text-muted">{{ $i + 1 }}</td>
+                            <td class="px-6 py-4 font-medium text-ink">{{ $detail->ingredient?->name ?? '-' }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-right text-ink">{{ number_format((float) $detail->quantity, 2, ',', '.') }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-muted">{{ $detail->unit }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-right text-ink">Rp {{ number_format((float) $detail->price, 0, ',', '.') }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-right font-medium text-ink">Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-muted">Tidak ada detail bahan baku dalam PO ini.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                    @if ($order->details->isNotEmpty())
+                    <tfoot class="border-t border-line bg-primary/5">
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-right text-label uppercase text-muted">Grand Total Estimasi</td>
+                            <td class="px-6 py-4 text-right text-lg font-semibold text-primary">Rp {{ number_format($order->grandTotal(), 0, ',', '.') }}</td>
+                        </tr>
+                    </tfoot>
                     @endif
-                </dl>
+                </table>
             </div>
+        </x-card>
 
-            {{-- Card Rincian Bahan --}}
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="p-5 border-b border-gray-100 flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    <h3 class="text-base font-semibold text-gray-900">Rincian Bahan Baku yang Dipesan</h3>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-100">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Bahan Baku</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Jumlah</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Satuan</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Harga/Satuan</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-50">
-                            @forelse ($order->details as $i => $detail)
-                                <tr class="hover:bg-gray-50/70 transition">
-                                    <td class="px-4 py-3 text-sm text-gray-400">{{ $i + 1 }}</td>
-                                    <td class="px-4 py-3 text-sm font-medium text-gray-800">
-                                        {{ $detail->ingredient?->name ?? '—' }}
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">
-                                        {{ number_format((float) $detail->quantity, 2, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-gray-500">
-                                        {{ $detail->unit }}
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">
-                                        Rp {{ number_format((float) $detail->price, 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-sm font-semibold text-blue-700 text-right">
-                                        Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-400">
-                                        Tidak ada detail bahan baku dalam PO ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                        @if ($order->details->isNotEmpty())
-                            <tfoot>
-                                <tr class="bg-blue-50 border-t-2 border-blue-200">
-                                    <td colspan="5" class="px-4 py-3 text-sm font-bold text-blue-800 text-right uppercase tracking-wider">
-                                        Grand Total Estimasi
-                                    </td>
-                                    <td class="px-4 py-3 text-base font-extrabold text-blue-700 text-right">
-                                        Rp {{ number_format($order->grandTotal(), 0, ',', '.') }}
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        @endif
-                    </table>
-                </div>
-            </div>
-
-        </div>
     </div>
 </x-app-layout>
