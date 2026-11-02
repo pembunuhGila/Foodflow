@@ -2,56 +2,56 @@
     @php
     // Peta status -> token warna (sama dengan halaman Daftar Rencana Produksi)
     $statusTone = [
-    'scheduled' => ['bg-info-bg text-info-text', 'bg-info-text', 'Dijadwalkan'],
-    'in_progress' => ['bg-warning-bg text-warning-text', 'bg-warning-text', 'Sedang Dimasak'],
-    'completed' => ['bg-success-bg text-success-text', 'bg-success-text', 'Selesai'],
-    'draft' => ['bg-canvas text-muted', 'bg-muted', 'Draft'],
-    'cancelled' => ['bg-danger-bg text-danger-text', 'bg-danger-text', 'Dibatalkan'],
+        'scheduled'   => ['bg-info-bg text-info-text',       'bg-info-text',    'Dijadwalkan'],
+        'in_progress' => ['bg-warning-bg text-warning-text', 'bg-warning-text', 'Sedang Dimasak'],
+        'completed'   => ['bg-success-bg text-success-text', 'bg-success-text', 'Selesai'],
+        'draft'       => ['bg-canvas text-muted',            'bg-muted',        'Draft'],
+        'cancelled'   => ['bg-danger-bg text-danger-text',   'bg-danger-text',  'Dibatalkan'],
     ];
 
     $metrics = [
-    [
-    'label' => 'Rencana Aktif',
-    'value' => number_format($activePlanCount, 0, ',', '.'),
-    'unit' => null,
-    'caption' => 'Dijadwalkan atau sedang dimasak',
-    'href' => route('production-plans.index'),
-    'icon' => 'clipboard',
-    'valueClass' => 'text-ink',
-    ],
-    [
-    'label' => 'Target Hari Ini',
-    'value' => number_format($todayTarget, 0, ',', '.'),
-    'unit' => 'porsi',
-    'caption' => 'Total target semua rencana hari ini',
-    'href' => route('production-plans.index'),
-    'icon' => 'clock',
-    'valueClass' => 'text-ink',
-    ],
-    [
-    'label' => 'Realisasi Hari Ini',
-    'value' => number_format($todayActual, 0, ',', '.'),
-    'unit' => 'porsi',
-    'caption' => 'Porsi matang yang sudah dicatat',
-    'href' => route('productions.index'),
-    'icon' => 'check',
-    'valueClass' => 'text-primary',
-    ],
-    [
-    'label' => 'Permintaan Bahan',
-    'value' => number_format($pendingMaterials, 0, ',', '.'),
-    'unit' => null,
-    'caption' => 'Menunggu verifikasi serah terima gudang',
-    'href' => route('material-requests.index'),
-    'icon' => 'calendar',
-    'valueClass' => $pendingMaterials > 0 ? 'text-warning-text' : 'text-ink',
-    ],
+        [
+            'label'   => 'Rencana Aktif',
+            'value'   => number_format($activePlanCount, 0, ',', '.'),
+            'unit'    => null,
+            'caption' => 'Dijadwalkan atau sedang dimasak',
+            'href'    => route('production-plans.index'),
+            'icon'    => 'clipboard',
+            'valueClass' => 'text-ink',
+        ],
+        [
+            'label'   => 'Target Hari Ini',
+            'value'   => number_format($todayTarget, 0, ',', '.'),
+            'unit'    => 'porsi',
+            'caption' => 'Total target semua rencana hari ini',
+            'href'    => route('production-plans.index'),
+            'icon'    => 'clock',
+            'valueClass' => 'text-ink',
+        ],
+        [
+            'label'   => 'Realisasi Hari Ini',
+            'value'   => number_format($todayActual, 0, ',', '.'),
+            'unit'    => 'porsi',
+            'caption' => 'Porsi matang yang sudah dicatat',
+            'href'    => route('productions.index'),
+            'icon'    => 'check',
+            'valueClass' => 'text-primary',
+        ],
+        [
+            'label'   => 'Permintaan Bahan',
+            'value'   => number_format($pendingMaterials, 0, ',', '.'),
+            'unit'    => null,
+            'caption' => 'Menunggu verifikasi serah terima gudang',
+            'href'    => route('material-requests.index'),
+            'icon'    => 'calendar',
+            'valueClass' => $pendingMaterials > 0 ? 'text-warning-text' : 'text-ink',
+        ],
     ];
 
     $shortcuts = [
-    ['title' => 'Rencana Produksi', 'text' => 'Atur jadwal, menu, target porsi, dan kebutuhan bahan.', 'href' => route('production-plans.index'), 'icon' => 'clipboard'],
-    ['title' => 'Permintaan Bahan', 'text' => 'Ajukan bahan ke gudang dan pantau status serah terima.', 'href' => route('material-requests.index'), 'icon' => 'calendar'],
-    ['title' => 'Realisasi Masak', 'text' => 'Catat porsi matang aktual dan evaluasi hasil masakan.', 'href' => route('productions.index'), 'icon' => 'check'],
+        ['title' => 'Rencana Produksi', 'text' => 'Atur jadwal, menu, target porsi, dan kebutuhan bahan.',       'href' => route('production-plans.index'),  'icon' => 'clipboard'],
+        ['title' => 'Permintaan Bahan', 'text' => 'Ajukan bahan ke gudang dan pantau status serah terima.',      'href' => route('material-requests.index'), 'icon' => 'calendar'],
+        ['title' => 'Realisasi Masak',  'text' => 'Catat porsi matang aktual dan evaluasi hasil masakan.',       'href' => route('productions.index'),       'icon' => 'check'],
     ];
     @endphp
 
@@ -59,6 +59,11 @@
         :title="'Selamat bekerja, ' . Auth::user()->name"
         subtitle="Pantau rencana masak, capaian porsi, dan kesiapan bahan hari ini.">
         <x-slot name="actions">
+            <div class="hidden items-center gap-2.5 rounded-full border border-line bg-white px-5 py-2.5 sm:inline-flex">
+                <x-icon name="calendar" class="h-4 w-4 text-primary" />
+                <span class="text-label uppercase text-muted">Tanggal operasional</span>
+                <span class="font-display text-body font-semibold text-ink">{{ $today->translatedFormat('d F Y') }}</span>
+            </div>
             <x-button :href="route('production-plans.create')">
                 <x-icon name="plus" class="h-4 w-4" />
                 Buat Rencana
@@ -104,6 +109,7 @@
                     <div class="flex items-center gap-4 text-small text-muted">
                         <span class="inline-flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-primary"></span>Target</span>
                         <span class="inline-flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-success-text"></span>Realisasi</span>
+                        <span class="inline-flex items-center gap-1.5"><span class="w-4 border-t-2 border-dashed border-muted"></span>Rata-rata realisasi</span>
                     </div>
                 </div>
 
@@ -254,53 +260,128 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Warna chart mengikuti token di tailwind.config.js (Chart.js tidak bisa membaca class Tailwind)
             const C = {
                 primary: '#7C5CE0', // primary
                 success: '#15803D', // success-text
-                ink: '#1E1B4B', // ink
-                muted: '#6B7280', // muted
-                line: '#ECE8F7', // line
-                canvas: '#F7F5FD', // canvas
+                ink:     '#1E1B4B', // ink
+                muted:   '#6B7280', // muted
+                line:    '#ECE8F7', // line
+                canvas:  '#F7F5FD', // canvas
             };
 
             Chart.defaults.font.family = 'Inter, ui-sans-serif, system-ui, sans-serif';
             Chart.defaults.color = C.muted;
 
             const weeklyData = @json($weeklyChart);
-            const labels = weeklyData.map(item => item.label + ' (' + item.date + ')');
+            const lastIndex = weeklyData.length - 1; // data terakhir = hari ini
+            const avgActual = weeklyData.length
+                ? weeklyData.reduce((sum, i) => sum + Number(i.actual), 0) / weeklyData.length
+                : 0;
+
+            // Batang dengan gradasi: warna penuh di atas, memudar ke bawah
+            const barGradient = (hex) => (ctx) => {
+                const area = ctx.chart.chartArea;
+                if (!area) return hex;
+                const g = ctx.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+                g.addColorStop(0, hex);
+                g.addColorStop(1, hex + '73');
+                return g;
+            };
+
+            const formatK = (v) => v >= 1000
+                ? (v / 1000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'k'
+                : v.toLocaleString('id-ID');
+
+            // Label sumbu X: nama hari tebal + tanggal; hari ini disorot ungu
+            const dayLabelsPlugin = {
+                id: 'dayLabels',
+                afterDraw(chart) {
+                    const { ctx, chartArea, scales } = chart;
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'alphabetic';
+                    weeklyData.forEach((item, i) => {
+                        const x = scales.x.getPixelForValue(i);
+                        const isToday = i === lastIndex;
+                        ctx.fillStyle = isToday ? C.primary : C.ink;
+                        ctx.font = "700 13px 'Plus Jakarta Sans', Inter, sans-serif";
+                        ctx.fillText(item.label, x, chartArea.bottom + 22);
+                        ctx.fillStyle = isToday ? C.primary : C.muted;
+                        ctx.font = (isToday ? '600 ' : '400 ') + "11px Inter, sans-serif";
+                        ctx.fillText(isToday ? 'Hari Ini' : item.date, x, chartArea.bottom + 39);
+                    });
+                    ctx.restore();
+                }
+            };
 
             const weeklyCtx = document.getElementById('productionWeeklyChart');
             if (weeklyCtx) {
                 new Chart(weeklyCtx, {
                     type: 'bar',
+                    plugins: [dayLabelsPlugin],
                     data: {
-                        labels: labels,
-                        datasets: [{
+                        labels: weeklyData.map(i => i.label),
+                        datasets: [
+                            {
+                                type: 'line',
+                                label: 'Tren Realisasi',
+                                data: weeklyData.map(i => i.actual),
+                                borderColor: C.success,
+                                borderWidth: 2.5,
+                                cubicInterpolationMode: 'monotone',
+                                pointRadius: 0,
+                                pointHoverRadius: 0,
+                                fill: true,
+                                backgroundColor: C.primary + '14',
+                                order: 0
+                            },
+                            {
+                                type: 'line',
+                                label: 'Rata-rata Realisasi',
+                                data: weeklyData.map(() => avgActual),
+                                borderColor: C.muted,
+                                borderWidth: 1,
+                                borderDash: [6, 4],
+                                pointRadius: 0,
+                                pointHoverRadius: 0,
+                                fill: false,
+                                order: 0
+                            },
+                            {
                                 label: 'Target Porsi',
                                 data: weeklyData.map(i => i.target),
-                                backgroundColor: C.primary,
-                                borderRadius: 6,
-                                maxBarThickness: 20
+                                backgroundColor: barGradient(C.primary),
+                                borderRadius: { topLeft: 6, topRight: 6 },
+                                borderSkipped: false,
+                                barPercentage: 0.9,
+                                categoryPercentage: 0.6,
+                                maxBarThickness: 16,
+                                order: 1
                             },
                             {
                                 label: 'Realisasi Porsi',
                                 data: weeklyData.map(i => i.actual),
-                                backgroundColor: C.success,
-                                borderRadius: 6,
-                                maxBarThickness: 20
+                                backgroundColor: barGradient(C.success),
+                                borderRadius: { topLeft: 6, topRight: 6 },
+                                borderSkipped: false,
+                                barPercentage: 0.9,
+                                categoryPercentage: 0.6,
+                                maxBarThickness: 16,
+                                order: 1
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: { padding: { bottom: 48 } },
+                        interaction: { mode: 'index', intersect: false },
                         plugins: {
-                            legend: {
-                                display: false
-                            },
+                            legend: { display: false },
                             tooltip: {
+                                filter: item => item.dataset.type !== 'line',
                                 backgroundColor: C.ink,
                                 padding: 10,
                                 cornerRadius: 12,
@@ -311,27 +392,18 @@
                         },
                         scales: {
                             x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 11
-                                    }
-                                }
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: { display: false }
                             },
                             y: {
-                                border: {
-                                    display: false
-                                },
-                                grid: {
-                                    color: C.line
-                                },
+                                beginAtZero: true,
+                                border: { display: false },
+                                grid: { color: C.line },
                                 ticks: {
-                                    font: {
-                                        size: 11
-                                    },
-                                    precision: 0
+                                    font: { size: 11 },
+                                    precision: 0,
+                                    callback: v => formatK(v)
                                 }
                             }
                         }
@@ -356,14 +428,7 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         cutout: '75%',
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: false
-                            }
-                        }
+                        plugins: { legend: { display: false }, tooltip: { enabled: false } }
                     }
                 });
             }
