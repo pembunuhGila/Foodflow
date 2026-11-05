@@ -87,6 +87,12 @@
                     </tbody>
                 </table>
             </div>
+
+            @if ($products->hasPages())
+            <div class="border-t border-line bg-primary/5 px-6 py-4">
+                {{ $products->links() }}
+            </div>
+            @endif
         </x-card>
     </div>
 </x-app-layout>

@@ -8,17 +8,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @page {
+            size: A4 portrait;
+            margin: 12mm 15mm 15mm 15mm;
+        }
+
         @media print {
-            .no-print { display: none !important; }
-            body { font-size: 12px; color: #000; background: #fff !important; }
-            .page-break { page-break-after: always; }
-            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                font-size: 11px;
+                color: #000;
+                background: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-container {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            tr {
+                page-break-inside: avoid;
+            }
+
+            .avoid-break {
+                page-break-inside: avoid;
+            }
+
+            .page-break {
+                page-break-after: always;
+            }
         }
     </style>
 </head>
 <body class="min-h-screen bg-canvas p-6 font-sans text-ink">
 
-    <div class="mx-auto max-w-4xl rounded-card bg-white p-8 shadow-card print:rounded-none print:p-0 print:shadow-none">
+    <div class="print-container mx-auto max-w-4xl rounded-card bg-white p-8 shadow-card print:rounded-none print:p-0 print:shadow-none">
 
         {{-- Bilah atas (tidak ikut tercetak) --}}
         <div class="no-print mb-6 flex items-center justify-between border-b border-line pb-4">
@@ -100,7 +142,7 @@
         </div>
 
         {{-- KOLOM TANDA TANGAN --}}
-        <div class="mt-8 grid grid-cols-2 gap-8 border-t border-line pt-6 text-center text-small">
+        <div class="avoid-break mt-8 grid grid-cols-2 gap-8 border-t border-line pt-6 text-center text-small">
             <div>
                 <p class="text-muted">Penanggung Jawab Gudang &amp; Logistik,</p>
                 <div class="h-20"></div>

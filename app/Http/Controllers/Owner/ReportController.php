@@ -18,17 +18,20 @@ class ReportController extends Controller
      */
     public function nutrition(Request $request): View
     {
+        $baseQuery = Product::query()->active();
+
+        $averageCalories = round((float) ($baseQuery->avg('calories') ?? 0), 1);
+        $averageProtein = round((float) ($baseQuery->avg('protein') ?? 0), 1);
+        $averageFat = round((float) ($baseQuery->avg('fat') ?? 0), 1);
+        $averageCarbs = round((float) ($baseQuery->avg('carbohydrates') ?? 0), 1);
+        $averageFiber = round((float) ($baseQuery->avg('dietary_fiber') ?? 0), 1);
+
         $products = Product::query()
             ->active()
             ->withCount('recipeItems')
             ->orderBy('name')
-            ->get();
-
-        $averageCalories = round($products->avg('calories') ?? 0, 1);
-        $averageProtein = round($products->avg('protein') ?? 0, 1);
-        $averageFat = round($products->avg('fat') ?? 0, 1);
-        $averageCarbs = round($products->avg('carbohydrates') ?? 0, 1);
-        $averageFiber = round($products->avg('dietary_fiber') ?? 0, 1);
+            ->paginate(10)
+            ->withQueryString();
 
         return view('owner.nutrition.index', [
             'products' => $products,

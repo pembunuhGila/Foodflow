@@ -55,5 +55,15 @@ class DatabaseSeeder extends Seeder
                 $account
             );
         }
+
+        // Panggil seluruh seeder master data dan operasional
+        $this->call([
+            CustomerSeeder::class,
+            SupplierSeeder::class,
+            IngredientSeeder::class,
+            ProductSeeder::class,
+            ProductionPlanSeeder::class,
+            IngredientStockTransactionSeeder::class,
+        ]);
     }
 }
