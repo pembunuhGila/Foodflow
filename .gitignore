@@ -28,3 +28,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+__pycache__/
+*.pyc
+.pytest_cache/
+test-results/
+FoodFlow_E2E_Testing_Package/
