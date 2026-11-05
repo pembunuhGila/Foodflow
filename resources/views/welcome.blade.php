@@ -23,10 +23,10 @@
             background: linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #0C2461 100%);
         }
         .card-hover {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.22s cubic-bezier(.4,0,.2,1), box-shadow 0.22s cubic-bezier(.4,0,.2,1);
         }
         .card-hover:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px);
             box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.14);
         }
         .nav-scrolled {
@@ -40,6 +40,83 @@
         .feature-grid-bg {
             background: radial-gradient(ellipse at top left, #EFF6FF 0%, #F8FAFC 60%);
         }
+
+        /* ── Scroll-reveal ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.55s cubic-bezier(.4,0,.2,1), transform 0.55s cubic-bezier(.4,0,.2,1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* stagger children inside a reveal-group */
+        .reveal-group > * { opacity: 0; transform: translateY(24px); transition: opacity 0.5s cubic-bezier(.4,0,.2,1), transform 0.5s cubic-bezier(.4,0,.2,1); }
+        .reveal-group.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay: 0.05s; }
+        .reveal-group.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay: 0.13s; }
+        .reveal-group.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay: 0.21s; }
+        .reveal-group.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay: 0.29s; }
+        .reveal-group.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay: 0.37s; }
+        .reveal-group.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay: 0.45s; }
+
+        /* ── Hero entrance ── */
+        @keyframes heroFadeUp {
+            from { opacity: 0; transform: translateY(32px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .hero-badge  { animation: heroFadeUp 0.6s cubic-bezier(.4,0,.2,1) 0.1s both; }
+        .hero-h1     { animation: heroFadeUp 0.65s cubic-bezier(.4,0,.2,1) 0.22s both; }
+        .hero-p      { animation: heroFadeUp 0.65s cubic-bezier(.4,0,.2,1) 0.34s both; }
+        .hero-cta    { animation: heroFadeUp 0.65s cubic-bezier(.4,0,.2,1) 0.44s both; }
+        .hero-stats  { animation: heroFadeUp 0.65s cubic-bezier(.4,0,.2,1) 0.54s both; }
+
+        /* ── Dashboard card float ── */
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-8px); }
+        }
+        .dashboard-float { animation: floatCard 5s ease-in-out infinite; }
+
+        /* ── Floating badge slide-in ── */
+        @keyframes badgeSlideIn {
+            from { opacity: 0; transform: translate(-12px, 12px) scale(0.92); }
+            to   { opacity: 1; transform: translate(0, 0) scale(1); }
+        }
+        .floating-badge { animation: badgeSlideIn 0.65s cubic-bezier(.4,0,.2,1) 0.75s both; }
+
+        /* ── Progress bar grow ── */
+        @keyframes growBar {
+            from { width: 0%; }
+            to   { width: 68%; }
+        }
+        .progress-bar { animation: growBar 1.4s cubic-bezier(.4,0,.2,1) 0.6s both; }
+
+        /* ── Stat counter pulse ── */
+        @keyframes statPop {
+            0%   { transform: scale(0.8); opacity: 0; }
+            70%  { transform: scale(1.06); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .stat-pop { opacity: 0; }
+        .stat-pop.visible { animation: statPop 0.55s cubic-bezier(.4,0,.2,1) forwards; }
+        .stat-pop.visible:nth-child(1) { animation-delay: 0.05s; }
+        .stat-pop.visible:nth-child(2) { animation-delay: 0.15s; }
+        .stat-pop.visible:nth-child(3) { animation-delay: 0.25s; }
+        .stat-pop.visible:nth-child(4) { animation-delay: 0.35s; }
+
+        /* ── Orb blobs drift ── */
+        @keyframes driftA {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50%       { transform: translate(30px, -20px) scale(1.08); }
+        }
+        @keyframes driftB {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50%       { transform: translate(-20px, 15px) scale(1.05); }
+        }
+        .orb-a { animation: driftA 12s ease-in-out infinite; }
+        .orb-b { animation: driftB 10s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-white text-slate-800 font-sans antialiased">
@@ -134,8 +211,8 @@
     {{-- ===== HERO ===== --}}
     <section id="beranda" class="hero-gradient min-h-[90vh] flex items-center relative overflow-hidden">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-300/20 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 -left-24 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl"></div>
+            <div class="orb-a absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-300/20 rounded-full blur-3xl"></div>
+            <div class="orb-b absolute bottom-0 -left-24 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl"></div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full relative z-10">
@@ -143,24 +220,24 @@
 
                 {{-- Left --}}
                 <div>
-                    <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-6 border border-blue-200">
+                    <div class="hero-badge inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-6 border border-blue-200">
                         <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                         Sistem ERP Terintegrasi untuk SPPG MBG
                     </div>
 
-                    <h1 class="font-display font-bold text-4xl sm:text-5xl text-slate-900 leading-[1.1] mb-5">
+                    <h1 class="hero-h1 font-display font-bold text-4xl sm:text-5xl text-slate-900 leading-[1.1] mb-5">
                         Satu Platform.<br>
                         <span class="text-blue-700">Kelola Semua</span><br>
                         Operasional Dapur.
                     </h1>
 
-                    <p class="text-slate-600 text-lg leading-relaxed mb-8 max-w-lg">
+                    <p class="hero-p text-slate-600 text-lg leading-relaxed mb-8 max-w-lg">
                         FoodFlow adalah sistem ERP khusus untuk Sentra Pengolahan Pangan Bergizi (SPPG) —
                         menggantikan spreadsheet dan catatan manual dengan platform digital yang real-time,
                         akurat, dan mudah digunakan oleh seluruh tim dapur.
                     </p>
 
-                    <div class="flex flex-wrap gap-3 mb-8">
+                    <div class="hero-cta flex flex-wrap gap-3 mb-8">
                         @if(Route::has('login'))
                         <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-colors shadow-lg shadow-blue-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
@@ -173,7 +250,7 @@
                         </a>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-5 pt-5 border-t border-slate-200/60">
+                    <div class="hero-stats flex flex-wrap items-center gap-5 pt-5 border-t border-slate-200/60">
                         @foreach([
                             ['4', 'Role Pengguna'],
                             ['18+', 'Modul Fitur'],
@@ -189,7 +266,7 @@
                 </div>
 
                 {{-- Right: Dashboard preview --}}
-                <div class="relative">
+                <div class="relative dashboard-float">
                     <div class="bg-white rounded-2xl shadow-2xl shadow-blue-100/60 border border-slate-100 overflow-hidden">
                         <div class="bg-slate-100 px-4 py-2.5 flex items-center gap-2 border-b border-slate-200">
                             <div class="flex gap-1.5">
@@ -222,7 +299,7 @@
                                     <span class="font-semibold text-blue-700">847 / 1.250 porsi</span>
                                 </div>
                                 <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-2 bg-blue-600 rounded-full" style="width: 68%"></div>
+                                    <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 68%"></div>
                                 </div>
                                 <div class="text-xs text-slate-400 mt-1.5">67.8% — estimasi selesai pkl. 12.30 WIB</div>
                             </div>
@@ -243,7 +320,7 @@
                     </div>
 
                     {{-- Floating badge --}}
-                    <div class="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-xl border border-slate-100 p-3 flex items-center gap-3 w-52">
+                    <div class="floating-badge absolute -bottom-5 -left-5 bg-white rounded-xl shadow-xl border border-slate-100 p-3 flex items-center gap-3 w-52">
                         <div class="w-9 h-9 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
@@ -260,7 +337,7 @@
     {{-- ===== ERP VALUE PROPOSITION ===== --}}
     <section id="erp" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-14">
+            <div class="text-center mb-14 reveal">
                 <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-4 border border-indigo-200">
                     Mengapa FoodFlow?
                 </div>
@@ -274,7 +351,7 @@
             </div>
 
             {{-- Before / After comparison --}}
-            <div class="grid lg:grid-cols-2 gap-6 mb-16">
+            <div class="grid lg:grid-cols-2 gap-6 mb-16 reveal-group">
                 {{-- Before --}}
                 <div class="bg-red-50 border border-red-100 rounded-2xl p-6 sm:p-8">
                     <div class="flex items-center gap-3 mb-6">
@@ -330,7 +407,7 @@
             <div class="mb-4">
                 <p class="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6">4 Peran Pengguna Terintegrasi</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 reveal-group">
                 @foreach([
                     ['⚙️', 'Admin / Operasional', 'bg-blue-50 border-blue-100', 'text-blue-700', [
                         'Manajemen pengguna & hak akses',
@@ -381,7 +458,7 @@
     {{-- ===== MODUL SISTEM ===== --}}
     <section id="modul" class="py-20 feature-grid-bg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-14">
+            <div class="text-center mb-14 reveal">
                 <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-4 border border-blue-200">
                     Modul Sistem
                 </div>
@@ -392,7 +469,7 @@
                 </p>
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 reveal-group">
                 @foreach([
                     [
                         'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01',
@@ -453,7 +530,7 @@
             </div>
 
             {{-- Security highlight --}}
-            <div class="mt-10 bg-slate-900 rounded-2xl p-6 sm:p-8">
+            <div class="mt-10 bg-slate-900 rounded-2xl p-6 sm:p-8 reveal">
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach([
                         ['M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'Login Aman', 'Password hashed bcrypt + rate limiting 5x/menit per IP'],
@@ -479,7 +556,7 @@
     {{-- ===== PROFIL DAPUR ===== --}}
     <section id="profil" class="dark-section py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
+            <div class="text-center mb-12 reveal">
                 <div class="inline-flex items-center gap-2 bg-blue-900/50 text-blue-200 text-xs font-semibold rounded-full px-4 py-1.5 mb-4 border border-blue-700/50">
                     Profil & Statistik Dapur
                 </div>
@@ -489,14 +566,14 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-10">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-10 stat-container">
                 @foreach([
                     ['M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z', '1.250+', 'Porsi / Hari', 'Rata-rata harian', 'bg-blue-900/50 text-blue-400'],
                     ['M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', '12', 'Sekolah', 'Kota Malang', 'bg-green-900/50 text-green-400'],
                     ['M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', '98.4%', 'Suhu Layak', 'Standar ≥60°C (BPOM)', 'bg-orange-900/50 text-orange-400'],
                     ['M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', '4', 'Peran Aktif', 'Admin, Gudang, Produksi, Owner', 'bg-purple-900/50 text-purple-400'],
                 ] as [$icon, $val, $label, $sub, $iconStyle])
-                <div class="bg-slate-800/60 border border-slate-700/40 rounded-2xl p-5 card-hover text-center backdrop-blur-sm">
+                <div class="bg-slate-800/60 border border-slate-700/40 rounded-2xl p-5 card-hover text-center backdrop-blur-sm stat-pop">
                     <div class="w-11 h-11 {{ $iconStyle }} rounded-xl flex items-center justify-center mx-auto mb-4">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $icon }}"/></svg>
                     </div>
@@ -507,7 +584,7 @@
                 @endforeach
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 reveal-group">
                 @foreach([
                     ['Nama Dapur',         'SPPG Dapur MBG Malang 01',                     'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
                     ['Wilayah Kerja',      'Kota Malang, Jawa Timur (Kode: MLG-01)',        'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
@@ -533,7 +610,7 @@
     {{-- ===== MENU HARIAN ===== --}}
     <section id="menu" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
+            <div class="text-center mb-12 reveal">
                 <div class="inline-flex items-center gap-2 bg-green-50 text-green-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-4 border border-green-200">
                     Menu Harian
                 </div>
@@ -545,7 +622,7 @@
             </div>
 
             {{-- 5 kelompok pangan --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-12 reveal-group">
                 @foreach([
                     ['🌾', 'Karbohidrat',    'Nasi, Jagung, Kentang',    '±250 kkal'],
                     ['🍗', 'Protein Hewani', 'Ayam, Telur, Ikan, Daging','±120 kkal'],
@@ -563,7 +640,7 @@
             </div>
 
             {{-- Sample menu cards --}}
-            <div class="grid sm:grid-cols-3 gap-5">
+            <div class="grid sm:grid-cols-3 gap-5 reveal-group">
                 @foreach([
                     ['Senin',   'Paket A', '🍱', '530 kkal', ['Nasi putih (200g)', 'Ayam goreng bumbu (80g)', 'Tumis bayam wortel (100g)', 'Jeruk segar (100g)', 'Susu UHT plain (200ml)'], 'bg-blue-50 border-blue-100', 'bg-blue-100 text-blue-700', 'text-blue-500'],
                     ['Selasa',  'Paket B', '🫕', '545 kkal', ['Nasi putih (200g)', 'Telur semur (1 butir)', 'Tempe goreng (60g)', 'Sayur bening bayam (150g)', 'Pepaya potong (100g)'],    'bg-green-50 border-green-100', 'bg-green-100 text-green-700', 'text-green-500'],
@@ -601,7 +678,7 @@
     {{-- ===== PORTAL / CTA ===== --}}
     <section class="portal-gradient py-20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="inline-flex items-center gap-2 bg-white/10 text-blue-200 text-xs font-semibold rounded-full px-4 py-1.5 mb-6 border border-white/20">
+            <div class="inline-flex items-center gap-2 bg-white/10 text-blue-200 text-xs font-semibold rounded-full px-4 py-1.5 mb-6 border border-white/20 reveal">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 Portal Petugas FoodFlow
             </div>
@@ -612,7 +689,7 @@
                 Tersedia akses Google SSO untuk kemudahan login petugas SPPG MBG.
             </p>
 
-            <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 sm:p-8 max-w-md mx-auto">
+            <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 sm:p-8 max-w-md mx-auto reveal">
                 <div class="grid grid-cols-2 gap-3 mb-6">
                     @foreach([['⚙️','Admin / Operasional'],['📦','Staff Gudang'],['👨‍🍳','Staff Produksi'],['📊','Manager / Owner']] as [$e,$r])
                     <div class="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2">
@@ -726,5 +803,32 @@
         </div>
     </footer>
 
+    <script>
+        // ── Scroll-reveal (reveal & reveal-group) ──────────────────────────
+        (function () {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('visible');
+                        io.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+
+            document.querySelectorAll('.reveal, .reveal-group').forEach(el => io.observe(el));
+
+            // ── Stat-pop (profil KPI cards) ──────────────────────────────
+            const statIo = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.querySelectorAll('.stat-pop').forEach(card => card.classList.add('visible'));
+                        statIo.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('.stat-container').forEach(el => statIo.observe(el));
+        })();
+    </script>
 </body>
 </html>
