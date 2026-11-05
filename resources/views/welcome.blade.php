@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" x-data="{ mobileMenuOpen: false, activeSection: 'beranda' }" x-cloak>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="SPPG Dapur MBG Kalideres 01 — Sentra Pengolahan Pangan Bergizi untuk program Makan Bergizi Gratis (MBG) di wilayah Kalideres, Jakarta Barat.">
-    <title>SPPG Dapur MBG Kalideres 01 — Transparansi Program MBG</title>
+    <meta name="description" content="SPPG Dapur MBG Malang 01 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Sentra Pengolahan Pangan Bergizi untuk program Makan Bergizi Gratis (MBG) di Kota Malang, Jawa Timur. Menyediakan makanan bergizi setiap hari untuk pelajar di Kota Malang.">
+    <title>SPPG Dapur MBG Malang 01 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Transparansi Program MBG</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,19 +96,19 @@
                 </span>
                 <span class="inline-flex items-center gap-1.5 bg-white border border-blue-100 text-slate-600 rounded-full px-3 py-0.5">
                     <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                    Wilayah Kalideres, Jakarta Barat
+                    Kota Malang, Jawa Timur
                 </span>
             </div>
             {{-- Right: shift + hotline --}}
             <div class="flex items-center gap-4 text-slate-500">
                 <span class="flex items-center gap-1.5">
                     <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span class="text-slate-400">Shift:</span> <span class="text-slate-700 font-medium">03.00 – 15.00 WIB</span>
+                    <span class="text-slate-400">Shift:</span> <span class="text-slate-700 font-medium">03.00 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ 15.00 WIB</span>
                 </span>
-                <span class="text-slate-300 hidden sm:inline">•</span>
+                <span class="text-slate-300 hidden sm:inline">ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢</span>
                 <span class="flex items-center gap-1.5 hidden sm:flex">
                     <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                    <span class="text-slate-400">Hotline:</span> <span class="text-slate-700 font-medium">(021) 543-9821</span>
+                    <span class="text-slate-400">Hotline:</span> <span class="text-slate-700 font-medium">(0341) 491-234</span>
                 </span>
             </div>
         </div>
@@ -131,7 +131,7 @@
                     </div>
                     <div class="leading-tight">
                         <div class="font-display font-bold text-slate-900 text-base tracking-tight">SPPG Dapur MBG</div>
-                        <div class="text-xs text-slate-500 font-medium">Kalideres 01 — BGN</div>
+                        <div class="text-xs text-slate-500 font-medium">Malang 01 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â BGN</div>
                     </div>
                 </a>
 
@@ -228,7 +228,7 @@
                     {{-- Badge --}}
                     <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-6 border border-blue-200">
                         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        Program Makan Bergizi Gratis (MBG) — BGN RI
+                        Program Makan Bergizi Gratis (MBG) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â BGN RI
                     </div>
 
                     <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-5xl text-slate-900 leading-tight mb-6">
@@ -238,9 +238,10 @@
                     </h1>
 
                     <p class="text-slate-600 text-base sm:text-lg leading-relaxed mb-8 max-w-lg">
-                        Sentra Pengolahan Pangan Bergizi Dapur MBG Kalideres 01 memastikan
+                        Sentra Pengolahan Pangan Bergizi Dapur MBG Malang 01 hadir untuk memastikan
                         <strong class="text-slate-800">1.250+ porsi makanan bergizi</strong> tersalurkan setiap hari
-                        ke 12 sekolah di wilayah Kalideres, Jakarta Barat — dengan standar gizi, kebersihan, dan transparansi tertinggi.
+                        ke 12 sekolah di Kota Malang ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â dengan standar gizi, kebersihan, dan transparansi
+                        yang dapat dipertanggungjawabkan kepada seluruh masyarakat.
                     </p>
 
                     <div class="flex flex-wrap gap-3">
@@ -273,7 +274,7 @@
                                 <div class="w-3 h-3 bg-green-400 rounded-full"></div>
                             </div>
                             <div class="flex-1 bg-white rounded-md px-3 py-1 text-xs text-slate-400 mx-4">
-                                foodflow.sppg-kalideres.go.id/dashboard
+                                foodflow.sppg-malang.go.id/dashboard
                             </div>
                         </div>
                         {{-- Dashboard content preview --}}
@@ -290,16 +291,16 @@
                                 <div class="bg-white rounded-xl p-3 border border-slate-100">
                                     <div class="text-xs text-slate-500 mb-1">Sekolah Terlayani</div>
                                     <div class="text-xl font-bold text-green-700">12</div>
-                                    <div class="text-xs text-slate-400 mt-1">Kalideres & sekitarnya</div>
+                                    <div class="text-xs text-slate-400 mt-1">Kota Malang</div>
                                 </div>
                                 <div class="bg-white rounded-xl p-3 border border-slate-100">
-                                    <div class="text-xs text-slate-500 mb-1">Suhu Layak (≥60°C)</div>
+                                    <div class="text-xs text-slate-500 mb-1">Suhu Layak (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥60Ãƒâ€šÃ‚Â°C)</div>
                                     <div class="text-xl font-bold text-orange-600">98.4%</div>
-                                    <div class="text-xs text-orange-500 mt-1">Standar BPOM ✓</div>
+                                    <div class="text-xs text-orange-500 mt-1">Standar BPOM ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</div>
                                 </div>
                                 <div class="bg-white rounded-xl p-3 border border-slate-100">
                                     <div class="text-xs text-slate-500 mb-1">Food Waste</div>
-                                    <div class="text-xl font-bold text-emerald-700">↓12%</div>
+                                    <div class="text-xl font-bold text-emerald-700">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“12%</div>
                                     <div class="text-xs text-emerald-600 mt-1">vs target bulanan</div>
                                 </div>
                             </div>
@@ -312,7 +313,7 @@
                                 <div class="h-2 bg-slate-100 rounded-full">
                                     <div class="h-2 bg-blue-600 rounded-full" style="width: 68%"></div>
                                 </div>
-                                <div class="text-xs text-slate-400 mt-1.5">67.8% — estimasi selesai pkl. 12.30 WIB</div>
+                                <div class="text-xs text-slate-400 mt-1.5">67.8% ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â estimasi selesai pkl. 12.30 WIB</div>
                             </div>
                         </div>
                     </div>
@@ -323,8 +324,8 @@
                             <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div>
-                            <div class="text-xs font-semibold text-slate-800">SDN Kalideres 01</div>
-                            <div class="text-xs text-green-600">Terkirim • 10.15 WIB</div>
+                            <div class="text-xs font-semibold text-slate-800">SDN Merjosari 01</div>
+                            <div class="text-xs text-green-600">Terkirim ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ 10.15 WIB</div>
                         </div>
                     </div>
                 </div>
@@ -344,7 +345,7 @@
                     Angka yang Berbicara
                 </h2>
                 <p class="text-slate-400 text-base max-w-xl mx-auto">
-                    Data capaian nyata Dapur MBG Kalideres 01 yang kami perbarui setiap hari secara transparan.
+                    Data capaian nyata Dapur MBG Malang 01 yang kami perbarui setiap hari secara transparan.
                 </p>
             </div>
 
@@ -362,19 +363,19 @@
                         'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
                         'value' => '12',
                         'label' => 'Sekolah',
-                        'sub' => 'Wilayah Kalideres',
+                        'sub' => 'Kota Malang',
                         'color' => 'green',
                     ],
                     [
                         'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
                         'value' => '98.4%',
                         'label' => 'Suhu Layak',
-                        'sub' => 'Standar ≥60°C (BPOM)',
+                        'sub' => 'Standar ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥60Ãƒâ€šÃ‚Â°C (BPOM)',
                         'color' => 'orange',
                     ],
                     [
                         'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
-                        'value' => '↓12%',
+                        'value' => 'ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“12%',
                         'label' => 'Food Waste',
                         'sub' => 'vs target bulanan',
                         'color' => 'emerald',
@@ -404,10 +405,10 @@
             {{-- Profile Info Row --}}
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach([
-                    ['label' => 'Nama Dapur', 'value' => 'SPPG Dapur MBG Kalideres 01', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
-                    ['label' => 'Wilayah Kerja', 'value' => 'Kalideres, Jakarta Barat (Kode: JKT-WB-01)', 'icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
+                    ['label' => 'Nama Dapur', 'value' => 'SPPG Dapur MBG Malang 01', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                    ['label' => 'Wilayah Kerja', 'value' => 'Kota Malang, Jawa Timur (Kode: MLG-01)', 'icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
                     ['label' => 'Kapasitas Produksi', 'value' => '1.500 porsi / hari (maks)', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
-                    ['label' => 'Jam Operasional', 'value' => 'Senin – Jumat, 03.00 – 15.00 WIB', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ['label' => 'Jam Operasional', 'value' => 'Senin ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Jumat, 03.00 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ 15.00 WIB', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
                     ['label' => 'Sertifikasi', 'value' => 'Laik Higiene Sanitasi No. 503/SGS/2024', 'icon' => 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'],
                     ['label' => 'Pengelola', 'value' => 'PT Sentra Dapur Mandiri (Mitra BGN)', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
                 ] as $info)
@@ -440,7 +441,7 @@
                     5 Kelompok Pangan Seimbang
                 </h2>
                 <p class="text-slate-500 text-base max-w-xl mx-auto">
-                    Setiap porsi MBG memenuhi pedoman gizi seimbang Kemenkes RI — mengandung karbohidrat,
+                    Setiap porsi MBG memenuhi pedoman gizi seimbang Kemenkes RI ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â mengandung karbohidrat,
                     protein, serat sayur, buah, dan kalsium yang terukur secara klinis.
                 </p>
             </div>
@@ -448,11 +449,11 @@
             {{-- Food Groups --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-14">
                 @foreach([
-                    ['icon' => '🌾', 'label' => 'Karbohidrat',    'example' => 'Nasi putih, Jagung, Kentang',       'kcal' => '±250 kkal'],
-                    ['icon' => '🍗', 'label' => 'Protein Hewani', 'example' => 'Ayam, Telur, Ikan, Daging sapi',   'kcal' => '±120 kkal'],
-                    ['icon' => '🥦', 'label' => 'Serat Sayur',    'example' => 'Bayam, Wortel, Buncis, Kangkung',  'kcal' => '±30 kkal'],
-                    ['icon' => '🍊', 'label' => 'Buah-buahan',    'example' => 'Jeruk, Pepaya, Pisang, Semangka',  'kcal' => '±50 kkal'],
-                    ['icon' => '🥛', 'label' => 'Kalsium',        'example' => 'Susu UHT, Tahu sutra, Tempe',      'kcal' => '±80 kkal'],
+                    ['icon' => 'ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â¾', 'label' => 'Karbohidrat',    'example' => 'Nasi putih, Jagung, Kentang',       'kcal' => 'Ãƒâ€šÃ‚Â±250 kkal'],
+                    ['icon' => 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â‚¬â€', 'label' => 'Protein Hewani', 'example' => 'Ayam, Telur, Ikan, Daging sapi',   'kcal' => 'Ãƒâ€šÃ‚Â±120 kkal'],
+                    ['icon' => 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã‚Â¦', 'label' => 'Serat Sayur',    'example' => 'Bayam, Wortel, Buncis, Kangkung',  'kcal' => 'Ãƒâ€šÃ‚Â±30 kkal'],
+                    ['icon' => 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ…Â ', 'label' => 'Buah-buahan',    'example' => 'Jeruk, Pepaya, Pisang, Semangka',  'kcal' => 'Ãƒâ€šÃ‚Â±50 kkal'],
+                    ['icon' => 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã¢â‚¬Âº', 'label' => 'Kalsium',        'example' => 'Susu UHT, Tahu sutra, Tempe',      'kcal' => 'Ãƒâ€šÃ‚Â±80 kkal'],
                 ] as $group)
                 <div class="food-icon-bg rounded-2xl p-5 text-center card-hover border border-blue-50">
                     <div class="text-4xl mb-3">{{ $group['icon'] }}</div>
@@ -471,7 +472,7 @@
                     [
                         'day' => 'Senin',
                         'date' => 'Paket A',
-                        'icon' => '🍱',
+                        'icon' => 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â±',
                         'kcal' => '530 kkal',
                         'items' => [
                             'Nasi putih (200g)',
@@ -485,7 +486,7 @@
                     [
                         'day' => 'Selasa',
                         'date' => 'Paket B',
-                        'icon' => '🫕',
+                        'icon' => 'ÃƒÂ°Ã…Â¸Ã‚Â«Ã¢â‚¬Â¢',
                         'kcal' => '545 kkal',
                         'items' => [
                             'Nasi putih (200g)',
@@ -499,7 +500,7 @@
                     [
                         'day' => 'Rabu',
                         'date' => 'Paket C',
-                        'icon' => '🍲',
+                        'icon' => 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â²',
                         'kcal' => '560 kkal',
                         'items' => [
                             'Nasi putih (200g)',
@@ -559,7 +560,7 @@
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         @foreach([
-                            ['value' => '↓12%', 'label' => 'Food Waste vs Target',    'sub' => 'Oktober 2026'],
+                            ['value' => 'ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“12%', 'label' => 'Food Waste vs Target',    'sub' => 'Oktober 2026'],
                             ['value' => '97%',   'label' => 'Tingkat Konsumsi',         'sub' => 'Rata-rata bulanan'],
                             ['value' => '8x',    'label' => 'Audit Internal/Bulan',     'sub' => 'Setiap Senin & Kamis'],
                             ['value' => '100%',  'label' => 'Daur Ulang Sisa',          'sub' => 'Ke mitra kompos'],
@@ -589,8 +590,8 @@
                     12 Sekolah, 1 Misi
                 </h2>
                 <p class="text-slate-500 text-base max-w-xl mx-auto">
-                    Jangkauan distribusi Dapur MBG Kalideres 01 mencakup 12 satuan pendidikan
-                    dari tingkat SD hingga SMP di wilayah Kalideres dan sekitarnya.
+                    Jangkauan distribusi Dapur MBG Malang 01 mencakup 12 satuan pendidikan
+                    dari tingkat SD hingga SMP di wilayah Lowokwaru dan sekitarnya, Kota Malang.
                 </p>
             </div>
 
@@ -600,18 +601,18 @@
                     <div class="map-placeholder rounded-2xl overflow-hidden h-80 sm:h-96 lg:h-full min-h-80 relative border border-blue-100">
                         {{-- Embedded map or placeholder --}}
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15867.5!2d106.7!3d-6.14!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a0e3c4c0c0c0c%3A0x0!2sKalideres%2C+Jakarta+Barat!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31671.8!2d112.6141!3d-7.9666!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd629aef0e1c931%3A0x81615e2c9ef54c24!2sLowokwaru%2C+Kota+Malang%2C+Jawa+Timur!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid"
                             class="w-full h-full border-0"
                             style="filter: hue-rotate(200deg) saturate(0.8) brightness(1.05);"
                             allowfullscreen=""
                             loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"
-                            title="Peta distribusi Dapur MBG Kalideres"
+                            title="Peta distribusi Dapur MBG Malang"
                         ></iframe>
                         {{-- Map overlay badge --}}
                         <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-sm border border-slate-100">
-                            <div class="text-xs font-semibold text-slate-700">🗺️ Kalideres, Jakarta Barat</div>
-                            <div class="text-xs text-slate-500">Radius distribusi ±5 km</div>
+                            <div class="text-xs font-semibold text-slate-700">ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã‚ÂºÃƒÂ¯Ã‚Â¸Ã‚Â Kota Malang, Jawa Timur</div>
+                            <div class="text-xs text-slate-500">Radius distribusi Ãƒâ€šÃ‚Â±5 km</div>
                         </div>
                     </div>
                 </div>
@@ -625,24 +626,24 @@
                         </div>
                         <div class="divide-y divide-slate-50 overflow-y-auto max-h-96 lg:max-h-none">
                             @foreach([
-                                ['no' => 1,  'name' => 'SDN Kalideres 01',       'kelurahan' => 'Kalideres',     'siswa' => 142, 'status' => 'aktif'],
-                                ['no' => 2,  'name' => 'SDN Kalideres 02',       'kelurahan' => 'Kalideres',     'siswa' => 118, 'status' => 'aktif'],
-                                ['no' => 3,  'name' => 'SDN Kalideres 03',       'kelurahan' => 'Kalideres',     'siswa' => 95,  'status' => 'aktif'],
-                                ['no' => 4,  'name' => 'SDN Pegadungan 01',      'kelurahan' => 'Pegadungan',    'siswa' => 130, 'status' => 'aktif'],
-                                ['no' => 5,  'name' => 'SDN Pegadungan 02',      'kelurahan' => 'Pegadungan',    'siswa' => 108, 'status' => 'aktif'],
-                                ['no' => 6,  'name' => 'SDN Semanan 01',         'kelurahan' => 'Semanan',       'siswa' => 97,  'status' => 'aktif'],
-                                ['no' => 7,  'name' => 'SDN Tegal Alur 01',      'kelurahan' => 'Tegal Alur',    'siswa' => 115, 'status' => 'aktif'],
-                                ['no' => 8,  'name' => 'SDN Tegal Alur 02',      'kelurahan' => 'Tegal Alur',    'siswa' => 103, 'status' => 'aktif'],
-                                ['no' => 9,  'name' => 'MIN 23 Jakarta Barat',   'kelurahan' => 'Kalideres',     'siswa' => 86,  'status' => 'aktif'],
-                                ['no' => 10, 'name' => 'SMPN 165 Jakarta',       'kelurahan' => 'Kalideres',     'siswa' => 134, 'status' => 'aktif'],
-                                ['no' => 11, 'name' => 'MTs Al-Hikmah Kalideres','kelurahan' => 'Pegadungan',    'siswa' => 72,  'status' => 'aktif'],
-                                ['no' => 12, 'name' => 'SDN Duri Kosambi 01',    'kelurahan' => 'Duri Kosambi',  'siswa' => 50,  'status' => 'persiapan'],
+                                ['no' => 1,  'name' => 'SDN Merjosari 01',       'kelurahan' => 'Merjosari',      'siswa' => 138, 'status' => 'aktif'],
+                                ['no' => 2,  'name' => 'SDN Merjosari 02',       'kelurahan' => 'Merjosari',      'siswa' => 122, 'status' => 'aktif'],
+                                ['no' => 3,  'name' => 'SDN Dinoyo 01',          'kelurahan' => 'Dinoyo',         'siswa' => 105, 'status' => 'aktif'],
+                                ['no' => 4,  'name' => 'SDN Dinoyo 02',          'kelurahan' => 'Dinoyo',         'siswa' => 97,  'status' => 'aktif'],
+                                ['no' => 5,  'name' => 'SDN Sumbersari 01',      'kelurahan' => 'Sumbersari',     'siswa' => 143, 'status' => 'aktif'],
+                                ['no' => 6,  'name' => 'SDN Sumbersari 02',      'kelurahan' => 'Sumbersari',     'siswa' => 118, 'status' => 'aktif'],
+                                ['no' => 7,  'name' => 'SDN Ketawanggede 01',    'kelurahan' => 'Ketawanggede',   'siswa' => 101, 'status' => 'aktif'],
+                                ['no' => 8,  'name' => 'SDN Lowokwaru 01',       'kelurahan' => 'Lowokwaru',      'siswa' => 126, 'status' => 'aktif'],
+                                ['no' => 9,  'name' => 'MIN 1 Kota Malang',      'kelurahan' => 'Merjosari',      'siswa' => 89,  'status' => 'aktif'],
+                                ['no' => 10, 'name' => 'SMPN 10 Malang',         'kelurahan' => 'Lowokwaru',      'siswa' => 134, 'status' => 'aktif'],
+                                ['no' => 11, 'name' => 'MTs Surya Buana Malang', 'kelurahan' => 'Lowokwaru',      'siswa' => 77,  'status' => 'aktif'],
+                                ['no' => 12, 'name' => 'SDN Tlogomas 01',        'kelurahan' => 'Tlogomas',       'siswa' => 50,  'status' => 'persiapan'],
                             ] as $school)
                             <div class="px-5 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors">
                                 <span class="text-xs text-slate-400 font-mono w-5 flex-shrink-0">{{ sprintf('%02d', $school['no']) }}</span>
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-medium text-slate-800 truncate">{{ $school['name'] }}</div>
-                                    <div class="text-xs text-slate-500">Kel. {{ $school['kelurahan'] }} • {{ $school['siswa'] }} siswa</div>
+                                    <div class="text-xs text-slate-500">Kel. {{ $school['kelurahan'] }} ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ {{ $school['siswa'] }} siswa</div>
                                 </div>
                                 <span class="flex-shrink-0 inline-flex items-center gap-1 text-xs rounded-full px-2 py-0.5 font-medium {{ $school['status'] === 'aktif' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $school['status'] === 'aktif' ? 'bg-green-500' : 'bg-amber-500' }}"></span>
@@ -695,12 +696,12 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1.5">Nama Sekolah</label>
                             <select name="sekolah" class="w-full rounded-xl border-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500 py-2.5 px-3.5">
-                                <option value="">— Pilih Sekolah —</option>
+                                <option value="">ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Pilih Sekolah ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â</option>
                                 @foreach([
-                                    'SDN Kalideres 01','SDN Kalideres 02','SDN Kalideres 03',
-                                    'SDN Pegadungan 01','SDN Pegadungan 02','SDN Semanan 01',
-                                    'SDN Tegal Alur 01','SDN Tegal Alur 02','MIN 23 Jakarta Barat',
-                                    'SMPN 165 Jakarta','MTs Al-Hikmah Kalideres','SDN Duri Kosambi 01',
+                                    'SDN Merjosari 01','SDN Merjosari 02','SDN Dinoyo 01',
+                                    'SDN Dinoyo 02','SDN Sumbersari 01','SDN Sumbersari 02',
+                                    'SDN Ketawanggede 01','SDN Lowokwaru 01','MIN 1 Kota Malang',
+                                    'SMPN 10 Malang','MTs Surya Buana Malang','SDN Tlogomas 01',
                                 ] as $sch)
                                 <option value="{{ $sch }}">{{ $sch }}</option>
                                 @endforeach
@@ -712,10 +713,10 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1.5">Jenis Laporan</label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             @foreach([
-                                ['value' => 'kualitas', 'label' => '🍽️ Kualitas Makanan'],
-                                ['value' => 'ketepatan','label' => '🕐 Ketepatan Waktu'],
-                                ['value' => 'kebersihan','label'=> '🧹 Kebersihan'],
-                                ['value' => 'apresiasi','label' => '👍 Apresiasi'],
+                                ['value' => 'kualitas', 'label' => 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â½ÃƒÂ¯Ã‚Â¸Ã‚Â Kualitas Makanan'],
+                                ['value' => 'ketepatan','label' => 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¢Ã‚Â Ketepatan Waktu'],
+                                ['value' => 'kebersihan','label'=> 'ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â¹ Kebersihan'],
+                                ['value' => 'apresiasi','label' => 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â Apresiasi'],
                             ] as $type)
                             <label class="flex items-center justify-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-xs font-medium text-slate-700 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700">
                                 <input type="radio" name="jenis_laporan" value="{{ $type['value'] }}" class="sr-only">
@@ -772,10 +773,10 @@
             <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 sm:p-8 max-w-md mx-auto">
                 <div class="grid grid-cols-2 gap-3 mb-6">
                     @foreach([
-                        ['role' => 'Admin / Operasional', 'icon' => '⚙️'],
-                        ['role' => 'Staff Gudang',         'icon' => '📦'],
-                        ['role' => 'Staff Produksi',       'icon' => '👨‍🍳'],
-                        ['role' => 'Manager / Owner',      'icon' => '📊'],
+                        ['role' => 'Admin / Operasional', 'icon' => 'ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â'],
+                        ['role' => 'Staff Gudang',         'icon' => 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦'],
+                        ['role' => 'Staff Produksi',       'icon' => 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¨ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â³'],
+                        ['role' => 'Manager / Owner',      'icon' => 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â '],
                     ] as $r)
                     <div class="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2 text-sm text-white">
                         <span>{{ $r['icon'] }}</span>
@@ -811,7 +812,7 @@
                 @endif
 
                 <p class="text-blue-300 text-xs text-center mt-4">
-                    Akun tidak aktif? Hubungi Admin melalui hotline <span class="font-semibold">(021) 543-9821</span>
+                    Akun tidak aktif? Hubungi Admin melalui hotline <span class="font-semibold">(0341) 491-234</span>
                 </p>
             </div>
         </div>
@@ -832,7 +833,7 @@
                         </div>
                         <div>
                             <div class="font-display font-bold text-white text-sm">SPPG Dapur MBG</div>
-                            <div class="text-xs text-slate-500">Kalideres 01 — BGN RI</div>
+                            <div class="text-xs text-slate-500">Malang 01 — BGN RI</div>
                         </div>
                     </div>
                     <p class="text-slate-500 text-xs leading-relaxed mb-4">
@@ -873,9 +874,9 @@
                     <h4 class="font-semibold text-slate-300 text-sm mb-4">Kontak</h4>
                     <ul class="space-y-3">
                         @foreach([
-                            ['icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', 'text' => 'Jl. Kalideres Raya No. 12, Jakarta Barat 11840'],
-                            ['icon' => 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z', 'text' => '(021) 543-9821 (Hotline Pengaduan)'],
-                            ['icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'text' => 'info@dapur-mbg-kalideres.id'],
+                            ['icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', 'text' => 'Jl. Soekarno-Hatta No. 9, Kota Malang 65141'],
+                            ['icon' => 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z', 'text' => '(0341) 491-234 (Hotline Pengaduan)'],
+                            ['icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'text' => 'info@dapur-mbg-malang.id'],
                         ] as $contact)
                         <li class="flex items-start gap-2.5">
                             <svg class="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -893,10 +894,10 @@
                     <ul class="space-y-2.5">
                         @foreach([
                             'Laik Higiene Sanitasi (Dinkes DKI)',
-                            'HACCP — Hazard Analysis Critical Control Point',
+                            'HACCP ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Hazard Analysis Critical Control Point',
                             'Pedoman Gizi Seimbang Kemenkes RI',
                             'SNI 01-3747 (Pangan Siap Saji)',
-                            'Panduan MBG — Badan Gizi Nasional',
+                            'Panduan MBG ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Badan Gizi Nasional',
                             'UU PDP (Perlindungan Data Pribadi)',
                         ] as $std)
                         <li class="flex items-start gap-2 text-xs text-slate-500">
@@ -911,13 +912,13 @@
             {{-- Footer bottom --}}
             <div class="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p class="text-slate-600 text-xs">
-                    &copy; {{ date('Y') }} SPPG Dapur MBG Kalideres 01 — PT Sentra Dapur Mandiri. Mitra resmi Badan Gizi Nasional (BGN) RI.
+                    &copy; {{ date('Y') }} SPPG Dapur MBG Malang 01 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â PT Sentra Dapur Mandiri. Mitra resmi Badan Gizi Nasional (BGN) RI.
                 </p>
                 <div class="flex items-center gap-4 text-xs text-slate-600">
                     <a href="#" class="hover:text-slate-400 transition-colors">Kebijakan Privasi</a>
-                    <span class="text-slate-700">•</span>
+                    <span class="text-slate-700">ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢</span>
                     <a href="#" class="hover:text-slate-400 transition-colors">Syarat & Ketentuan</a>
-                    <span class="text-slate-700">•</span>
+                    <span class="text-slate-700">ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢</span>
                     <span>Powered by <strong class="text-slate-500">FoodFlow</strong></span>
                 </div>
             </div>
@@ -926,3 +927,7 @@
 
 </body>
 </html>
+
+
+
+
