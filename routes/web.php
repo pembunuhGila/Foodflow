@@ -11,6 +11,7 @@ use App\Http\Controllers\Owner\ProductionMonitoringController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionDashboardController;
+use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionRealizationController;
 use App\Http\Controllers\ProductRecipeController;
@@ -18,7 +19,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\StockCardController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Models\Ingredient;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -27,8 +27,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('dashboard')
-        : redirect()->route('login');
-});
+        : view('welcome');
+})->name('welcome');
 
 // Redirect generic dashboard ke dashboard sesuai role
 Route::get('/dashboard', function (Request $request) {
