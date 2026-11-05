@@ -3,7 +3,6 @@
 .env
 .env.*
 !.env.example
-/docs
 .phpactor.json
 .phpunit.result.cache
 /.codex
@@ -28,6 +27,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+~$*.docx
+~$*.xlsx
 __pycache__/
 *.pyc
 .pytest_cache/

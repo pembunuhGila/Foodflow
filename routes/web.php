@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DemoRoleSwitcherController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MaterialReceiptController;
 use App\Http\Controllers\MaterialRequestController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Owner\ProductionMonitoringController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionDashboardController;
+use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionRealizationController;
 use App\Http\Controllers\ProductRecipeController;
@@ -18,7 +20,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\StockCardController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\ProductionMaterialUsageController;
 use App\Models\Ingredient;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -412,5 +413,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Fitur Pengganti Peran Instan untuk Presentasi & Live Demo (FR-Demo)
+Route::match(['get', 'post'], '/demo/switch-role/{role}', [DemoRoleSwitcherController::class, 'switchRole'])
+    ->name('demo.switch-role');
 
 require __DIR__.'/auth.php';
