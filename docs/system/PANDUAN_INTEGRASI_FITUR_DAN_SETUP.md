@@ -17,6 +17,7 @@
 5. [Rincian Arsitektur Modul Bisnis ERP](#-5-rincian-arsitektur-modul-bisnis-erp)
 6. [Panduan Instalasi & Setup Step-by-Step dari Nol](#-6-panduan-instalasi--setup-step-by-step-dari-nol)
 7. [Panduan Skenario Demo & Sidang Presentasi](#-7-panduan-skenario-demo--sidang-presentasi)
+8. [Kronologi Lengkap Perjalanan Pengembangan Sistem (End-to-End Development Journey)](#-8-kronologi-lengkap-perjalanan-pengembangan-sistem-end-to-end-development-journey)
 
 ---
 
@@ -358,6 +359,147 @@ Untuk mempermudah demonstrasi di hadapan dosen penguji tanpa membuang waktu bola
    - Tunjukkan metrik porsi harian, kepatuhan gizi, dan alert bahan kritis.
    - Buka menu **Pusat Cetak Laporan Eksekutif** (`/owner/reports`).
    - Klik tombol **Cetak Laporan Inventaris / Produksi** $\rightarrow$ Dialog print browser akan membuka dokumen dalam tata letak rapi **A4 Portrait**, header tabel berulang, dan widget demo switcher otomatis tersembunyi berkat class `print:hidden`.
+
+---
+
+## 📜 8. Kronologi Lengkap Perjalanan Pengembangan Sistem (End-to-End Development Journey)
+
+Bagian ini mendokumentasikan seluruh tahapan rekayasa perangkat lunak FoodFlow secara kronologis: dari tahap konsepsi awal, perancangan arsitektur, implementasi modul 4 divisi, penjaminan mutu otomatis, peluncuran halaman publik, inovasi tanda tangan digital kanvas, hingga deployment cloud production di AWS EC2.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                      PETA KRONOLOGIS PENGEMBANGAN SISTEM FOODFLOW                      │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Inisiasi & Desain Sistem      │ PRD, UseCaseSPEC, Batasan Ruang Lingkup, Postgres   │
+│ 2. Fondasi Keamanan & Auth       │ Breeze, 4 Peran RBAC, Admin Approval, Google SSO    │
+│ 3. Master Data & Siklus Order    │ Pelanggan, Bahan Baku, Menu Gizi, Resep, Order Form │
+│ 4. Perencanaan Dapur & Gizi      │ Min Stok, Jadwal Masak, Ingredient Calculator       │
+│ 5. Pengadaan & Mutasi Stok IN    │ PO Supplier, Penerimaan Bahan, Cek Fisik, Stok IN   │
+│ 6. Operasional Masak & Stok OUT  │ Verifikasi Bahan Dapur, Catat Porsi, Bahan Riil     │
+│ 7. Eksekutif & Laporan Cetak     │ Live Dashboard KPI, Evaluasi Gizi, Cetak A4 Portrait│
+│ 8. Quality Assurance & Testing   │ 289+ PHPUnit Tests, Pint, 1-Click Role Switcher Demo│
+│ 9. Public Landing Page           │ Rebranding ERP Katering Sentral, Animasi, Auth Link │
+│ 10. Digital Signature (Canvas)   │ HTML5 Canvas Signature Pad, Ttd Otomatis, Print CSS │
+│ 11. Cloud AWS EC2 Deployment     │ Ubuntu 24.04, Nginx, Let's Encrypt SSL, DuckDNS     │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 🗓️ Rincian Perjalanan Lengkap Per Fase:
+
+#### 🔹 Fase 1: Inisiasi Proyek, Analisis Kebutuhan, & Arsitektur Inti
+- **Latar Belakang:** Proyek dirancang untuk mengatasi inefisiensi pencatatan manual di Sentra Pengolahan Pangan Bergizi (SPPG) Dapur MBG Kalideres 01 yang kemudian disesuaikan dengan kebutuhan SPPG Dapur MBG Malang 01 serta industri katering sentral.
+- **Analisis Kebutuhan:** Membedah dokumen `docs/PRD.md` dan `docs/UseCaseSPEC.md` untuk memetakan aktor dan use case fungsional.
+- **Penetapan Batasan Ketat (*In-Scope vs Out-of-Scope*):**
+  - Pemeriksaan bahan baku tiba dibatasi pada status fisik praktis (`Baik`, `Rusak`, `Kedaluwarsa`, `Tidak Sesuai`), bukan uji laboratorium sains.
+  - Saldo stok bahan baku tidak boleh diedit manual secara bebas, melainkan wajib dihitung murni dari agregasi transaksi mutasi stok: $\text{Stok Akhir} = \text{Total IN} - \text{Total OUT} \pm \text{ADJUSTMENT}$.
+- **Pemilihan Stack Teknologi:** Memilih arsitektur Monolith Server-Side Rendering (Laravel 12 + PHP 8.4) dengan Tailwind CSS, Alpine.js, dan basis data PostgreSQL Supabase Cloud demi menjamin integritas transaksi (ACID) dan performa tinggi pada perangkat kasir/dapur berspesifikasi standar.
+
+#### 🔹 Fase 2: Fondasi Autentikasi Multi-Role, Keamanan, & Akun Staf
+- **Scaffolding:** Mengintegrasikan Laravel Breeze stack Blade dengan session-cookie HTTP-only.
+- **Course-Grained RBAC:** Mendefinisikan 4 peran utama melalui Backed Enum `UserRole` (`admin`, `gudang`, `produksi`, `owner`) dan mengamankan rute melalui middleware `EnsureUserHasRole`.
+- **Manajemen Akun:** Membangun modul Kelola Pengguna (`UserManagement`), alur reset sandi internal yang memerlukan otorisasi fisik admin (`PasswordResetRequest`), dan modal konfirmasi logout interaktif.
+- **Otentikasi Modern:** Menambahkan fitur Single Sign-On (SSO) Google OAuth 2.0 via Laravel Socialite (`feat/socialite-auth` / PR #40) sehingga staf dapat login sekali klik menggunakan akun Google institusi.
+
+#### 🔹 Fase 3: Master Data & Manajemen Siklus Pesanan Pelanggan (Admin)
+- **Master Data Inti:** Membangun CRUD Master Bahan Baku (`ingredients`), Master Supplier/Pemasok (`vendors`), dan Master Pelanggan Katering (`customers`).
+- **Master Menu & Komposisi Resep:** Membangun modul Menu Makanan (`products`) lengkap dengan validasi ambang batas Angka Kecukupan Gizi (AKG) serta pembangun resep dinamis (`Recipe Builder`) yang memetakan takaran bahan per porsi.
+- **Siklus Transaksi Pesanan:** Membangun formulir pembuatan pesanan katering (`catering_orders`) yang mendukung multi-item dinamis menggunakan Alpine.js repeater, kalkulasi total biaya seketika di browser, pemfilteran status pesanan (Pending $\rightarrow$ Confirmed $\rightarrow$ Processing $\rightarrow$ Completed $\rightarrow$ Cancelled), serta cetak invoice.
+
+#### 🔹 Fase 4: Perencanaan Dapur, Penjadwalan Masak, & Agregasi Bahan (Produksi & Gizi)
+- **Kontrol Ambang Batas Stok:** Menambahkan field `minimum_stock` dan indikator alert peringatan stok menipis pada gudang (`feat/ingredients-min-stock`).
+- **Jadwal Rencana Produksi:** Membangun modul penjadwalan masak harian (`production_plans`) yang mengelompokkan pesanan sekolah dan target porsi makan siang.
+- **Domain Service Mesin Hitung Bahan:** Mengembangkan kelas layanan `ProductionIngredientCalculator` untuk menghitung kebutuhan total gramasi bahan mentah secara otomatis dari target ribuan porsi yang direncanakan.
+- **Permintaan Bahan Dapur:** Membangun formulir pengajuan kebutuhan bahan mentah dari dapur ke gudang (`material_requests`).
+
+#### 🔹 Fase 5: Rantai Pasok Pengadaan PO, Penerimaan Fisik, & Mutasi Stok Masuk (Gudang)
+- **Pengadaan Bahan:** Membangun modul Purchase Order ke supplier (`purchase_orders`) untuk mencegah kekosongan stok bahan sebelum jadwal masak dimulai.
+- **Penerimaan Fisik & Pemeriksaan Barang:** Membangun form penerimaan barang tiba (`material_receipts`), di mana staf gudang memeriksa kesesuaian fisik dan memilih status kelayakan barang.
+- **Otomatisasi Stok Masuk (IN):** Sesuai aturan bisnis BR-04, hanya bahan yang berstatus `Baik` yang otomatis menambah stok gudang melalui mutasi transaksi `IN`.
+- **Kartu Mutasi Stok & Stock Opname:** Membangun riwayat kartu stok (`stock_cards`) dan modul penyesuaian fisik (`ADJUSTMENT`) dengan proteksi `DB::transaction()` dan pesimistic lock (`lockForUpdate`) untuk menghindari race condition.
+
+#### 🔹 Fase 6: Operasional Masak Riil, Mutasi Keluar OUT, & Pencatatan Porsi Matang (Dapur)
+- **Pengeluaran Bahan Dapur:** Verifikasi pengeluaran bahan baku oleh petugas gudang yang otomatis membukukan transaksi mutasi Stok Keluar (`OUT`).
+- **Pencatatan Realisasi Produksi:** Staf dapur mencatat hasil masak riil porsi makanan yang matang dan siap distribusikan (`production_realizations`), serta menandai rencana produksi selesai.
+- **Pemakaian Bahan Aktual:** Mencatat penggunaan bahan baku riil di lapangan vs takaran estimasi resep untuk mendeteksi deviasi/efisiensi masak dapur.
+
+#### 🔹 Fase 7: Dashboard Live Monitoring Owner, Evaluasi Gizi, & Laporan Cetak A4 Portrait
+- **Dashboard Eksekutif Owner:** Menyajikan ringkasan metrik performa operasional: capaian porsi masakan harian, status bahan kritis gudang, dan tingkat pemenuhan pesanan pelanggan.
+- **Evaluasi Kepatuhan Gizi:** Visualisasi persentase kecukupan gizi makanan sehat (kalori, protein, lemak, karbohidrat) terhadap standar katering/MBG.
+- **Pusat Cetak Laporan Eksekutif:** Membangun halaman cetak laporan resmi untuk Laporan Jadwal Produksi dan Laporan Mutasi Persediaan Gudang.
+- **Standarisasi Cetak A4 Portrait Modern:** Menyelesaikan kendala pemotongan tabel pada printer dengan mengimplementasikan CSS `@page { size: A4 portrait; margin: 12mm 15mm; }`, pengulangan header tabel otomatis (`thead { display: table-header-group; }`), pencegahan pemotongan tanda tangan (`page-break-inside: avoid;`), dan penyembunyian kontrol navigasi (`.no-print`).
+
+#### 🔹 Fase 8: Quality Assurance, Automated Testing, & Tooling Sidang
+- **Pengujian Otomatis Komprehensif:** Mengembangkan test suite PHPUnit dengan 289+ skenario uji otomatis (*feature tests & unit tests*) mencakup otorisasi RBAC, integritas transaksi stok, kalkulasi gizi, dan boundary validation.
+- **Standarisasi Gaya Kode:** Memastikan seluruh kode PHP mematuhi PSR-12 menggunakan Laravel Pint (`vendor/bin/pint --format agent`).
+- **1-Click Demo Role Switcher:** Menciptakan bilah navigasi demo instan (di header dan floating button) yang memungkinkan presenter sidang berganti identitas pengguna (Admin $\leftrightarrow$ Gudang $\leftrightarrow$ Produksi $\leftrightarrow$ Owner) dalam waktu kurang dari 1 detik tanpa perlu logout/login manual.
+- **Massive Database Seeder:** Menyusun seeder realistis dengan 200 data siswa, 22 resep menu bergizi, 16 jadwal produksi, dan puluhan riwayat mutasi stok.
+
+#### 🔹 Fase 9: Pembuatan & Redesign Public Landing Page
+- **Halaman Muka Publik:** Merancang halaman landing page modern (`welcome.blade.php`) agar publik dan calon mitra katering dapat melihat profil layanan, keunggulan gizi, dan transparansi dapur.
+- **Reorganisasi Routing:** Memastikan rute `/` mengarah langsung ke landing page publik tanpa dipaksa redirect ke halaman login, serta menambahkan tombol navigasi *"Kembali ke Beranda"* pada halaman login.
+- **Rebranding Fokus ERP Katering Sentral:** Menyesuaikan narasi dari sebelumnya yang terlalu kaku di program MBG menjadi **Sistem ERP Manajemen Bisnis Katering & Dapur Sentral Terintegrasi**.
+- **Pembersihan Elemen & Harmonisasi Visual:** Menghapus floating badge stok melayang, menyelaraskan palet warna brand ke tema Royal Violet (`#7C5CE0`) & deep ink (`#0F0E26`/`#18153A`), mendesain ulang footer, serta menambahkan efek animasi interaktif (glow orbs, card hover, progress bar).
+- **Branch Fitur:** Dipisahkan secara rapi ke branch `feat/landing-erp-revamp`.
+
+#### 🔹 Fase 10: Inovasi Tanda Tangan Digital Interaktif pada Dokumen Laporan
+- **Kebutuhan Bisnis:** Laporan eksekutif persediaan dan produksi memerlukan tanda tangan digital resmi penanggung jawab dapur, logistik, dan direktur operasional sebelum dicetak atau diekspor ke PDF.
+- **Komponen Modal Kanvas HTML5:** Membangun `components/report-signature-modal.blade.php` dengan canvas interaktif touch/mouse berskala High-DPI (Retina 2x).
+- **Fitur Coretan Tangan & ⚡ Ttd Otomatis:** Pengguna dapat menggambar tanda tangan langsung atau memilih fitur tanda tangan otomatis yang estetik.
+- **Stempel Waktu Digital Resmi:** Menempelkan verifikasi waktu otomatis berstandar Indonesia (contoh: `Ditandatangani digital • 06 Nov 2026 10:48 WIB`).
+- **Penyimpanan Lokal (Persistence):** Menyimpan data URL tanda tangan di `localStorage` per penanda tangan sehingga tidak hilang saat halaman di-refresh.
+- **Integrasi Print CSS:** Pada tampilan layar, kontrol interaktif ditampilkan; saat dialog print aktif, tombol-tombol pembantu disembunyikan dan hanya tanda tangan bersih beserta stempel verifikasi yang tercetak di kertas A4.
+- **Branch Fitur:** Dipisahkan secara rapi ke branch `feat/report-digital-signature`.
+
+#### 🔹 Fase 11: Deployment Cloud AWS EC2, Let's Encrypt SSL HTTPS, & Nginx Reverse Proxy
+- **Infrastruktur Cloud:** Mengonfigurasi Virtual Machine AWS EC2 berorientasi produksi dengan sistem operasi Ubuntu 24.04 LTS (IP Publik: `15.135.75.37`).
+- **Domain Publik & SSL Gratis:** Mengintegrasikan domain publik gratis `https://foodflow-app.duckdns.org` dengan sertifikat SSL/TLS resmi Let's Encrypt via Certbot.
+- **Nginx Reverse Proxy:** Mengonfigurasi Nginx dengan port 80 HTTP yang otomatis dialihkan (*301 Permanent Redirect*) ke port 443 HTTPS demi menjamin keamanan data end-to-end.
+- **Koneksi Database Cloud:** Menghubungkan aplikasi ke basis data PostgreSQL Supabase Cloud dengan koneksi terenkripsi SSL (`DB_SSLMODE=require`).
+- **Automated Deployment Pipeline:** Menyiapkan alur deployment satu perintah yang melakukan sinkronisasi Git, build aset Vite produksi, penyesuaian hak akses direktori storage/cache, optimasi route/config Laravel, dan graceful reload PHP 8.4-FPM.
+
+---
+
+### 🌳 Ringkasan Silsilah Pull Request (PR) & Branch Resmi
+
+| PR / Branch | Tipe | Modul / Fitur yang Dikerjakan | Status |
+| :--- | :---: | :--- | :---: |
+| `feat/auth-multi-role` | PR | Fondasi Autentikasi Multi-Role & Middleware Enum RBAC | Merged ✅ |
+| `feat/user-management` | PR | CRUD Kelola Pengguna & Penugasan Divisi Staf | Merged ✅ |
+| `feat/password-reset-admin-approval` | PR | Alur Permintaan Reset Sandi Verifikasi Fisik Admin | Merged ✅ |
+| `feat/logout-confirmation` | PR | Modal Konfirmasi Sesi Keluar Pengguna | Merged ✅ |
+| `feat/ingredients-migration-model` | PR | Skema Migrasi & Model Eloquent Bahan Baku | Merged ✅ |
+| `feat/ingredients-crud` | PR | CRUD Master Bahan Baku Mentah Gudang | Merged ✅ |
+| `feat/suppliers-crud` | PR | CRUD Master Pemasok / Rekanan Vendor | Merged ✅ |
+| `feat/customers-crud` (PR #8) | PR | CRUD Master Pelanggan Katering & Sekolah | Merged ✅ |
+| `feat/products-crud` (PR #9) | PR | Master Menu Hidangan Sehat & Standar Gizi AKG | Merged ✅ |
+| `feat/product-recipe-builder` (PR #10) | PR | Pembangun Resep Komposisi Bahan Menu Dinamis | Merged ✅ |
+| `feat/production-plan-create` (PR #11) | PR | Form Pembuatan Rencana Jadwal Masak Dapur | Merged ✅ |
+| `feat/orders-migration-model` (PR #12) | PR | Skema Migrasi & Model Pesanan Pelanggan | Merged ✅ |
+| `feat/ingredients-min-stock` (PR #14) | PR | Kontrol Ambang Batas Minimum Stok & Badge Alert | Merged ✅ |
+| `feat/orders-create-form` (PR #15) | PR | Formulir Pembuatan Pesanan Katering Multi-Item | Merged ✅ |
+| `feat/orders-list-status` (PR #16) | PR | Tabel Daftar & Filter Status Pesanan Katering | Merged ✅ |
+| `feat/orders-detail-view` (PR #17) | PR | Tampilan Rincian Pesanan & Pembatalan Order | Merged ✅ |
+| `feat/production-ingredient-calculator` (PR #18) | PR | Mesin Kalkulasi Otomatis Kebutuhan Bahan Dapur | Merged ✅ |
+| `feat/purchase-orders-create` (PR #19) | PR | Form Pembuatan Purchase Order Pengadaan Bahan | Merged ✅ |
+| `feat/material-requests-verify-stock-out` (PR #23) | PR | Verifikasi Permintaan Bahan & Transaksi Stok Keluar | Merged ✅ |
+| `feat/production-realization-record` (PR #24) | PR | Pencatatan Realisasi Hasil Masak Porsi Matang | Merged ✅ |
+| `feat/production-plan-list` (PR #25) | PR | Tampilan Monitoring Jadwal Masak Dapur | Merged ✅ |
+| `feat/material-requests-create` (PR #26) | PR | Form Permintaan Bahan Mentah Dapur ke Gudang | Merged ✅ |
+| `feat/purchase-orders-list` | PR | Monitoring Daftar Purchase Order ke Supplier | Merged ✅ |
+| `feat/material-receipts-form` | PR | Penerimaan Bahan Supplier & Pemeriksaan Fisik | Merged ✅ |
+| `feat/production-material-usage` | PR | Pencatatan Penggunaan Bahan Baku Riil Saat Masak | Merged ✅ |
+| `feat/stock-cards-adjustment` | PR | Kartu Mutasi Stok Bahan & Form Penyesuaian Fisik | Merged ✅ |
+| `feat/owner-production-monitoring` | PR | Dashboard Live Monitoring Produksi untuk Owner | Merged ✅ |
+| `feat/owner-nutrition-monitoring-reports` | PR | Monitoring Evaluasi Gizi & Pusat Cetak Laporan PDF | Merged ✅ |
+| `testing` (PR #39) | PR | Penyelarasan Automated Test Suite PHPUnit | Merged ✅ |
+| `feat/socialite-auth` (PR #40) | PR | Single Sign-On (SSO) Google OAuth 2.0 | Merged ✅ |
+| `feat/report-portrait-pagination` (PR #41) | PR | Standarisasi Format Cetak Laporan A4 Portrait | Merged ✅ |
+| `feat/demo-role-switcher` (PR #42) | PR | 1-Click Role Switcher Demo untuk Sidang/Presentasi | Merged ✅ |
+| `feat/landing-page` (PR #43) | PR | Pembuatan Halaman Depan Publik (Landing Page) | Merged ✅ |
+| `feat/landing-routing-and-login-back` (PR #44) | PR | Rute Publik Bersih & Tombol Kembali di Login | Merged ✅ |
+| `docs/materi-integrasi-dan-setup` (PR #45) | PR | Dokumentasi Komprehensif Integrasi Kurikulum Bab 1-9 | Merged ✅ |
+| `feat/landing-erp-revamp` | Branch | Rebranding ERP Katering, Animasi, & Harmonisasi Visual | Aktif & Pushed ✅ |
+| `feat/report-digital-signature` | Branch | Kanvas Tanda Tangan Digital Interaktif Laporan | Aktif & Pushed ✅ |
 
 ---
 
