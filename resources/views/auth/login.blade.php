@@ -1,4 +1,11 @@
 <x-guest-layout>
+    <x-slot name="back">
+        <a href="{{ route('welcome') }}" class="inline-flex items-center gap-2 text-muted hover:text-primary transition-colors">
+            <x-icon name="arrow-left" class="h-4 w-4" />
+            Kembali ke Beranda
+        </a>
+    </x-slot>
+
     <x-slot name="intro">
         <h1 class="text-h1 text-ink">Selamat datang!</h1>
         <p class="mt-1 text-body text-muted">Masukkan kredensial Anda untuk mengakses dashboard dapur produksi.</p>
@@ -85,5 +92,13 @@
             </svg>
             Masuk dengan Akun Google
         </a>
+
+        {{-- Kembali ke Beranda / Landing Page --}}
+        <div class="pt-2 text-center">
+            <a href="{{ route('welcome') }}" class="inline-flex items-center gap-1.5 text-small font-medium text-muted hover:text-primary transition-colors">
+                <x-icon name="arrow-left" class="h-3.5 w-3.5" />
+                Kembali ke Halaman Utama
+            </a>
+        </div>
     </form>
 </x-guest-layout>

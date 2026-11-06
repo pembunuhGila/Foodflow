@@ -175,12 +175,19 @@
                     @endforeach
                 </div>
 
+                @auth
+                <a href="{{ route('dashboard') }}" class="hidden lg:inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    Buka Dashboard
+                </a>
+                @else
                 @if(Route::has('login'))
                 <a href="{{ route('login') }}" class="hidden lg:inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                     Login Petugas
                 </a>
                 @endif
+                @endauth
 
                 <button class="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100" @click="mobileMenuOpen = !mobileMenuOpen">
                     <svg x-show="!mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -201,9 +208,13 @@
                 @foreach([['#beranda','Beranda'],['#erp','Fitur ERP'],['#modul','Modul Sistem'],['#profil','Profil Dapur'],['#menu','Menu Harian']] as [$h,$l])
                 <a href="{{ $h }}" @click="mobileMenuOpen = false" class="text-sm font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-lg px-3 py-2.5 transition-colors">{{ $l }}</a>
                 @endforeach
+                @auth
+                <a href="{{ route('dashboard') }}" class="mt-2 inline-flex items-center justify-center gap-2 bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg">Buka Dashboard</a>
+                @else
                 @if(Route::has('login'))
                 <a href="{{ route('login') }}" class="mt-2 inline-flex items-center justify-center gap-2 bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg">Login Petugas</a>
                 @endif
+                @endauth
             </div>
         </div>
     </nav>
@@ -238,12 +249,19 @@
                     </p>
 
                     <div class="hero-cta flex flex-wrap gap-3 mb-8">
+                        @auth
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-colors shadow-lg shadow-blue-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            Buka Dashboard Sistem
+                        </a>
+                        @else
                         @if(Route::has('login'))
                         <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-colors shadow-lg shadow-blue-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                             Masuk ke Sistem
                         </a>
                         @endif
+                        @endauth
                         <a href="#erp" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm px-6 py-3 rounded-xl border border-slate-200 transition-colors">
                             Lihat Fitur ERP
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -699,6 +717,12 @@
                     @endforeach
                 </div>
 
+                @auth
+                <a href="{{ route('dashboard') }}" class="w-full inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-bold text-sm px-6 py-3.5 rounded-xl hover:bg-blue-50 transition-colors shadow-lg mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    Buka Dashboard Saya
+                </a>
+                @else
                 @if(Route::has('login'))
                 <a href="{{ route('login') }}" class="w-full inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-bold text-sm px-6 py-3.5 rounded-xl hover:bg-blue-50 transition-colors shadow-lg mb-3">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
@@ -716,6 +740,7 @@
                 </a>
                 @endif
                 @endif
+                @endauth
 
                 <p class="text-blue-300 text-xs text-center mt-4">
                     Belum punya akun? Hubungi Admin — <span class="font-semibold">(0341) 491-234</span>

@@ -26,9 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('dashboard')
-        : view('welcome');
+    return view('welcome');
 })->name('welcome');
 
 // Redirect generic dashboard ke dashboard sesuai role
