@@ -3,23 +3,29 @@ $user = auth()->user();
 $role = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
 $groups = config('menu.' . $role, []);
 
+// Hitung total item menu navigasi pada sidebar role ini
+$totalMenuItems = collect($groups)->sum(fn ($g) => count($g['items'] ?? []));
+
+// Logika: jika isi menu pada sidebar role kurang dari 6, maka tidak perlu dibuat dropdown
+$isDropdownRole = $totalMenuItems >= 6;
+
 $resolve = function ($candidates) {
-foreach ((array) $candidates as $name) {
-if (\Illuminate\Support\Facades\Route::has($name)) {
-return $name;
-}
-}
-return null;
+    foreach ((array) $candidates as $name) {
+        if (\Illuminate\Support\Facades\Route::has($name)) {
+            return $name;
+        }
+    }
+    return null;
 };
 
 $isActive = function (?string $name) {
-if (! $name) {
-return false;
-}
-if (! str_contains($name, '.')) {
-return request()->routeIs($name);
-}
-return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*');
+    if (! $name) {
+        return false;
+    }
+    if (! str_contains($name, '.')) {
+        return request()->routeIs($name);
+    }
+    return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*');
 };
 @endphp
 
@@ -47,24 +53,24 @@ return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*'
         @foreach ($groups as $group)
         @php
         $items = collect($group['items'])->map(function ($item) use ($resolve, $isActive) {
-        $item['resolved'] = $resolve($item['route']);
-        $item['active'] = $isActive($item['resolved']);
-        return $item;
+            $item['resolved'] = $resolve($item['route']);
+            $item['active'] = $isActive($item['resolved']);
+            return $item;
         });
         $groupActive = $items->contains('active', true);
-        $fixed = $group['title'] === 'Utama';
+        
+        // Hanya buat dropdown jika role memiliki menu >= 6 dan grup bukan 'Utama'
+        $isDropdown = $isDropdownRole && ($group['title'] !== 'Utama');
         @endphp
 
-        <div x-data="{ open: {{ $groupActive || $fixed ? 'true' : 'false' }} }" class="pt-4 first:pt-1">
-            @if ($fixed)
-            <div class="px-3 pb-1.5 text-label uppercase text-muted">{{ $group['title'] }}</div>
-            @else
-            <button type="button" @click="open = !open"
+        @if ($isDropdown)
+        {{-- Grup dengan Accordion Dropdown (untuk sidebar role dengan isi >= 6) --}}
+        <div x-data="{ open: {{ $groupActive ? 'true' : 'false' }} }" class="pt-4 first:pt-1">
+            <button type="button" @click="open = !open" data-sidebar-toggle="true"
                 class="flex w-full items-center justify-between rounded-full px-3 pb-1.5 text-label uppercase text-muted hover:text-ink">
                 <span>{{ $group['title'] }}</span>
                 <x-icon name="chevron" class="h-4 w-4 transition-transform" ::class="{ 'rotate-180': open }" />
             </button>
-            @endif
 
             <ul x-show="open" x-cloak class="space-y-0.5">
                 @foreach ($items as $item)
@@ -91,6 +97,37 @@ return request()->routeIs(\Illuminate\Support\Str::beforeLast($name, '.') . '.*'
                 @endforeach
             </ul>
         </div>
+        @else
+        {{-- Grup Flat / Non-Dropdown (jika isi sidebar role kurang dari 6) --}}
+        <div class="pt-4 first:pt-1">
+            <div class="px-3 pb-1.5 text-label uppercase text-muted">{{ $group['title'] }}</div>
+
+            <ul class="space-y-0.5">
+                @foreach ($items as $item)
+                <li>
+                    @if ($item['resolved'])
+                    <a href="{{ route($item['resolved']) }}"
+                        @if ($item['active']) aria-current="page" @endif
+                        class="flex items-center gap-3 rounded-full px-3 py-2.5 text-body transition
+                                          {{ $item['active']
+                                              ? 'bg-primary font-medium text-white shadow-card'
+                                              : 'text-ink hover:bg-primary/10' }}">
+                        <x-icon :name="$item['icon']" />
+                        <span class="truncate">{{ $item['label'] }}</span>
+                    </a>
+                    @else
+                    <div class="flex cursor-not-allowed items-center gap-3 rounded-full px-3 py-2.5 text-body text-muted/70"
+                        title="Fitur ini belum tersedia">
+                        <x-icon :name="$item['icon']" />
+                        <span class="truncate">{{ $item['label'] }}</span>
+                        <span class="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-label normal-case tracking-normal text-primary">Segera</span>
+                    </div>
+                    @endif
+                </li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         @endforeach
     </nav>
 
