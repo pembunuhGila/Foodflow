@@ -94,16 +94,26 @@
                     <span class="font-medium text-ink">{{ $order->created_at?->locale('id')->translatedFormat('d F Y, H:i') ?? '-' }}</span>
                 </p>
 
-                {{-- Aksi (teks) --}}
-                <div class="no-print flex flex-wrap items-center gap-x-4 gap-y-2 text-small font-medium">
+                {{-- Aksi (Tombol Button) --}}
+                <div class="no-print flex flex-wrap items-center gap-2">
                     <button type="button" @click="showInvoiceModal = true" id="btn-view-invoice-summary"
-                        class="text-primary transition hover:text-primary-dark">Lihat Ringkasan Invoice</button>
+                        class="inline-flex items-center gap-1.5 rounded-input border border-line bg-white px-3 py-1.5 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5 hover:border-primary/30">
+                        <x-icon name="eye" class="h-4 w-4 text-muted" />
+                        <span>Lihat Ringkasan Invoice</span>
+                    </button>
+
                     <button type="button" onclick="window.print()" id="btn-print-invoice"
-                        class="text-primary transition hover:text-primary-dark">Cetak Invoice</button>
+                        class="inline-flex items-center gap-1.5 rounded-input border border-primary/30 bg-primary/5 px-3 py-1.5 text-small font-medium text-primary shadow-sm transition hover:bg-primary/10">
+                        <x-icon name="printer" class="h-4 w-4" />
+                        <span>Cetak Invoice</span>
+                    </button>
 
                     @if ($isAdmin)
                     <a href="{{ route('catering-orders.edit', $order) }}" id="btn-edit-order"
-                        class="text-primary transition hover:text-primary-dark">Edit Pesanan</a>
+                        class="inline-flex items-center gap-1.5 rounded-input border border-line bg-white px-3 py-1.5 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5">
+                        <svg class="h-3.5 w-3.5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        <span>Edit Pesanan</span>
+                    </a>
 
                     @if ($next)
                     <form id="next-order-form" method="POST" action="{{ route('catering-orders.update-status', $order) }}" class="inline-block">
@@ -111,7 +121,10 @@
                         @method('PATCH')
                         <input type="hidden" name="status" value="{{ $next['status'] }}">
                         <button type="button" @click="$dispatch('open-confirm', @js($nextConfirm))"
-                            class="text-primary transition hover:text-primary-dark">{{ $next['label'] }}</button>
+                            class="inline-flex items-center gap-1.5 rounded-input bg-primary px-3.5 py-1.5 text-small font-medium text-white shadow-sm transition hover:bg-primary-dark">
+                            <x-icon name="check" class="h-4 w-4" />
+                            <span>{{ $next['label'] }}</span>
+                        </button>
                     </form>
                     @endif
 
@@ -121,10 +134,12 @@
                         @method('PATCH')
                         <input type="hidden" name="status" value="cancelled">
                         <button type="button" @click="$dispatch('open-confirm', @js($cancelConfirm))" id="btn-cancel-order"
-                            class="text-danger-text transition hover:underline">Batalkan Pesanan</button>
+                            class="inline-flex items-center gap-1.5 rounded-input border border-danger-text/20 bg-danger-bg/50 px-3 py-1.5 text-small font-medium text-danger-text shadow-sm transition hover:bg-danger-bg">
+                            <span>Batalkan Pesanan</span>
+                        </button>
                     </form>
                     @else
-                    <span class="text-muted">Pesanan telah dibatalkan</span>
+                    <span class="inline-flex items-center rounded-input bg-slate-100 px-3 py-1.5 text-small text-muted">Pesanan telah dibatalkan</span>
                     @endif
                     @endif
                 </div>
