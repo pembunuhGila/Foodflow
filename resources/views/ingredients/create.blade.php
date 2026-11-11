@@ -63,10 +63,11 @@
                     <x-input-error :messages="$errors->get('category')" class="mt-1" />
                 </div>
 
-                <!-- Satuan Berjenjang (Kelompok -> Satuan Detail) -->
+                <!-- Satuan Berjenjang (Kelompok -> Satuan Detail) + Opsi Kustom Manual -->
                 <div x-data="{
                     group: 'berat',
                     unit: '{{ old('unit', 'kg') }}',
+                    customUnit: '',
                     unitsByGroup: {
                         'berat': [
                             { value: 'kg', label: 'kg (Kilogram)' },
@@ -91,17 +92,28 @@
                         ]
                     },
                     init() {
+                        let found = false;
                         for (const [grp, list] of Object.entries(this.unitsByGroup)) {
                             if (list.some(u => u.value === this.unit)) {
                                 this.group = grp;
+                                found = true;
                                 break;
                             }
                         }
+                        if (!found && this.unit) {
+                            this.group = 'lainnya';
+                            this.customUnit = this.unit;
+                        }
                     },
                     onGroupChange() {
-                        if (this.unitsByGroup[this.group] && this.unitsByGroup[this.group].length > 0) {
+                        if (this.group === 'lainnya') {
+                            this.unit = this.customUnit || '';
+                        } else if (this.unitsByGroup[this.group] && this.unitsByGroup[this.group].length > 0) {
                             this.unit = this.unitsByGroup[this.group][0].value;
                         }
+                    },
+                    onCustomInput(e) {
+                        this.unit = e.target.value;
                     }
                 }" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Dropdown 1: Tipe / Kelompok Satuan -->
@@ -113,19 +125,30 @@
                             <option value="volume">Volume / Cairan (liter, ml)</option>
                             <option value="satuan">Satuan Hitung (pcs, butir, lembar)</option>
                             <option value="kemasan">Kemasan & Wadah (bungkus, ikat, kaleng, botol, karung)</option>
+                            <option value="lainnya">Lainnya (Ketik Manual Sendiri...)</option>
                         </select>
-                        <p class="mt-1 text-small text-muted">Pilih kategori takaran (misal: Berat atau Volume).</p>
+                        <p class="mt-1 text-small text-muted">Pilih kategori takaran bahan baku.</p>
                     </div>
 
-                    <!-- Dropdown 2: Satuan Detail yang Disimpan -->
+                    <!-- Dropdown 2 / Input Manual: Satuan Detail yang Disimpan -->
                     <div>
                         <x-input-label for="unit">Satuan Ukuran <span class="text-danger-text">*</span></x-input-label>
-                        <select name="unit" id="unit" x-model="unit" required
-                            class="mt-1.5 block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                            <template x-for="item in unitsByGroup[group]" :key="item.value">
-                                <option :value="item.value" x-text="item.label" :selected="item.value === unit"></option>
-                            </template>
-                        </select>
+                        
+                        <div x-show="group !== 'lainnya'">
+                            <select id="unit_select" x-model="unit"
+                                class="mt-1.5 block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                                <template x-for="item in (unitsByGroup[group] || [])" :key="item.value">
+                                    <option :value="item.value" x-text="item.label" :selected="item.value === unit"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <div x-show="group === 'lainnya'" style="display: none;">
+                            <input type="text" x-model="customUnit" @input="onCustomInput($event)" placeholder="Ketik satuan baru, misal: ruas, kotak, toples"
+                                class="mt-1.5 block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                        </div>
+
+                        <input type="hidden" name="unit" :value="unit">
                         <p class="mt-1 text-small text-muted">Satuan ini yang digunakan pada resep menu & kartu stok.</p>
                         <x-input-error :messages="$errors->get('unit')" class="mt-1" />
                     </div>
