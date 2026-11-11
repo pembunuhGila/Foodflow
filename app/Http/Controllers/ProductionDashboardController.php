@@ -20,16 +20,18 @@ class ProductionDashboardController extends Controller
             ProductionPlanStatus::Cancelled->value,
         ];
 
-        // Rencana yang masih berjalan.
-        $activePlans = ProductionPlan::query()
+        // Rencana yang masih berjalan (diurutkan rencana terbaru sama seperti di daftar rencana produksi dapur).
+        $activePlansQuery = ProductionPlan::query()
             ->whereIn('status', [
                 ProductionPlanStatus::Scheduled->value,
                 ProductionPlanStatus::InProgress->value,
             ])
             ->with(['details.product', 'details.production'])
-            ->orderBy('production_date')
-            ->orderBy('id')
-            ->get();
+            ->orderByDesc('production_date')
+            ->orderByDesc('id');
+
+        $activePlanCount = $activePlansQuery->count();
+        $activePlans = $activePlansQuery->take(5)->get();
 
         // Rencana yang dijadwalkan untuk hari ini.
         $todayPlans = ProductionPlan::query()
@@ -87,12 +89,12 @@ class ProductionDashboardController extends Controller
 
         return view('dashboard.produksi', [
             'today' => $today,
-            'activePlanCount' => $activePlans->count(),
+            'activePlanCount' => $activePlanCount,
             'todayTarget' => $todayTarget,
             'todayActual' => $todayActual,
             'pendingMaterials' => $pendingMaterials,
             'completionRate' => $completionRate,
-            'activePlans' => $activePlans->take(5),
+            'activePlans' => $activePlans,
             'weeklyChart' => $weeklyChart,
         ]);
     }
