@@ -6,8 +6,9 @@ $groups = config('menu.' . $role, []);
 // Hitung total item menu navigasi pada sidebar role ini
 $totalMenuItems = collect($groups)->sum(fn ($g) => count($g['items'] ?? []));
 
-// Logika: jika isi menu pada sidebar role kurang dari 6, maka tidak perlu dibuat dropdown
-$isDropdownRole = $totalMenuItems >= 6;
+// Logika: jika isi menu pada sidebar role 6 ke bawah (5-6 menu termasuk dashboard), tampilkan flat tanpa dropdown.
+// Hanya role dengan menu lebih dari 6 (seperti Admin dengan 13 menu) yang menggunakan accordion dropdown.
+$isDropdownRole = $totalMenuItems > 6;
 
 $resolve = function ($candidates) {
     foreach ((array) $candidates as $name) {

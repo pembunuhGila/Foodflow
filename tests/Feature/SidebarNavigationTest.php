@@ -53,16 +53,18 @@ class SidebarNavigationTest extends TestCase
         $response->assertSee('Cetak Laporan');
     }
 
-    public function test_gudang_sidebar_has_dropdown_controls_when_items_are_six(): void
+    public function test_gudang_sidebar_has_no_dropdown_when_items_are_six_or_less(): void
     {
         $gudang = User::factory()->create(['role' => UserRole::Gudang]);
 
         $response = $this->actingAs($gudang)->get(route($gudang->getDashboardRoute()));
 
         $response->assertOk();
-        // Role Gudang memiliki 6 menu (>= 6)
-        $response->assertSee('data-sidebar-toggle="true"', false);
+        // Role Gudang memiliki 6 menu (<= 6) sehingga ditampilkan flat tanpa dropdown accordion button
+        $response->assertDontSee('data-sidebar-toggle="true"', false);
         $response->assertSee('Persediaan');
         $response->assertSee('Pengadaan');
+        $response->assertSee('Bahan Baku');
+        $response->assertSee('Kartu Stok');
     }
 }
