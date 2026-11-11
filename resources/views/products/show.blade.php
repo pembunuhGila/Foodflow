@@ -52,12 +52,7 @@
 
     <div class="space-y-6">
 
-        @if (session('success'))
-        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary" role="status">
-            <x-icon name="check" class="h-5 w-5 shrink-0" />
-            <span>{{ session('success') }}</span>
-        </div>
-        @endif
+        <x-flash-alert />
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
 

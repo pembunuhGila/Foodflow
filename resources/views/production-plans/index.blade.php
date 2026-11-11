@@ -53,16 +53,7 @@
 
     <div class="space-y-6">
 
-        @if (session('success'))
-        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary" role="status">
-            <x-icon name="check" class="h-5 w-5 shrink-0" />
-            <span>{{ session('success') }}</span>
-        </div>
-        @endif
-
-        @if (session('warning'))
-        <div class="rounded-input border border-amber-200 bg-amber-50 p-4 text-body text-amber-800" role="alert">{{ session('warning') }}</div>
-        @endif
+        <x-flash-alert />
 
         @if (!empty($filterWarning))
         <div class="rounded-input border border-amber-200 bg-amber-50 p-4 text-body text-amber-800" role="alert">{{ $filterWarning }}</div>

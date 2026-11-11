@@ -43,18 +43,7 @@
 
     <div class="space-y-6">
 
-        @if (session('success'))
-        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary print:hidden" role="status">
-            <x-icon name="check" class="h-5 w-5 shrink-0" />
-            <span>{{ session('success') }}</span>
-        </div>
-        @endif
-
-        @if (session('error'))
-        <div class="rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text print:hidden" role="alert">
-            {{ session('error') }}
-        </div>
-        @endif
+        <x-flash-alert />
 
         <!-- Informasi PO -->
         <x-card class="w-full sm:p-8">

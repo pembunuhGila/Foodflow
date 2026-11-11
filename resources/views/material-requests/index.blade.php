@@ -31,18 +31,12 @@
 
     <div class="space-y-6">
 
-        {{-- Flash Alert --}}
-        @if (session('success'))
-            <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary" role="status">
-                <x-icon name="check" class="h-5 w-5 shrink-0" />
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
+        <x-flash-alert />
 
-        @if (session('error') || $errors->has('status') || $errors->has('general'))
+        @if ($errors->has('status') || $errors->has('general'))
             <div class="flex items-center gap-2 rounded-input border border-danger-text/20 bg-danger-bg p-4 text-body text-danger-text" role="alert">
                 <x-icon name="alert" class="h-5 w-5 shrink-0" />
-                <span>{{ session('error') ?? $errors->first('status') ?? $errors->first('general') }}</span>
+                <span>{{ $errors->first('status') ?? $errors->first('general') }}</span>
             </div>
         @endif
 
