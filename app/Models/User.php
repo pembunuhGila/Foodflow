@@ -62,11 +62,13 @@ class User extends Authenticatable
 
     /**
      * The model's default values for attributes.
+     * Default role sengaja tidak di-set agar tidak ada user yang
+     * mendapatkan akses Admin secara tidak sengaja. Role wajib
+     * di-set secara eksplisit saat membuat user baru.
      *
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'role' => UserRole::Admin,
         'status' => UserStatus::Aktif,
     ];
 
