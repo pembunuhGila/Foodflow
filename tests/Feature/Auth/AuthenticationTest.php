@@ -101,7 +101,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('welcome'));
     }
 
     public function test_user_cannot_access_other_role_dashboard(): void

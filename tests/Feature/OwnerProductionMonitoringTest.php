@@ -65,7 +65,7 @@ class OwnerProductionMonitoringTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeText('Monitoring Capaian Produksi Dapur (Live)');
-        $response->assertSeeText('FR-37 & UC-10');
+        $response->assertSeeText('PEMANTAUAN PRODUKSI');
     }
 
     public function test_admin_can_access_production_monitoring_dashboard(): void

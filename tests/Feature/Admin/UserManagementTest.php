@@ -116,7 +116,7 @@ class UserManagementTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.users.edit', $targetUser));
 
         $response->assertStatus(200);
-        $response->assertSee('Ubah Data Pengguna');
+        $response->assertSee('Edit Pengguna');
         $response->assertSee($targetUser->email);
     }
 

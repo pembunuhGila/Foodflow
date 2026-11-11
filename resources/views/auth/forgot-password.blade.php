@@ -13,7 +13,7 @@
         <x-icon :name="$hasError ? 'alert-circle' : 'lock'" class="h-5 w-5" />
     </div>
 
-    <h1 class="mt-5 font-display text-h2 text-ink">{{ $hasError ? 'Email Tidak Ditemukan' : 'Lupa Password?' }}</h1>
+    <h1 class="mt-5 font-display text-h2 text-ink">{{ $hasError ? 'Email Tidak Ditemukan' : 'Lupa Kata Sandi?' }}</h1>
     <p class="mt-1 text-body text-muted">
         {{ $hasError ? 'Email belum terdaftar, gunakan Email yang terdaftar.' : 'Masukkan email terdaftar. Permintaan akan diteruskan ke Admin.' }}
     </p>
