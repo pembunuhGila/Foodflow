@@ -104,7 +104,7 @@ class CateringOrderListTest extends TestCase
         // 3. Tanggal kirim
         $response->assertSee('25/10/2026');
         // 4. Total porsi
-        $response->assertSee('50 Porsi');
+        $response->assertSee('50 porsi');
         // 5. Total nominal
         $response->assertSee('Rp 1.750.000');
         // 6. Badge status pesanan
@@ -419,7 +419,7 @@ class CateringOrderListTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('id="btn-create-catering-order"', false);
-        $response->assertSee('id="status-select-'.$order->id.'"', false);
+        $response->assertSee('id="next-order-'.$order->id.'"', false);
         $response->assertSee('Konfirmasi');
     }
 

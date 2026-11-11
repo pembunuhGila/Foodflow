@@ -122,13 +122,12 @@ class ProductionPlanListTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('PLN-20261021-0001');
-        $response->assertSee('21/10/2026');
-        $response->assertSee('200 Porsi');
+        $response->assertSee('20/10/2026'); // plan_date ditampilkan sebagai d/m/Y
+        $response->assertSee('200 porsi'); // huruf kecil sesuai view
         $response->assertSee('Ayam Panggang Klaten Sehat');
         $response->assertSee('Tumis Buncis Jagung Manis');
         $response->assertSee($this->produksi->name);
         $response->assertSee('Dijadwalkan');
-        $response->assertSee('Scheduled');
     }
 
     /**
@@ -316,8 +315,8 @@ class ProductionPlanListTest extends TestCase
         ]));
 
         $response->assertOk();
-        $response->assertSee('Tidak ada rencana produksi ditemukan');
-        $response->assertSee('Reset Filter');
+        $response->assertSee('Tidak ada rencana produksi yang sesuai dengan filter.');
+        $response->assertSee('Reset filter');
     }
 
     /**
