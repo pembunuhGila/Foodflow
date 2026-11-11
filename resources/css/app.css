@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
     body {
         @apply bg-canvas text-ink font-sans antialiased;
@@ -11,5 +12,63 @@
     h2,
     h3 {
         @apply font-display;
+    }
+}
+
+@keyframes blobMove1 {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-120px, 90px) scale(1.15); }
+    66%  { transform: translate(60px, 160px) scale(0.92); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes blobMove2 {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(130px, -100px) scale(1.18); }
+    66%  { transform: translate(-60px, -170px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+/* HERO */
+#beranda > .pointer-events-none > div:nth-child(1) {
+    animation: blobMove1 16s ease-in-out infinite;
+    will-change: transform;
+}
+#beranda > .pointer-events-none > div:nth-child(2) {
+    animation: blobMove2 20s ease-in-out infinite;
+    will-change: transform;
+}
+
+/* CTA / Portal Akses */
+section.relative.overflow-hidden.py-20 > .pointer-events-none > div:nth-child(1) {
+    animation: blobMove2 20s ease-in-out infinite;
+    will-change: transform;
+}
+section.relative.overflow-hidden.py-20 > .pointer-events-none > div:nth-child(2) {
+    animation: blobMove1 16s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes blobMoveA {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-140px, 100px) scale(1.15); }
+    66%  { transform: translate(70px, 170px) scale(0.92); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes blobMoveB {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(140px, -110px) scale(1.18); }
+    66%  { transform: translate(-70px, -180px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+.blob-a { animation: blobMoveA 14s ease-in-out infinite; will-change: transform; }
+.blob-b { animation: blobMoveB 18s ease-in-out infinite; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+    #beranda > .pointer-events-none > div,
+    section.relative.overflow-hidden.py-20 > .pointer-events-none > div {
+        animation: none;
     }
 }
