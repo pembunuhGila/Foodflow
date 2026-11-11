@@ -284,7 +284,7 @@ class ProductionPlanController extends Controller
 
             return redirect()
                 ->route('production-plans.index')
-                ->with('warning', "Rencana produksi {$productionPlan->plan_number} sudah memiliki catatan operasional terkait sehingga statusnya dialihkan ke 'Dibatalkan'.");
+                ->with('warning', "Rencana produksi {$productionPlan->plan_number} sudah memiliki catatan operasional terkait sehingga statusnya dialihkan ke 'Dibatalkan' dan tetap tercatat di laporan.");
         }
 
         $planNumber = $productionPlan->plan_number;

@@ -387,7 +387,7 @@
 
             .print-header-block, .print-only { display: block !important; }
 
-            @page { size: A4 landscape; margin: 8mm 10mm 10mm 10mm; }
+            @page { size: A4 portrait; margin: 8mm 10mm 10mm 10mm; }
 
             html, body, .min-h-screen, main {
                 background: #ffffff !important;
@@ -404,7 +404,7 @@
 
             .summary-cards-container {
                 display: grid !important;
-                grid-template-columns: repeat(6, 1fr) !important;
+                grid-template-columns: repeat(3, 1fr) !important;
                 gap: 6px !important;
                 margin-bottom: 6px !important;
             }
