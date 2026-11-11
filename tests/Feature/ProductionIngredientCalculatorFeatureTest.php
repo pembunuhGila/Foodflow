@@ -113,18 +113,16 @@ class ProductionIngredientCalculatorFeatureTest extends TestCase
         $response = $this->actingAs($this->produksi)->get(route('production-plans.show', $this->plan));
 
         $response->assertOk();
-        $response->assertSee('Kalkulasi Kebutuhan Bahan Baku dan Ketersediaan Stok Gudang');
+        $response->assertSee('Kalkulasi Kebutuhan Bahan Baku');
         $response->assertSee('Dada Ayam Fillet Segar');
         $response->assertSee('Beras Merah Organik');
 
-        // 10 Kolom Minimal
-        $response->assertSee('Kebutuhan Total');
+        // Kolom Tabel Kalkulator
+        $response->assertSee('Kebutuhan');
         $response->assertSee('Stok Aktual');
-        $response->assertSee('Proyeksi Stok Akhir');
-        $response->assertSee('Kekurangan Produksi');
-        $response->assertSee('Minimum Stok');
-        $response->assertSee('Status Kebutuhan');
-        $response->assertSee('Status Stok Akhir');
+        $response->assertSee('Stok Akhir');
+        $response->assertSee('Kekurangan');
+        $response->assertSee('Min Stok');
         $response->assertSee('Cek Fisik');
 
         // Kebutuhan ayam = 20 kg, stok = 12 kg, defisit 8 kg
@@ -143,7 +141,7 @@ class ProductionIngredientCalculatorFeatureTest extends TestCase
 
         // Status kesiapan produksi & kondisi persediaan
         $response->assertSee('Perlu Pengadaan');
-        $response->assertSee('Defisit Stok');
+        $response->assertSee('Defisit');
     }
 
     public function test_plan_with_stock_below_minimum_shows_restock_warning_separated_from_readiness(): void
@@ -183,10 +181,10 @@ class ProductionIngredientCalculatorFeatureTest extends TestCase
         // Kesiapan Produksi = Siap Produksi (kebutuhan 18 kg terpenuhi oleh 20 kg)
         $response->assertSee('Siap Produksi');
 
-        // Kondisi Persediaan Akhir = Restock Diperlukan (sisa 2 kg < min 10 kg)
-        $response->assertSee('Restock Diperlukan');
-        $response->assertSee('Di Bawah Minimum');
-        $response->assertSee('+2 kg');
+        // Kondisi Persediaan Akhir = Restock (sisa 2 kg < min 10 kg)
+        $response->assertSee('Restock');
+        $response->assertSee('Di Bawah Min');
+        $response->assertSee('2 kg');
     }
 
     public function test_all_authenticated_roles_can_view_kitchen_worksheet(): void

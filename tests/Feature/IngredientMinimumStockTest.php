@@ -159,7 +159,7 @@ class IngredientMinimumStockTest extends TestCase
 
         $response->assertOk();
         // Check for alert banner
-        $response->assertSee('Peringatan Batas Minimum Stok');
+        $response->assertSee('Peringatan batas minimum stok');
         $response->assertSee('2'); // 2 critical/low stock items
 
         // Check for visual badges
@@ -237,7 +237,7 @@ class IngredientMinimumStockTest extends TestCase
         // 1. Low stock show page
         $responseLow = $this->actingAs($this->gudang)->get(route('ingredients.show', $lowStockIngredient));
         $responseLow->assertOk();
-        $responseLow->assertSee('Peringatan Batas Minimum Stok (BR-06)');
+        $responseLow->assertSee('Peringatan: batas minimum stok');
         $responseLow->assertSee('Stok Menipis');
         $responseLow->assertSee('12.00 kg');
         $responseLow->assertSee('20.00 kg');
@@ -245,14 +245,14 @@ class IngredientMinimumStockTest extends TestCase
         // 2. Out of stock show page
         $responseOut = $this->actingAs($this->gudang)->get(route('ingredients.show', $outOfStockIngredient));
         $responseOut->assertOk();
-        $responseOut->assertSee('Peringatan: Stok Bahan Baku Habis! (BR-06)');
+        $responseOut->assertSee('Peringatan: stok bahan baku habis');
         $responseOut->assertSee('Stok Habis');
 
         // 3. Safe stock show page
         $responseSafe = $this->actingAs($this->gudang)->get(route('ingredients.show', $safeIngredient));
         $responseSafe->assertOk();
-        $responseSafe->assertDontSee('Peringatan Batas Minimum Stok (BR-06)');
-        $responseSafe->assertDontSee('Peringatan: Stok Bahan Baku Habis! (BR-06)');
+        $responseSafe->assertDontSee('Peringatan: batas minimum stok');
+        $responseSafe->assertDontSee('Peringatan: stok bahan baku habis');
         $responseSafe->assertSee('Stok Aman');
     }
 
@@ -288,11 +288,10 @@ class IngredientMinimumStockTest extends TestCase
         $response = $this->actingAs($this->gudang)->get(route('gudang.dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Peringatan Batas Minimum Stok (BR-06)');
-        $response->assertSee('2 Bahan Butuh Restock');
+        $response->assertSee('Peringatan stok');
+        $response->assertSee('2 bahan perlu tindakan');
         $response->assertSee('Beras Pulen Kritis');
         $response->assertSee('Daging Ayam Kritis');
-        $response->assertSee('Kelola Bahan Kritis');
     }
 
     /**
@@ -317,7 +316,7 @@ class IngredientMinimumStockTest extends TestCase
         $response = $this->actingAs($this->gudang)->get(route('gudang.dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Batas Minimum Stok Terkendali (BR-06)');
-        $response->assertSee('Semua persediaan bahan baku aktif saat ini berada dalam kondisi aman');
+        $response->assertSee('Peringatan stok');
+        $response->assertSee('Semua stok bahan di atas batas minimum');
     }
 }

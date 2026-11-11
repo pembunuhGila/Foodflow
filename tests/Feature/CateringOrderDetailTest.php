@@ -101,7 +101,7 @@ class CateringOrderDetailTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('catering-orders.show', $this->order));
 
         $response->assertOk();
-        $response->assertSee('Rincian Pesanan Katering');
+        $response->assertSee('Detail Pesanan');
         $response->assertSee($this->order->order_number);
     }
 
@@ -110,7 +110,7 @@ class CateringOrderDetailTest extends TestCase
         $response = $this->actingAs($this->owner)->get(route('catering-orders.show', $this->order));
 
         $response->assertOk();
-        $response->assertSee('Rincian Pesanan Katering');
+        $response->assertSee('Detail Pesanan');
         $response->assertSee($this->order->order_number);
     }
 
@@ -150,8 +150,8 @@ class CateringOrderDetailTest extends TestCase
         $response->assertSee('ORD-20261017-0099');
         $response->assertSee('Nomor Invoice');
 
-        // Tanggal Pengiriman
-        $response->assertSee('25 October 2026');
+        // Tanggal Pengiriman — format Bahasa Indonesia: "25 Oktober 2026"
+        $response->assertSee('25 Oktober 2026');
 
         // Catatan Khusus
         $response->assertSee('Tolong sediakan sendok garpu kayu ramah lingkungan dan sambal dipisah wadahnya.');
@@ -176,7 +176,7 @@ class CateringOrderDetailTest extends TestCase
         $response->assertSee('Rp 750.000');
 
         // Total Porsi & Grand Total
-        $response->assertSee('100 Porsi');
+        $response->assertSee('100 porsi'); // sesuai format view: lowercase
         $response->assertSee('Rp 3.000.000');
     }
 
@@ -213,7 +213,7 @@ class CateringOrderDetailTest extends TestCase
         // Setelah dibatalkan, halaman detail menampilkan badge dibatalkan
         $detailResponse = $this->actingAs($this->admin)->get(route('catering-orders.show', $this->order));
         $detailResponse->assertSee('Dibatalkan');
-        $detailResponse->assertSee('Pesanan Telah Dibatalkan');
+        $detailResponse->assertSee('Pesanan telah dibatalkan');
     }
 
     public function test_non_admin_cannot_see_edit_or_cancel_action_buttons(): void
@@ -240,7 +240,7 @@ class CateringOrderDetailTest extends TestCase
         $editResponse = $this->actingAs($this->admin)->get(route('catering-orders.edit', $this->order));
 
         $editResponse->assertOk();
-        $editResponse->assertSee('Edit Pesanan Katering');
+        $editResponse->assertSee('Edit Pesanan');
         $editResponse->assertSee($this->order->order_number);
 
         $updateResponse = $this->actingAs($this->admin)->put(

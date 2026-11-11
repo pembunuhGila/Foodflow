@@ -18,7 +18,7 @@ class PasswordResetTest extends TestCase
         $response = $this->get('/forgot-password');
 
         $response->assertStatus(200);
-        $response->assertSee('Lupa kata sandi');
+        $response->assertSee('Lupa Kata Sandi');
     }
 
     public function test_user_can_submit_password_reset_request(): void
