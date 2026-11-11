@@ -55,4 +55,24 @@ class StoreIngredientRequest extends FormRequest
             'is_active' => 'status aktif',
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama bahan baku wajib diisi.',
+            'name.unique' => 'Nama bahan baku sudah terdaftar dalam sistem, silakan gunakan nama lain.',
+            'name.max' => 'Nama bahan baku maksimal 255 karakter.',
+            'unit.required' => 'Satuan ukuran bahan baku wajib dipilih.',
+            'minimum_stock.required' => 'Batas stok minimum wajib diisi.',
+            'minimum_stock.numeric' => 'Batas stok minimum harus berupa angka.',
+            'minimum_stock.min' => 'Batas stok minimum tidak boleh bernilai negatif (minimal 0).',
+            'current_stock.numeric' => 'Saldo stok awal harus berupa angka.',
+            'current_stock.min' => 'Saldo stok awal tidak boleh bernilai negatif (minimal 0).',
+        ];
+    }
 }

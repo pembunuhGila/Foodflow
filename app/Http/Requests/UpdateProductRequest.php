@@ -88,4 +88,25 @@ class UpdateProductRequest extends FormRequest
             'dietary_fiber' => 'serat pangan (gram)',
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama menu hidangan wajib diisi.',
+            'name.unique' => 'Nama menu hidangan sudah terdaftar dalam sistem, silakan gunakan nama lain.',
+            'unit.required' => 'Satuan porsi menu hidangan wajib diisi.',
+            'selling_price.required' => 'Harga jual menu wajib diisi.',
+            'selling_price.numeric' => 'Harga jual harus berupa angka.',
+            'selling_price.min' => 'Harga jual tidak boleh bernilai negatif.',
+            'calories.required' => 'Kandungan kalori wajib diisi oleh staf produksi.',
+            'protein.required' => 'Kandungan protein wajib diisi oleh staf produksi.',
+            'fat.required' => 'Kandungan lemak wajib diisi oleh staf produksi.',
+            'carbohydrates.required' => 'Kandungan karbohidrat wajib diisi oleh staf produksi.',
+        ];
+    }
 }

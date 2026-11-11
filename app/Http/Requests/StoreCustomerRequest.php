@@ -53,4 +53,18 @@ class StoreCustomerRequest extends FormRequest
             'is_active' => 'status aktif',
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama pelanggan wajib diisi.',
+            'name.unique' => 'Nama pelanggan sudah terdaftar dalam sistem, silakan gunakan nama lain.',
+            'email.email' => 'Format alamat email tidak valid.',
+        ];
+    }
 }
