@@ -111,7 +111,7 @@
                         <th class="px-3 py-2 text-right text-label uppercase">Total Masuk (IN)</th>
                         <th class="px-3 py-2 text-right text-label uppercase">Total Keluar (OUT)</th>
                         <th class="px-3 py-2 text-right text-label uppercase">Penyesuaian (Adj)</th>
-                        <th class="px-3 py-2 text-right text-label uppercase">Saldo Akhir Saat Ini</th>
+                        <th class="px-3 py-2 text-right text-label uppercase">Stok Akhir Saat Ini</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-line">

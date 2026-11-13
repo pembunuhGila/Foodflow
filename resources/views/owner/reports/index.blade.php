@@ -11,7 +11,7 @@
     [
     'icon' => 'package',
     'title' => 'Laporan Mutasi Persediaan Bahan Gudang',
-    'desc' => 'Merekapitulasi seluruh mutasi barang masuk (IN), mutasi pengeluaran ke dapur (OUT), koreksi fisik (Adjustment), serta saldo sisa per bahan baku.',
+    'desc' => 'Merekapitulasi seluruh mutasi barang masuk (IN), mutasi pengeluaran ke dapur (OUT), koreksi fisik (Adjustment), serta stok sisa per bahan baku.',
     'route' => 'owner.reports.inventory',
     'button' => 'Buka & Cetak Laporan Persediaan (PDF)',
     ],
