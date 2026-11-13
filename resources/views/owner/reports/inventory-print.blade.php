@@ -68,6 +68,10 @@
                 &larr; Kembali ke Pusat Laporan
             </a>
             <div class="flex items-center gap-2.5">
+                <button type="button" @click="resetAll()" title="Bersihkan tanda tangan dan kembalikan nama ke awal" class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-muted shadow-sm transition hover:bg-slate-50 hover:text-ink">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Reset</span>
+                </button>
                 <button type="button" @click="openSignModal('signer2', signer2Name, 'Owner / Direktur Operasional')" class="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-small font-medium text-primary shadow-sm transition hover:bg-primary/10">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                     <span>Tanda Tangan Digital</span>

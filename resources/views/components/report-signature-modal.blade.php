@@ -96,10 +96,25 @@ function digitalSignatureApp(defaultSigner1 = 'Penanggung Jawab', defaultSigner2
         ctx: null,
 
         initSignatures() {
-            this.signatures.signer1 = localStorage.getItem('foodflow_sig_signer1') || null;
-            this.signatures.signer2 = localStorage.getItem('foodflow_sig_signer2') || null;
-            this.timestamps.signer1 = localStorage.getItem('foodflow_sig_time_signer1') || '';
-            this.timestamps.signer2 = localStorage.getItem('foodflow_sig_time_signer2') || '';
+            // Tanda tangan dan timestamp selalu mulai dari kondisi bersih (reset otomatis saat halaman dibuka)
+            this.signatures.signer1 = null;
+            this.signatures.signer2 = null;
+            this.timestamps.signer1 = '';
+            this.timestamps.signer2 = '';
+
+            // Bersihkan sisa penyimpanan sesi lama agar tidak menempel ke dokumen baru
+            try {
+                ['signer1', 'signer2'].forEach(k => {
+                    localStorage.removeItem(`foodflow_sig_${k}`);
+                    localStorage.removeItem(`foodflow_sig_time_${k}`);
+                });
+            } catch (err) {}
+        },
+
+        resetAll() {
+            this.signer1Name = defaultSigner1;
+            this.signer2Name = defaultSigner2;
+            this.initSignatures();
         },
 
         openSignModal(key, name, role) {
