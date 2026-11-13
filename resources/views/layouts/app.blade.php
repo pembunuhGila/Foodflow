@@ -24,7 +24,6 @@
     $user = auth()->user();
     $roleValue = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
     $roleLabel = ['admin' => 'Admin', 'gudang' => 'Staf Gudang', 'produksi' => 'Staf Produksi', 'owner' => 'Owner'][$roleValue] ?? ucfirst($roleValue);
-    $unreadNotifications = 0;
     @endphp
 
     <div x-data="{ sidebarOpen: false }" class="flex min-h-screen">
@@ -50,23 +49,6 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    {{-- Notifikasi --}}
-                    <div class="relative" x-data="{ open: false }" @click.outside="open = false" @keydown.escape.window="open = false">
-                        <button type="button" @click="open = !open"
-                            class="relative flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-primary/10"
-                            aria-label="Notifikasi">
-                            <x-icon name="bell" class="h-5 w-5" />
-                            @if ($unreadNotifications > 0)
-                            <span class="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-primary ring-2 ring-white"></span>
-                            @endif
-                        </button>
-                        <div x-show="open" x-cloak x-transition.opacity
-                            class="absolute right-0 mt-2 w-72 rounded-card border border-line bg-white p-4 shadow-card">
-                            <div class="text-h3 font-display text-ink">Notifikasi</div>
-                            <p class="mt-3 text-small text-muted">Belum ada notifikasi.</p>
-                        </div>
-                    </div>
-
                     <div class="flex items-center gap-3 pl-1">
                         <div class="hidden text-right leading-tight sm:block">
                             <div class="text-body font-medium text-ink">{{ $user->name }}</div>
