@@ -50,9 +50,6 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    {{-- Pengalih Profil Cepat untuk Demo & Presentasi Penguji (FR-Demo) --}}
-                    <x-demo-role-switcher />
-
                     {{-- Notifikasi --}}
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false" @keydown.escape.window="open = false">
                         <button type="button" @click="open = !open"

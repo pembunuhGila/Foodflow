@@ -197,7 +197,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-line bg-white">
-                        @foreach ($activePlans->sortBy([['production_date', 'desc'], ['id', 'desc']]) as $plan)
+                        @foreach ($activePlans as $plan)
                         @php
                         $st = $plan->status instanceof \BackedEnum ? $plan->status->value : (string) $plan->status;
                         $tone = $statusTone[$st] ?? ['bg-canvas text-muted', 'bg-muted', $st];

@@ -39,13 +39,7 @@
         rejectAction: ''
     }" @keydown.escape.window="processModalOpen = false; rejectModalOpen = false">
 
-        <!-- Session Status Alert -->
-        @if (session('status'))
-        <div class="flex items-center gap-2 rounded-input border border-primary/20 bg-primary/10 p-4 text-body text-primary" role="status">
-            <x-icon name="check" class="h-5 w-5 shrink-0" />
-            <span>{{ session('status') }}</span>
-        </div>
-        @endif
+        <x-flash-alert />
 
         <!-- Filter & Search -->
         <x-filter-bar :action="route('admin.password-resets.index')" :search="$search"

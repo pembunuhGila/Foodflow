@@ -34,3 +34,4 @@ __pycache__/
 .pytest_cache/
 test-results/
 FoodFlow_E2E_Testing_Package/
+/docs/materi/

@@ -295,31 +295,88 @@
         </x-card>
 
         <!-- Tanda tangan serah terima -->
-        <div class="signature-section mt-6 border-t border-line pt-5">
+        @php
+            $defaultGudang = $plan->materialRequests->firstWhere('status', 'approved')?->approver?->name
+                ?? $plan->materialRequests->first()?->approver?->name
+                ?? '';
+            $defaultDapur = (auth()->user()?->role === \App\Enums\UserRole::Produksi)
+                ? auth()->user()->name
+                : ($plan->creator?->name ?? '');
+            $defaultKepala = $plan->creator?->name ?? auth()->user()?->name ?? '';
+        @endphp
+
+        <div class="signature-section mt-6 rounded-card border border-line bg-white p-5 shadow-card print:border-none print:shadow-none print:p-0"
+             x-data="{
+                 staffGudang: @js($defaultGudang),
+                 timDapur: @js($defaultDapur),
+                 kepalaProduksi: @js($defaultKepala)
+             }">
+            <div class="no-print mb-4 flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2 text-small text-muted">
+                    <x-icon name="user" class="h-4 w-4 text-primary" />
+                    <span>Nama penandatangan terisi otomatis dan dapat diubah secara manual sebelum mencetak lembar kerja.</span>
+                </div>
+            </div>
+
             <div class="signature-grid grid grid-cols-1 gap-6 text-center text-small text-ink sm:grid-cols-3">
+                <!-- 1. Staff Gudang -->
                 <div class="sig-box flex flex-col items-center">
-                    <span class="sig-title mb-12 font-semibold sm:mb-14">Disiapkan Oleh (Staff Gudang):</span>
-                    <div class="sig-line mb-1.5 w-48 max-w-full border-b border-gray-400"></div>
-                    <span class="sig-sub text-muted">(Nama &amp; Tanda Tangan)</span>
+                    <span class="sig-title mb-10 font-semibold sm:mb-12">Disiapkan Oleh (Staff Gudang):</span>
+                    <div class="sig-line mb-1.5 w-52 max-w-full border-b border-gray-400"></div>
+
+                    {{-- Tampilan Layar (Input Manual) --}}
+                    <div class="no-print w-52 max-w-full">
+                        <input type="text" x-model="staffGudang" placeholder="Nama Staff Gudang"
+                               class="w-full rounded-md border border-line bg-canvas/50 px-2.5 py-1 text-center text-small font-medium text-ink placeholder:text-muted/60 focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+
+                    {{-- Tampilan Cetak (Print Output) --}}
+                    <div class="print-only hidden">
+                        <span class="sig-name font-semibold text-ink" x-text="staffGudang || '(Nama &amp; Tanda Tangan)'"></span>
+                    </div>
                 </div>
+
+                <!-- 2. Tim Dapur -->
                 <div class="sig-box flex flex-col items-center">
-                    <span class="sig-title mb-12 font-semibold sm:mb-14">Diterima Oleh (Tim Dapur):</span>
-                    <div class="sig-line mb-1.5 w-48 max-w-full border-b border-gray-400"></div>
-                    <span class="sig-sub text-muted">(Nama &amp; Tanda Tangan)</span>
+                    <span class="sig-title mb-10 font-semibold sm:mb-12">Diterima Oleh (Tim Dapur):</span>
+                    <div class="sig-line mb-1.5 w-52 max-w-full border-b border-gray-400"></div>
+
+                    {{-- Tampilan Layar (Input Manual) --}}
+                    <div class="no-print w-52 max-w-full">
+                        <input type="text" x-model="timDapur" placeholder="Nama Tim Dapur"
+                               class="w-full rounded-md border border-line bg-canvas/50 px-2.5 py-1 text-center text-small font-medium text-ink placeholder:text-muted/60 focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+
+                    {{-- Tampilan Cetak (Print Output) --}}
+                    <div class="print-only hidden">
+                        <span class="sig-name font-semibold text-ink" x-text="timDapur || '(Nama &amp; Tanda Tangan)'"></span>
+                    </div>
                 </div>
+
+                <!-- 3. Kepala Produksi / Ahli Gizi -->
                 <div class="sig-box flex flex-col items-center">
-                    <span class="sig-title mb-12 font-semibold sm:mb-14">Disetujui (Kepala Produksi / Ahli Gizi):</span>
-                    <div class="sig-line mb-1.5 w-48 max-w-full border-b border-gray-400"></div>
-                    <span class="sig-name font-semibold text-ink">{{ $plan->creator?->name ?? '(Nama & Tanda Tangan)' }}</span>
+                    <span class="sig-title mb-10 font-semibold sm:mb-12">Disetujui (Kepala Produksi / Ahli Gizi):</span>
+                    <div class="sig-line mb-1.5 w-52 max-w-full border-b border-gray-400"></div>
+
+                    {{-- Tampilan Layar (Input Manual) --}}
+                    <div class="no-print w-52 max-w-full">
+                        <input type="text" x-model="kepalaProduksi" placeholder="Nama Kepala Produksi"
+                               class="w-full rounded-md border border-line bg-canvas/50 px-2.5 py-1 text-center text-small font-medium text-ink placeholder:text-muted/60 focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+
+                    {{-- Tampilan Cetak (Print Output) --}}
+                    <div class="print-only hidden">
+                        <span class="sig-name font-semibold text-ink" x-text="kepalaProduksi || '{{ $plan->creator?->name ?? '(Nama &amp; Tanda Tangan)' }}'"></span>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- CSS khusus cetak & PDF (tidak diubah) -->
+    <!-- CSS khusus cetak & PDF -->
     <style>
-        .print-header-block { display: none; }
+        .print-header-block, .print-only { display: none; }
 
         @media print {
             nav, header, aside, .no-print, button,
@@ -328,9 +385,9 @@
                 content: "" !important;
             }
 
-            .print-header-block { display: block !important; }
+            .print-header-block, .print-only { display: block !important; }
 
-            @page { size: A4 landscape; margin: 8mm 10mm 10mm 10mm; }
+            @page { size: A4 portrait; margin: 8mm 10mm 10mm 10mm; }
 
             html, body, .min-h-screen, main {
                 background: #ffffff !important;
@@ -347,7 +404,7 @@
 
             .summary-cards-container {
                 display: grid !important;
-                grid-template-columns: repeat(6, 1fr) !important;
+                grid-template-columns: repeat(3, 1fr) !important;
                 gap: 6px !important;
                 margin-bottom: 6px !important;
             }
