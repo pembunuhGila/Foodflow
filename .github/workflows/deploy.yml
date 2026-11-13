@@ -1,0 +1,26 @@
+name: Deploy ke EC2 FoodFlow
+
+# 1. Kapan robot ini mulai jalan?
+on:
+  push:
+    branches: [ main ]  # Setiap ada git push ke branch main
+
+# 2. Apa yang robot ini lakukan?
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Robot berjalan di server cloud milik GitHub
+    steps:
+      # Langkah: Masuk ke server EC2 via SSH dan jalankan perintah
+      - name: Deploy ke Server EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/Foodflow
+            git pull origin main
+            php artisan migrate --force
+            php artisan optimize:clear
+            php artisan view:cache
+            sudo systemctl reload php8.4-fpm
