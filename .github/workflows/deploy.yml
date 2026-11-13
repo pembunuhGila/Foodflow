@@ -20,6 +20,7 @@ jobs:
           script: |
             cd /var/www/Foodflow
             git pull origin main
+            npm run build
             php artisan migrate --force
             php artisan optimize:clear
             php artisan view:cache
