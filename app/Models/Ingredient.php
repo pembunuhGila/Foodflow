@@ -207,6 +207,37 @@ class Ingredient extends Model
     }
 
     /**
+     * Rincian purchase order yang memuat bahan baku ini.
+     *
+     * @return HasMany<PurchaseOrderDetail, $this>
+     */
+    public function purchaseOrderDetails(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderDetail::class, 'ingredient_id');
+    }
+
+    /**
+     * Estimasi biaya acuan per unit satuan bahan baku (diambil dari PO supplier terbaru atau estimasi standar pasar).
+     */
+    public function getEstimatedCostPerUnitAttribute(): float
+    {
+        $latestPrice = $this->purchaseOrderDetails()->latest('id')->value('price');
+        if ($latestPrice && (float) $latestPrice > 0) {
+            return (float) $latestPrice;
+        }
+
+        return match (strtolower($this->category ?? '')) {
+            'protein hewani', 'daging' => 45000.0,
+            'protein nabati' => 15000.0,
+            'karbohidrat' => 14000.0,
+            'sayuran' => 12000.0,
+            'bumbu & rempah' => 25000.0,
+            'minyak & lemak' => 20000.0,
+            default => 15000.0,
+        };
+    }
+
+    /**
      * Rincian permintaan bahan baku yang melibatkan bahan ini.
      *
      * @return HasMany<MaterialRequestDetail, $this>

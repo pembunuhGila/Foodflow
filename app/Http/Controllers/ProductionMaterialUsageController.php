@@ -24,16 +24,43 @@ class ProductionMaterialUsageController extends Controller
     {
         $productionPlan->load([
             'details.product',
-            'materialUsages.ingredient',
+            'materialUsages.ingredient.purchaseOrderDetails',
             'materialUsages.recorder',
         ]);
 
         $calculation = $this->calculator->calculateForPlan($productionPlan);
 
+        $totalPlannedCost = 0.0;
+        $totalActualCost = 0.0;
+
+        foreach ($productionPlan->materialUsages as $usage) {
+            $unitCost = $usage->ingredient?->estimated_cost_per_unit ?? 15000.0;
+            $plannedCost = (float) $usage->planned_quantity * $unitCost;
+            $actualCost = (float) $usage->actual_quantity * $unitCost;
+            $costDiff = $actualCost - $plannedCost;
+
+            $usage->setAttribute('unit_cost', $unitCost);
+            $usage->setAttribute('planned_cost', $plannedCost);
+            $usage->setAttribute('actual_cost', $actualCost);
+            $usage->setAttribute('cost_difference', $costDiff);
+
+            $totalPlannedCost += $plannedCost;
+            $totalActualCost += $actualCost;
+        }
+
+        $costVariance = $totalActualCost - $totalPlannedCost;
+        $efficiencyPercent = $totalPlannedCost > 0
+            ? (($costVariance / $totalPlannedCost) * 100)
+            : 0.0;
+
         return view('production-plans.material-usages.show', [
             'plan' => $productionPlan,
             'usages' => $productionPlan->materialUsages,
             'calculatedItems' => $calculation['items'],
+            'totalPlannedCost' => $totalPlannedCost,
+            'totalActualCost' => $totalActualCost,
+            'costVariance' => $costVariance,
+            'efficiencyPercent' => $efficiencyPercent,
         ]);
     }
 
