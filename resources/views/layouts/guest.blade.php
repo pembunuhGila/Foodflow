@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'FoodFlow') }}</title>
+    <title>{{ config('app.name', 'FoodFlow') }} — Sistem Katering</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
@@ -19,51 +19,58 @@
     </style>
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased bg-canvas text-ink">
     <div class="min-h-screen lg:grid lg:grid-cols-2">
 
-        {{-- Panel kiri: branding (disembunyikan di layar kecil) --}}
-        <aside class="relative hidden overflow-hidden bg-gradient-to-br from-ink via-secondary to-primary p-12 text-white lg:flex lg:flex-col lg:justify-between">
-            <div class="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-primary/40 blur-3xl"></div>
-            <div class="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-tertiary/40 blur-3xl"></div>
-
+        {{-- Panel kiri: branding katering operasional --}}
+        <aside class="relative hidden overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-blue-900 p-12 text-white lg:flex lg:flex-col lg:justify-between shadow-2xl">
             <div class="relative flex items-center gap-3">
-                <span class="flex h-11 w-16 items-center justify-center rounded-input bg-white p-1.5">
-                    <x-brand-logo class="h-full w-full" />
+                <span class="flex h-11 w-14 items-center justify-center rounded-lg bg-white/10 p-2 border border-white/20">
+                    <x-brand-logo class="h-full w-full object-contain" />
                 </span>
-                <span class="font-display text-h2 italic">FoodFlow</span>
+                <div class="leading-tight">
+                    <span class="font-display text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        FoodFlow
+                        <span class="rounded bg-blue-500/20 border border-blue-400/30 px-2 py-0.5 text-[11px] font-semibold text-blue-200 uppercase tracking-normal">Katering</span>
+                    </span>
+                    <span class="text-xs text-blue-200/70">Operasional &amp; Dapur Sentral</span>
+                </div>
             </div>
 
-            <div class="relative max-w-lg">
-                <h2 class="font-display text-4xl font-semibold leading-tight tracking-tight">
-                    Kelola dapur produksi,
-                    <span class="bg-gradient-to-r from-warning-bg to-tertiary bg-clip-text text-transparent">lebih rapi dan terukur.</span>
+            <div class="relative max-w-lg my-auto py-8">
+                <div class="inline-flex items-center gap-2 rounded-md bg-blue-500/10 border border-blue-400/20 px-3 py-1 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-4">
+                    <span class="h-1.5 w-1.5 rounded-full bg-blue-400"></span>
+                    Sistem Operasional Katering
+                </div>
+                <h2 class="font-display text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+                    Kelola pesanan dapur,
+                    <span class="text-blue-300">presisi di setiap porsi.</span>
                 </h2>
-                <p class="mt-4 text-body text-white/75">
-                    Pantau pergerakan stok bahan mentah, susun jadwal masak harian, dan pantau kalkulasi nutrisi gizi porsi secara presisi dalam satu dashboard terintegrasi.
+                <p class="mt-4 text-sm leading-relaxed text-blue-100/75">
+                    Platform terpadu untuk mengontrol pesanan katering, kalkulasi komposisi resep, mutasi stok gudang, hingga realisasi masak dapur harian.
                 </p>
 
                 <ul class="mt-8 space-y-3">
                     @foreach ([
-                    ['check', 'Validasi Email Terdaftar', 'Sistem memverifikasi akun aktif sesuai penugasan shift'],
-                    ['users', 'Otorisasi Admin', 'Permohonan reset password diteruskan ke dashboard manajemen'],
-                    ['key', 'Password Sementara', 'Kredensial baru diberikan setelah permohonan disetujui admin'],
+                    ['cart', 'Pesanan & Komposisi Resep', 'Kalkulasi otomatis kebutuhan bahan baku per porsi menu katering'],
+                    ['package', 'Stok Gudang & PO Supplier', 'Peringatan stok minimum dan alur penerimaan barang dari vendor'],
+                    ['clock', 'Jadwal & Realisasi Masak', 'Pencatatan hasil olahan dapur dan pemantauan distribusi tepat waktu'],
                     ] as [$icon, $title, $desc])
-                    <li class="flex items-center gap-4 rounded-card border border-white/15 bg-white/10 p-4 backdrop-blur">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-input bg-white/15">
-                            <x-icon :name="$icon" />
+                    <li class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-400/20 text-blue-200">
+                            <x-icon :name="$icon" class="h-5 w-5" />
                         </span>
                         <div>
-                            <div class="text-body font-semibold">{{ $title }}</div>
-                            <div class="text-small text-white/70">{{ $desc }}</div>
+                            <div class="text-sm font-semibold text-white">{{ $title }}</div>
+                            <div class="text-xs text-blue-100/70">{{ $desc }}</div>
                         </div>
                     </li>
                     @endforeach
                 </ul>
             </div>
 
-            <div class="relative flex items-center justify-between border-t border-white/15 pt-5 text-small text-white/70">
-                <span>Digunakan oleh tim Manajer, Chef, &amp; Gudang</span>
+            <div class="relative flex items-center justify-between border-t border-white/10 pt-5 text-xs text-blue-200/60">
+                <span>Khusus staf operasional: Admin, Gudang, Dapur, &amp; Manajemen</span>
                 <span>Versi 0.1</span>
             </div>
         </aside>
@@ -71,28 +78,31 @@
         {{-- Panel kanan: form --}}
         <main class="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-6 py-10">
             @isset($back)
-            <div class="absolute inset-x-0 top-0 border-b border-line px-8 py-5 text-small">{{ $back }}</div>
+            <div class="absolute inset-x-0 top-0 border-b border-line bg-white/60 px-8 py-4 text-small">
+                {{ $back }}
+            </div>
             @endisset
 
-            <div class="w-full max-w-md">
+            <div class="w-full max-w-md my-auto pt-6">
 
                 {{-- Logo untuk layar kecil --}}
                 <div class="mb-8 flex items-center gap-3 lg:hidden">
-                    <x-brand-logo class="h-10 w-16" />
-                    <span class="font-display text-h2 text-ink">FoodFlow</span>
+                    <x-brand-logo class="h-10 w-14" />
+                    <span class="font-display text-2xl font-bold text-ink">FoodFlow</span>
+                    <span class="rounded bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">Katering</span>
                 </div>
 
                 @isset($intro)
                 <div class="mb-6">{{ $intro }}</div>
                 @endisset
 
-                <div class="rounded-card border border-line bg-white p-8 shadow-card">
+                <div class="rounded-2xl border border-line bg-white p-7 sm:p-8 shadow-card">
                     {{ $slot }}
                 </div>
 
-                <p class="mt-6 text-center text-small text-muted">
-                    Belum memiliki akses dapur katering? <span class="text-primary">Hubungi Admin</span>
-                    <br>&copy; {{ date('Y') }} FoodFlow
+                <p class="mt-6 text-center text-xs text-muted">
+                    Membutuhkan akun staf operasional? <span class="font-medium text-primary">Hubungi Admin Dapur</span>
+                    <br>&copy; {{ date('Y') }} FoodFlow Katering
                 </p>
             </div>
         </main>
