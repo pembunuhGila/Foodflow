@@ -50,7 +50,19 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans text-ink antialiased">
+<body class="bg-gray-100 font-sans text-ink antialiased" x-data="{
+    signerName: '{{ $user?->name ?? '' }}',
+    canPrint() {
+        return Boolean(this.signerName && this.signerName.trim() !== '');
+    },
+    validateAndPrint() {
+        if (!this.canPrint()) {
+            alert('Nama Penanggung Jawab dokumen wajib diisi sebelum mencetak atau mengekspor PDF.');
+            return;
+        }
+        window.print();
+    }
+}">
 
     {{-- Toolbar Aksi Atas (Hanya tampil di layar browser, tersembunyi saat dicetak) --}}
     <div class="no-print sticky top-0 z-30 border-b border-line bg-white/95 px-6 py-4 shadow-sm backdrop-blur-md">
@@ -63,11 +75,16 @@
                 <span class="text-body font-semibold text-ink">{{ $title }}</span>
             </div>
             <div class="flex items-center gap-3">
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-small font-medium text-white shadow-card transition hover:bg-primary-dark">
+                <button type="button" @click="validateAndPrint()"
+                    :class="canPrint() ? 'bg-primary hover:bg-primary-dark text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'"
+                    class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-small font-semibold transition">
                     <x-icon name="printer" class="h-4 w-4" />
                     <span>Cetak Dokumen / Simpan PDF</span>
                 </button>
             </div>
+        </div>
+        <div x-show="!canPrint()" class="mx-auto mt-2 max-w-5xl rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs text-amber-800">
+            <span><strong>Validasi Wajib:</strong> Lengkapi nama Penanggung Jawab dokumen di bagian bawah untuk mengaktifkan cetak/ekspor PDF.</span>
         </div>
     </div>
 
@@ -130,8 +147,12 @@
                 <p>Status: Sah & Terverifikasi.</p>
             </div>
             <div class="text-center">
-                <p class="mb-12">Penanggung Jawab,</p>
-                <p class="font-semibold text-ink underline">{{ $user?->name ?? 'Administrator' }}</p>
+                <p class="mb-8">Penanggung Jawab,</p>
+                <div class="no-print mb-1.5">
+                    <input type="text" x-model="signerName" placeholder="Ketik nama penanggung jawab..."
+                           class="w-48 rounded border border-line bg-canvas/60 px-2.5 py-1 text-center text-xs font-semibold text-ink focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary">
+                </div>
+                <p class="font-semibold text-ink underline" x-text="signerName || '( ............................................ )'"></p>
                 <p class="text-tiny text-muted">{{ ucfirst($user?->role?->value ?? 'Staff') }}</p>
             </div>
         </div>

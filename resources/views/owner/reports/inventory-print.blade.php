@@ -76,10 +76,19 @@
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                     <span>Tanda Tangan Digital</span>
                 </button>
-                <button onclick="window.print()" class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-small font-medium text-white shadow-card transition hover:bg-primary-dark">
+                <button type="button" @click="validateAndExport()" 
+                        :class="canExport() ? 'bg-primary hover:bg-primary-dark text-white cursor-pointer shadow-card' : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'"
+                        class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-small font-semibold transition">
                     <x-icon name="printer" class="h-4 w-4" />
                     <span>Cetak Dokumen / Simpan PDF</span>
                 </button>
+            </div>
+
+            <div x-show="!canExport()" class="w-full mt-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-2 text-xs text-amber-800">
+                <span class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span><strong>Validasi Wajib:</strong> Lengkapi nama dan bubuhkan tanda tangan digital pada kedua kolom penanggung jawab di bawah untuk mengaktifkan cetak/ekspor.</span>
+                </span>
             </div>
         </div>
 

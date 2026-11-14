@@ -259,6 +259,35 @@ function digitalSignatureApp(defaultSigner1 = '', defaultSigner2 = '') {
                 localStorage.removeItem(`foodflow_sig_${key}`);
                 localStorage.removeItem(`foodflow_sig_time_${key}`);
             } catch (err) {}
+        },
+
+        canExport() {
+            return Boolean(
+                this.signer1Name && this.signer1Name.trim() !== '' &&
+                this.signer2Name && this.signer2Name.trim() !== '' &&
+                this.signatures.signer1 &&
+                this.signatures.signer2
+            );
+        },
+
+        validateAndExport() {
+            if (!this.signer1Name || this.signer1Name.trim() === '') {
+                alert('Nama Penanggung Jawab pertama wajib diisi sebelum mencetak atau menyimpan dokumen.');
+                return;
+            }
+            if (!this.signatures.signer1) {
+                alert('Tanda tangan digital Penanggung Jawab pertama wajib dibubuhkan sebelum mencetak atau menyimpan dokumen.');
+                return;
+            }
+            if (!this.signer2Name || this.signer2Name.trim() === '') {
+                alert('Nama Pimpinan / Penanggung Jawab kedua wajib diisi sebelum mencetak atau menyimpan dokumen.');
+                return;
+            }
+            if (!this.signatures.signer2) {
+                alert('Tanda tangan digital Pimpinan / Penanggung Jawab kedua wajib dibubuhkan sebelum mencetak atau menyimpan dokumen.');
+                return;
+            }
+            window.print();
         }
     };
 }

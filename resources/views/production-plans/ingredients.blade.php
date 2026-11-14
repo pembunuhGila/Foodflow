@@ -51,7 +51,31 @@
             'detail' => '',
             'confirmLabel' => 'Ya, Ajukan',
         ];
+
+        $defaultGudang = $plan->materialRequests->firstWhere('status', 'approved')?->approver?->name
+            ?? $plan->materialRequests->first()?->approver?->name
+            ?? '';
+        $defaultDapur = (auth()->user()?->role === \App\Enums\UserRole::Produksi)
+            ? auth()->user()->name
+            : ($plan->creator?->name ?? '');
+        $defaultKepala = $plan->creator?->name ?? auth()->user()?->name ?? '';
     @endphp
+
+    <div x-data="{
+        staffGudang: @js($defaultGudang),
+        timDapur: @js($defaultDapur),
+        kepalaProduksi: @js($defaultKepala),
+        canPrint() {
+            return Boolean(this.staffGudang && this.staffGudang.trim() && this.timDapur && this.timDapur.trim() && this.kepalaProduksi && this.kepalaProduksi.trim());
+        },
+        validateAndPrint() {
+            if (!this.canPrint()) {
+                alert('Harap lengkapi seluruh nama penandatangan (Staff Gudang, Tim Dapur, dan Kepala Produksi) pada bagian bawah sebelum mencetak dokumen.');
+                return;
+            }
+            window.print();
+        }
+    }">
 
     {{-- Header (disembunyikan saat cetak) --}}
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between print:hidden">
@@ -99,8 +123,9 @@
             @endif
             @endif
 
-            <button type="button" onclick="window.print()"
-                class="inline-flex items-center gap-2 rounded-input bg-primary px-4 py-2.5 text-label uppercase text-white transition hover:bg-primary-dark">
+            <button type="button" @click="validateAndPrint()"
+                :class="canPrint() ? 'bg-primary hover:bg-primary-dark text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'"
+                class="inline-flex items-center gap-2 rounded-input px-4 py-2.5 text-label uppercase transition">
                 Cetak / Simpan PDF
             </button>
         </div>
@@ -305,17 +330,19 @@
             $defaultKepala = $plan->creator?->name ?? auth()->user()?->name ?? '';
         @endphp
 
-        <div class="signature-section mt-6 rounded-card border border-line bg-white p-5 shadow-card print:border-none print:shadow-none print:p-0"
-             x-data="{
-                 staffGudang: @js($defaultGudang),
-                 timDapur: @js($defaultDapur),
-                 kepalaProduksi: @js($defaultKepala)
-             }">
+        <div class="signature-section mt-6 rounded-card border border-line bg-white p-5 shadow-card print:border-none print:shadow-none print:p-0">
             <div class="no-print mb-4 flex items-center justify-between border-b border-line pb-3">
                 <div class="flex items-center gap-2 text-small text-muted">
                     <x-icon name="user" class="h-4 w-4 text-primary" />
                     <span>Nama penandatangan terisi otomatis dan dapat diubah secara manual sebelum mencetak lembar kerja.</span>
                 </div>
+            </div>
+
+            <div x-show="!canPrint()" class="no-print mb-4 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-2 text-xs text-amber-800">
+                <span class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span><strong>Validasi Wajib:</strong> Lengkapi nama Staff Gudang, Tim Dapur, dan Kepala Produksi untuk mengaktifkan tombol cetak/ekspor.</span>
+                </span>
             </div>
 
             <div class="signature-grid grid grid-cols-1 gap-6 text-center text-small text-ink sm:grid-cols-3">
@@ -478,4 +505,5 @@
             .sig-sub, .sig-name { font-size: 7pt !important; display: block !important; }
         }
     </style>
+    </div>
 </x-app-layout>
