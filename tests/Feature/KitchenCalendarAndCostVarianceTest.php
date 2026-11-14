@@ -4,11 +4,15 @@ namespace Tests\Feature;
 
 use App\Enums\ProductionPlanStatus;
 use App\Enums\UserRole;
+use App\Models\CateringOrder;
+use App\Models\Customer;
 use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\ProductionMaterialUsage;
 use App\Models\ProductionPlan;
 use App\Models\ProductionPlanDetail;
+use App\Models\PurchaseOrder;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -113,5 +117,21 @@ class KitchenCalendarAndCostVarianceTest extends TestCase
             ->assertSee('Realisasi Biaya Aktual')
             ->assertSee('Varians Efisiensi Biaya')
             ->assertSee('Daging Sapi Has Luar');
+    }
+
+    public function test_database_seeder_executes_completely_for_all_modules(): void
+    {
+        $this->seed();
+
+        $this->assertDatabaseHas('users', ['email' => 'admin@foodflow.test']);
+        $this->assertDatabaseHas('users', ['email' => 'produksi@foodflow.test']);
+        $this->assertGreaterThan(0, Customer::count());
+        $this->assertGreaterThan(0, Supplier::count());
+        $this->assertGreaterThan(0, Ingredient::count());
+        $this->assertGreaterThan(0, Product::count());
+        $this->assertGreaterThan(0, CateringOrder::count());
+        $this->assertGreaterThan(0, PurchaseOrder::count());
+        $this->assertGreaterThan(0, ProductionPlan::count());
+        $this->assertGreaterThan(0, ProductionMaterialUsage::count());
     }
 }

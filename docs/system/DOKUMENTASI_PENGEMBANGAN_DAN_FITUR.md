@@ -133,6 +133,56 @@ Selama sesi pengerjaan, sejumlah masalah teknis dan perbaikan UI telah diselesai
      - Master Data Supplier (`/suppliers`)
      - Pesanan Katering (`/catering-orders`)
 
+### E. Kalender Visual Jadwal Masak Dapur (`/production-plans/calendar`)
+- **Navigasi Bulanan Interaktif:** Memungkinkan kepala dapur dan staf produksi memantau jadwal masak harian, mingguan, dan bulanan dengan kontrol navigasi bulan (`prev`, `next`, dan tombol `Hari Ini`).
+- **Kartu Ringkasan Metrik Bulanan:**
+  - Total Rencana Masak bulan berjalan.
+  - Estimasi Total Porsi masakan yang harus diproduksi.
+  - Total Menu Hidangan unik yang dijadwalkan.
+  - Total Rencana yang telah diselesaikan.
+- **Chip Status Warna Standar Katering:**
+  - `Draft` (Kuning)
+  - `Disetujui` (Biru)
+  - `Dalam Proses` (Indigo)
+  - `Selesai` (Hijau Emerald)
+- **Modal Interaktif Detail Jadwal:** Mengklik jadwal masak langsung memunculkan rincian lengkap (nomor rencana, nama pesanan katering, jam masak, porsi target, menu masakan, dan catatan dapur) serta tautan cepat ke lembar kalkulasi bahan tanpa perlu memuat ulang halaman.
+- **Bilah Peralihan Tampilan:** Tersedia tombol switcher cepat antara tampilan daftar tabel biasa dan tampilan kalender visual pada modul rencana produksi.
+
+### F. Analisis Varians Biaya Masak Dapur (Estimasi Resep vs Realisasi Aktual)
+- **Accessor Harga Bahan Baku Riil (`Ingredient::estimated_cost_per_unit`):** Menghubungkan harga beli bahan baku acuan dari riwayat Purchase Order supplier terakhir atau harga patokan per unit standar.
+- **Kalkulasi Komparatif Otomatis pada Controller (`ProductionMaterialUsageController`):**
+  - **Estimasi Biaya Resep (Rp):** Jumlah takaran resep standar dikalikan harga satuan bahan baku.
+  - **Realisasi Biaya Aktual (Rp):** Jumlah bahan baku yang riil terpakai di dapur dikalikan harga satuan bahan baku.
+  - **Varians Biaya (Rp & %):** Selisih antara biaya aktual dan estimasi resep untuk mengukur efisiensi atau pemborosan dapur katering.
+- **Dasbor Finansial Dapur Interaktif (`production-plans.material-usages.show`):**
+  - Tiga kartu KPI finansial: *Estimasi Biaya Resep*, *Realisasi Biaya Aktual*, dan *Varians Efisiensi Biaya*.
+  - Penanda badge visual: **Efisien / Penghematan (Hijau)** jika realisasi $\le$ estimasi, dan **Overbudget / Pemborosan (Merah)** jika pemakaian melebihi takaran standar.
+  - Kolom rincian rupiah pada tabel bahan: *Harga Satuan*, *Subtotal Estimasi*, *Subtotal Realisasi*, dan *Selisih Rupiah* per item bahan baku.
+
+### G. Validasi Wajib Nama & Tanda Tangan Digital Sebelum Ekspor Laporan
+- **Integritas & Akuntabilitas Dokumen:** Menjamin tidak ada laporan cetak atau dokumen ekspor resmi yang diterbitkan tanpa identitas penanggung jawab yang sah.
+- **Proteksi Tombol Aksi:** Tombol ekspor pada modal tanda tangan `<x-report-signature-modal>` otomatis terkunci (`disabled` dengan indikator visual) apabila nama penanggung jawab belum diisi atau kanvas tanda tangan masih kosong.
+- **Cakupan Modul Terproteksi:**
+  1. Laporan Stok Bahan Baku Gudang (`/owner/reports/inventory/print`)
+  2. Laporan Realisasi Produksi Dapur (`/owner/reports/production/print`)
+  3. Lembar Kerja Bahan Masak Dapur (`/production-plans/{plan}/ingredients`)
+  4. Template Ekspor Cetak Standar Katering (`/exports/print`)
+
+### H. Penyempurnaan Tampilan Login & Redesign UI Katering
+- **Penghapusan Opsi Demo Cepat Login:** Menghapus blok tombol isi otomatis akun demo pada halaman login agar form autentikasi lebih bersih, profesional, dan mengutamakan keamanan kredensial.
+- **Presisi Tata Letak Panel Login:**
+  - Panel kiri dinaikkan ke atas dengan margin dan padding yang proporsional (`justify-between pt-10 pb-8`).
+  - Panel bawah (status operasional & kepatuhan gizi) dijangkarkan presisi ke batas bawah layar.
+- **Redesign Tema Biru Katering:**
+  - Transformasi estetika antarmuka ke palet warna Biru Katering Profesional (Primary Blue `#1E40AF` & Accent Blue `#3B82F6`) menggantikan tampilan putih polos.
+  - Optimalisasi ukuran tombol aksi di seluruh modul (seperti tombol simpan, filter, dan ekspor) agar proporsional, ergonomis, dan tidak berlebihan.
+
+### I. Kelengkapan Seeder Seluruh Modul Operasional (All-Module Seed Data)
+- **`CateringOrderSeeder`:** Memuat 12 data pesanan katering realistis lengkap dengan item hidangan, variasi status pesanan (Confirmed, In Production, Delivered), dan tanggal pengiriman.
+- **`PurchaseOrderSeeder`:** Memuat 8 data purchase order pengadaan ke 5 mitra supplier rekanan dengan harga riil per satuan untuk membentuk acuan kalkulasi biaya bahan baku.
+- **`ProductionPlanSeeder`:** Mengaitkan jadwal masak ke pesanan katering, permintaan bahan gudang, realisasi masak, dan pencatatan pemakaian bahan aktual dengan varians biaya realistis.
+- **`ProductSeeder`:** Memastikan setiap menu hidangan di basis data memiliki formula resep bahan baku lengkap untuk perhitungan otomatis kebutuhan dapur.
+
 ---
 
 ## 6. Arsitektur REST API (Rekomendasi Skripsi)

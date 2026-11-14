@@ -62,6 +62,8 @@ class DatabaseSeeder extends Seeder
             SupplierSeeder::class,
             IngredientSeeder::class,
             ProductSeeder::class,
+            PurchaseOrderSeeder::class,
+            CateringOrderSeeder::class,
             ProductionPlanSeeder::class,
             IngredientStockTransactionSeeder::class,
         ]);

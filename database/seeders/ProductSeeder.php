@@ -335,5 +335,33 @@ class ProductSeeder extends Seeder
                 $tumisSayur->ingredients()->sync($syncData);
             }
         }
+
+        // Pastikan seluruh menu hidangan katering memiliki resep bahan baku lengkap
+        $allIngredients = Ingredient::all();
+        if ($allIngredients->isNotEmpty()) {
+            $allProducts = Product::withCount('ingredients')->get();
+            foreach ($allProducts as $pIndex => $prod) {
+                if ($prod->ingredients_count === 0) {
+                    $slice = $allIngredients->slice(($pIndex * 3) % max(1, $allIngredients->count()), 4);
+                    if ($slice->count() < 2) {
+                        $slice = $allIngredients->take(3);
+                    }
+                    $sync = [];
+                    foreach ($slice as $ing) {
+                        $sync[$ing->id] = [
+                            'quantity_per_unit' => match (strtolower($ing->category ?? '')) {
+                                'karbohidrat' => 0.120,
+                                'protein hewani', 'daging' => 0.150,
+                                'protein nabati' => 0.080,
+                                'sayuran' => 0.100,
+                                default => 0.015,
+                            },
+                            'unit' => $ing->unit ?? 'kg',
+                        ];
+                    }
+                    $prod->ingredients()->sync($sync);
+                }
+            }
+        }
     }
 }
