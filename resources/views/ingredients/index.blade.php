@@ -312,7 +312,7 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" x-on:click="$dispatch('close')" class="rounded-full border border-line bg-white px-4 py-2 text-small font-medium text-ink hover:bg-gray-50">
+                    <button type="button" x-on:click="$dispatch('close')" class="rounded-lg border border-line bg-white px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50 transition">
                         Batal
                     </button>
                     <x-primary-button type="submit">
