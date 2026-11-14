@@ -8,6 +8,6 @@
         'neutral' => 'bg-white text-muted border border-line',
     ][$variant] ?? 'bg-info-bg text-info-text border border-info-text/20';
 @endphp
-<span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-label uppercase $styles"]) }}>
+<span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase $styles"]) }}>
     {{ $slot }}
 </span>

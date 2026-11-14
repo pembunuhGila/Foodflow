@@ -7,7 +7,7 @@
         'danger'  => 'bg-danger-bg text-danger-text',
     ][$tone] ?? 'bg-info-bg text-primary';
 @endphp
-<div class="rounded-card border border-line bg-white p-5 shadow-card">
+<div class="rounded-card border border-line bg-white p-5 shadow-card hover:shadow-cardHover transition-shadow duration-200">
     <div class="flex items-start justify-between gap-3">
         <div>
             <div class="text-label uppercase text-muted">{{ $label }}</div>

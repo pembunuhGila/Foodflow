@@ -13,7 +13,7 @@
             Selamat datang, <span class="font-medium text-ink">{{ $user?->name ?? 'Pengguna' }}</span>. Sistem sedang mengarahkan Anda ke dashboard operasional sesuai hak akses peran Anda.
         </p>
         <div class="mt-6">
-            <a href="{{ route($targetRoute) }}" class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-body font-medium text-white shadow-card transition hover:bg-primary/90">
+            <a href="{{ route($targetRoute) }}" class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-dark">
                 <span>Buka Dashboard Sekarang</span>
                 <x-icon name="arrow" class="h-4 w-4" />
             </a>

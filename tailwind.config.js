@@ -18,25 +18,27 @@ export default {
 
             colors: {
                 primary: {
-                    DEFAULT: "#7C5CE0",
-                    dark: "#6B46C1",
+                    DEFAULT: "#2563EB",
+                    dark: "#1D4ED8",
+                    light: "#60A5FA",
+                    subtle: "#EFF6FF",
                 },
-                secondary: "#4C2FB5",
-                tertiary: "#F5D0FE",
-                ink: "#1E1B4B",
-                muted: "#6B7280",
-                canvas: "#F7F5FD",
-                line: "#ECE8F7",
+                secondary: "#0284C7",
+                tertiary: "#E0F2FE",
+                ink: "#0F172A",
+                muted: "#64748B",
+                canvas: "#F8FAFC",
+                line: "#E2E8F0",
 
                 success: { bg: "#DCFCE7", text: "#15803D" },
                 warning: { bg: "#FEF3C7", text: "#B45309" },
                 danger: { bg: "#FEE2E2", text: "#B91C1C" },
-                info: { bg: "#EDE9FE", text: "#6D28D9" },
+                info: { bg: "#EFF6FF", text: "#1D4ED8" },
 
                 wash: {
-                    from: "#F7F5FD",
+                    from: "#F8FAFC",
                     via: "#FFFFFF",
-                    to: "#F3EEFA",
+                    to: "#F1F5F9",
                 },
             },
 
@@ -61,22 +63,25 @@ export default {
                 body: ["14px", { lineHeight: "20px" }],
                 small: ["13px", { lineHeight: "18px" }],
                 label: [
-                    "12px",
+                    "11px",
                     {
                         lineHeight: "16px",
-                        letterSpacing: "0.06em",
+                        letterSpacing: "0.05em",
                         fontWeight: "700",
                     },
                 ],
             },
 
             borderRadius: {
-                card: "20px",
-                input: "12px",
+                card: "16px",
+                input: "8px",
+                btn: "8px",
             },
 
             boxShadow: {
-                card: "0px 8px 24px -4px rgba(124, 92, 224, 0.06), 0px 2px 6px -1px rgba(30, 27, 75, 0.03)",
+                card: "0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03)",
+                cardHover: "0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04)",
+                dropdown: "0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04)",
             },
         },
     },
