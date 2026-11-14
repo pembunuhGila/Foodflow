@@ -120,7 +120,7 @@
                             <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Jenis Mutasi</th>
                             <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Masuk</th>
                             <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Keluar</th>
-                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Adjustment</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-label uppercase text-muted">Penyesuaian Fisik</th>
                             <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Catatan &amp; Referensi</th>
                             <th scope="col" class="px-6 py-3.5 text-left text-label uppercase text-muted">Operator</th>
                         </tr>
@@ -137,20 +137,20 @@
                             <td class="px-6 py-4 font-medium text-ink">{{ $tx->ingredient?->name ?? '-' }}</td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 @if ($type === 'in')
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-small font-medium text-primary">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-primary"></span> Masuk
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-success-text/20 bg-success-bg px-2.5 py-1 text-small font-medium text-success-text">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-success-text"></span> Masuk
                                 </span>
                                 @elseif ($type === 'out')
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-danger-bg px-2.5 py-1 text-small font-medium text-danger-text">
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-danger-text/20 bg-danger-bg px-2.5 py-1 text-small font-medium text-danger-text">
                                     <span class="h-1.5 w-1.5 rounded-full bg-danger-text"></span> Keluar
                                 </span>
                                 @else
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-small font-medium text-gray-600">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span> Adjustment
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-info-text/20 bg-info-bg px-2.5 py-1 text-small font-medium text-info-text">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-info-text"></span> Penyesuaian Fisik
                                 </span>
                                 @endif
                             </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-right font-medium text-primary">
+                            <td class="whitespace-nowrap px-6 py-4 text-right font-medium text-success-text">
                                 {{ $type === 'in' ? '+' . number_format($qty, 2, ',', '.') . ' ' . $unit : '-' }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right font-medium text-danger-text">

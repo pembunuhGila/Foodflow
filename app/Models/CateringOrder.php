@@ -163,7 +163,7 @@ class CateringOrder extends Model
             'processing' => 'Diproses',
             'delivered' => 'Selesai',
             'cancelled' => 'Dibatalkan',
-            default => 'Pending',
+            default => 'Pending (Menunggu)',
         };
     }
 

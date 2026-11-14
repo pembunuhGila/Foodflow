@@ -74,7 +74,7 @@
                 <button type="button" @click="logout()" :disabled="loading"
                         class="flex h-11 items-center justify-center gap-2 rounded-full bg-primary text-body font-medium text-white shadow-card hover:bg-primary-dark disabled:opacity-60">
                     <x-icon name="power" class="h-4 w-4" />
-                    <span x-text="loading ? 'Memproses...' : 'Ya, Logout'"></span>
+                    <span x-text="loading ? 'Memproses...' : 'Ya, Keluar'"></span>
                 </button>
             </div>
         </div>

@@ -192,40 +192,46 @@
                             <!-- Kondisi stok -->
                             <td class="whitespace-nowrap px-6 py-4">
                                 @if ($item->isOutOfStock())
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-danger-bg px-2.5 py-1 text-small font-medium text-danger-text">
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-danger-text/20 bg-danger-bg px-2.5 py-1 text-small font-medium text-danger-text">
                                     <span class="h-1.5 w-1.5 rounded-full bg-danger-text"></span> Stok Habis
                                 </span>
                                 @elseif ($item->isLowStock())
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-small font-medium text-amber-800">
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-small font-medium text-amber-800">
                                     <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Stok Menipis
                                 </span>
                                 @else
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-small font-medium text-primary">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-primary"></span> Stok Aman
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-success-text/20 bg-success-bg px-2.5 py-1 text-small font-medium text-success-text">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-success-text"></span> Stok Aman
                                 </span>
                                 @endif
                             </td>
 
-                            <!-- Status: Aktif violet, Nonaktif abu-abu -->
+                            <!-- Status: Aktif hijau, Nonaktif abu-abu -->
                             <td class="whitespace-nowrap px-6 py-4">
                                 @if ($item->isActive())
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-small font-medium text-primary">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-primary"></span> Aktif
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-success-text/20 bg-success-bg px-2.5 py-1 text-small font-medium text-success-text">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-success-text"></span> Aktif
                                 </span>
                                 @else
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-small font-medium text-gray-600">
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-gray-100 px-2.5 py-1 text-small font-medium text-gray-600">
                                     <span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span> Nonaktif
                                 </span>
                                 @endif
                             </td>
 
-                            <!-- Aksi (teks, bukan tombol) -->
+                            <!-- Aksi (tombol pill nyaman sentuh) -->
                             <td class="whitespace-nowrap px-6 py-4 text-right text-small font-medium">
-                                <div class="flex items-center justify-end gap-3">
-                                    <a href="{{ route('ingredients.show', $item) }}" class="text-primary transition hover:text-primary-dark">Detail</a>
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('ingredients.show', $item) }}"
+                                       class="inline-flex items-center rounded-full border border-line bg-white px-3 py-1.5 text-small font-medium text-ink shadow-sm transition hover:border-primary hover:text-primary">
+                                        Detail
+                                    </a>
 
                                     @if ($canManage)
-                                    <a href="{{ route('ingredients.edit', $item) }}" class="text-primary transition hover:text-primary-dark">Edit</a>
+                                    <a href="{{ route('ingredients.edit', $item) }}"
+                                       class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-small font-medium text-primary shadow-sm transition hover:bg-primary/20">
+                                        Edit
+                                    </a>
 
                                     @php
                                     $confirmData = [
@@ -244,7 +250,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <button type="button" @click="$dispatch('open-confirm', @js($confirmData))"
-                                            class="text-small font-medium transition {{ $item->isActive() ? 'text-danger-text hover:underline' : 'text-primary hover:text-primary-dark' }}">
+                                            class="inline-flex items-center rounded-full border px-3 py-1.5 text-small font-medium shadow-sm transition {{ $item->isActive() ? 'border-danger-text/20 bg-danger-bg/50 text-danger-text hover:bg-danger-bg' : 'border-success-text/20 bg-success-bg/50 text-success-text hover:bg-success-bg' }}">
                                             {{ $item->isActive() ? 'Nonaktifkan' : 'Aktifkan' }}
                                         </button>
                                     </form>

@@ -72,7 +72,7 @@
 
             <div class="rounded-input border border-line bg-primary/5 p-4 text-small text-muted">
                 <span class="font-semibold text-ink">Aturan bisnis:</span>
-                Perubahan saldo stok tidak boleh diedit langsung tanpa jejak mutasi. Formulir ini otomatis menerbitkan transaksi <code>adjustment</code> pada kartu stok dan menyelaraskan saldo fisik gudang.
+                Perubahan saldo stok tidak boleh diedit langsung tanpa jejak mutasi. Formulir ini otomatis menerbitkan transaksi penyesuaian (koreksi fisik) pada kartu stok dan menyelaraskan saldo fisik gudang.
             </div>
 
             <form method="POST" action="{{ route('stock-adjustments.store') }}" class="mt-6 space-y-6">

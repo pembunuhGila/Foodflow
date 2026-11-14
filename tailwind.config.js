@@ -32,6 +32,12 @@ export default {
                 warning: { bg: "#FEF3C7", text: "#B45309" },
                 danger: { bg: "#FEE2E2", text: "#B91C1C" },
                 info: { bg: "#EDE9FE", text: "#6D28D9" },
+
+                wash: {
+                    from: "#F7F5FD",
+                    via: "#FFFFFF",
+                    to: "#F3EEFA",
+                },
             },
 
             fontSize: {

@@ -83,7 +83,16 @@ class StockCardController extends Controller
             'adjustment_date' => ['required', 'date'],
             'notes' => ['required', 'string', 'min:5', 'max:500'],
         ], [
+            'ingredient_id.required' => 'Bahan baku wajib dipilih.',
+            'ingredient_id.exists' => 'Bahan baku yang dipilih tidak ditemukan dalam sistem.',
+            'physical_count.required' => 'Jumlah hitung fisik wajib diisi.',
+            'physical_count.numeric' => 'Jumlah hitung fisik harus berupa angka.',
+            'physical_count.min' => 'Jumlah hitung fisik tidak boleh bernilai negatif (minimal 0).',
+            'adjustment_date.required' => 'Tanggal penyesuaian fisik wajib diisi.',
+            'adjustment_date.date' => 'Format tanggal penyesuaian fisik tidak valid.',
             'notes.required' => 'Alasan penyesuaian stok wajib diisi (misal: susut bobot, selisih opname fisik, rusak tersenggol, dll).',
+            'notes.min' => 'Alasan penyesuaian minimal 5 karakter agar informatif bagi audit stok.',
+            'notes.max' => 'Alasan penyesuaian maksimal 500 karakter.',
         ]);
 
         $ingredient = Ingredient::lockForUpdate()->findOrFail($validated['ingredient_id']);

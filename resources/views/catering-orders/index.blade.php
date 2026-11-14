@@ -11,12 +11,12 @@
             'status' => $s,
         ]));
         $tabs = [
-            ['label' => 'Semua',        'key' => 'all',        'value' => ''],
-            ['label' => 'Pending',      'key' => 'pending',    'value' => 'pending'],
-            ['label' => 'Dikonfirmasi', 'key' => 'confirmed',  'value' => 'confirmed'],
-            ['label' => 'Diproses',     'key' => 'processing', 'value' => 'processing'],
-            ['label' => 'Selesai',      'key' => 'delivered',  'value' => 'delivered'],
-            ['label' => 'Dibatalkan',   'key' => 'cancelled',  'value' => 'cancelled'],
+            ['label' => 'Semua',              'key' => 'all',        'value' => ''],
+            ['label' => 'Pending (Menunggu)', 'key' => 'pending',    'value' => 'pending'],
+            ['label' => 'Dikonfirmasi',       'key' => 'confirmed',  'value' => 'confirmed'],
+            ['label' => 'Diproses',           'key' => 'processing', 'value' => 'processing'],
+            ['label' => 'Selesai',            'key' => 'delivered',  'value' => 'delivered'],
+            ['label' => 'Dibatalkan',         'key' => 'cancelled',  'value' => 'cancelled'],
         ];
 
         $inputClass = 'block w-full rounded-input border border-line bg-white px-3 py-2.5 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -29,11 +29,11 @@
         ];
 
         $statusBadge = [
-            'pending'    => ['bg-amber-50 text-amber-800', 'bg-amber-500'],
-            'confirmed'  => ['bg-primary/10 text-primary', 'bg-primary'],
+            'pending'    => ['bg-amber-50 text-amber-800 border border-amber-200', 'bg-amber-500'],
+            'confirmed'  => ['bg-info-bg text-info-text border border-info-text/20', 'bg-info-text'],
             'processing' => ['bg-primary text-white', 'bg-white'],
-            'delivered'  => ['bg-gray-100 text-gray-600', 'bg-gray-400'],
-            'cancelled'  => ['bg-danger-bg text-danger-text', 'bg-danger-text'],
+            'delivered'  => ['bg-success-bg text-success-text border border-success-text/20', 'bg-success-text'],
+            'cancelled'  => ['bg-danger-bg text-danger-text border border-danger-text/20', 'bg-danger-text'],
         ];
     @endphp
 
@@ -188,10 +188,13 @@
                                 </span>
                             </td>
 
-                            <!-- Aksi (teks, bukan tombol) -->
+                            <!-- Aksi (tombol pill nyaman sentuh) -->
                             <td class="whitespace-nowrap px-6 py-4 text-right text-small font-medium">
-                                <div class="flex items-center justify-end gap-3">
-                                    <a href="{{ route('catering-orders.show', $order) }}" class="text-primary transition hover:text-primary-dark">Detail</a>
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('catering-orders.show', $order) }}"
+                                       class="inline-flex items-center rounded-full border border-line bg-white px-3 py-1.5 text-small font-medium text-ink shadow-sm transition hover:border-primary hover:text-primary">
+                                        Detail
+                                    </a>
 
                                     @if ($isAdmin && $next)
                                     @php
@@ -212,7 +215,7 @@
                                         @method('PATCH')
                                         <input type="hidden" name="status" value="{{ $next['status'] }}">
                                         <button type="button" @click="$dispatch('open-confirm', @js($nextConfirm))"
-                                                class="text-small font-medium text-primary transition hover:text-primary-dark">
+                                                class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-small font-medium text-primary shadow-sm transition hover:bg-primary/20">
                                             {{ $next['label'] }}
                                         </button>
                                     </form>
@@ -237,7 +240,7 @@
                                         @method('PATCH')
                                         <input type="hidden" name="status" value="cancelled">
                                         <button type="button" @click="$dispatch('open-confirm', @js($cancelConfirm))"
-                                                class="text-small font-medium text-danger-text transition hover:underline">
+                                                class="inline-flex items-center rounded-full border border-danger-text/20 bg-danger-bg/50 px-3 py-1.5 text-small font-medium text-danger-text shadow-sm transition hover:bg-danger-bg">
                                             Batalkan
                                         </button>
                                     </form>

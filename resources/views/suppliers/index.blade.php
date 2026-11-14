@@ -103,21 +103,27 @@
                             <!-- Status -->
                             <td class="whitespace-nowrap px-6 py-4">
                                 @if ($item->isActive())
-                                <x-badge variant="success"><span class="h-1.5 w-1.5 rounded-full bg-primary"></span> Aktif</x-badge>
+                                <x-badge variant="success"><span class="h-1.5 w-1.5 rounded-full bg-success-text"></span> Aktif</x-badge>
                                 @else
                                 <x-badge variant="neutral"><span class="h-1.5 w-1.5 rounded-full bg-muted"></span> Nonaktif</x-badge>
                                 @endif
                             </td>
 
-                            <!-- Aksi -->
+                            <!-- Aksi (tombol pill nyaman sentuh) -->
                             <td class="whitespace-nowrap px-6 py-4 text-right text-small font-medium">
-                                <div class="flex items-center justify-end gap-3">
+                                <div class="flex items-center justify-end gap-2">
                                     <!-- Detail (Admin, Gudang, Owner) -->
-                                    <a href="{{ route('suppliers.show', $item) }}" class="text-primary transition hover:text-primary-dark">Detail</a>
+                                    <a href="{{ route('suppliers.show', $item) }}"
+                                       class="inline-flex items-center rounded-full border border-line bg-white px-3 py-1.5 text-small font-medium text-ink shadow-sm transition hover:border-primary hover:text-primary">
+                                        Detail
+                                    </a>
 
                                     @if (auth()->user()->isAdmin())
                                     <!-- Edit -->
-                                    <a href="{{ route('suppliers.edit', $item) }}" class="text-primary transition hover:text-primary-dark">Edit</a>
+                                    <a href="{{ route('suppliers.edit', $item) }}"
+                                       class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-small font-medium text-primary shadow-sm transition hover:bg-primary/20">
+                                        Edit
+                                    </a>
 
                                     <!-- Toggle Status (BR-02: Soft Toggle) -->
                                     @php
@@ -137,7 +143,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <button type="button" @click="$dispatch('open-confirm', @js($confirmData))"
-                                            class="text-small font-medium transition {{ $item->isActive() ? 'text-danger-text hover:underline' : 'text-primary hover:text-primary-dark' }}">
+                                            class="inline-flex items-center rounded-full border px-3 py-1.5 text-small font-medium shadow-sm transition {{ $item->isActive() ? 'border-danger-text/20 bg-danger-bg/50 text-danger-text hover:bg-danger-bg' : 'border-success-text/20 bg-success-bg/50 text-success-text hover:bg-success-bg' }}">
                                             {{ $item->isActive() ? 'Nonaktifkan' : 'Aktifkan' }}
                                         </button>
                                     </form>

@@ -4,11 +4,11 @@
     $st = $order->status instanceof \BackedEnum ? $order->status->value : (string) $order->status;
 
     $statusBadge = [
-    'pending' => ['bg-amber-50 text-amber-800', 'bg-amber-500'],
-    'confirmed' => ['bg-primary/10 text-primary', 'bg-primary'],
+    'pending' => ['bg-amber-50 text-amber-800 border border-amber-200', 'bg-amber-500'],
+    'confirmed' => ['bg-info-bg text-info-text border border-info-text/20', 'bg-info-text'],
     'processing' => ['bg-primary text-white', 'bg-white'],
-    'delivered' => ['bg-gray-100 text-gray-600', 'bg-gray-400'],
-    'cancelled' => ['bg-danger-bg text-danger-text', 'bg-danger-text'],
+    'delivered' => ['bg-success-bg text-success-text border border-success-text/20', 'bg-success-text'],
+    'cancelled' => ['bg-danger-bg text-danger-text border border-danger-text/20', 'bg-danger-text'],
     ];
     $badge = $statusBadge[$st] ?? ['bg-gray-100 text-gray-600', 'bg-gray-400'];
 

@@ -68,9 +68,11 @@ $isActive = function (?string $name) {
         {{-- Grup dengan Accordion Dropdown (untuk sidebar role dengan isi >= 6) --}}
         <div x-data="{ open: {{ $groupActive ? 'true' : 'false' }} }" class="pt-4 first:pt-1">
             <button type="button" @click="open = !open" data-sidebar-toggle="true"
-                class="flex w-full items-center justify-between rounded-full px-3 pb-1.5 text-label uppercase text-muted hover:text-ink">
-                <span>{{ $group['title'] }}</span>
-                <x-icon name="chevron" class="h-4 w-4 transition-transform" ::class="{ 'rotate-180': open }" />
+                class="flex w-full items-center justify-between rounded-full px-3 py-1.5 text-label uppercase text-muted transition hover:bg-primary/5 hover:text-ink focus:outline-none focus:ring-1 focus:ring-primary/20">
+                <span class="font-bold tracking-wider">{{ $group['title'] }}</span>
+                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-primary/5 text-muted transition-transform" :class="{ 'rotate-180 bg-primary/10 text-primary': open }">
+                    <x-icon name="chevron" class="h-3.5 w-3.5" />
+                </span>
             </button>
 
             <ul x-show="open" x-cloak class="space-y-0.5">
