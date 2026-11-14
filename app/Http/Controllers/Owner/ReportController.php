@@ -63,7 +63,7 @@ class ReportController extends Controller
         $toDate = $request->input('to_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
 
         $plans = ProductionPlan::query()
-            ->with(['details.product', 'creator'])
+            ->with(['details.product', 'details.production', 'creator'])
             ->whereDate('plan_date', '>=', $fromDate)
             ->whereDate('plan_date', '<=', $toDate)
             ->orderBy('plan_date')

@@ -17,6 +17,11 @@ class DemoRoleSwitcherController extends Controller
      */
     public function switchRole(Request $request, string $role): RedirectResponse
     {
+        // Cegah pengambilalihan akun di production (Temuan Keamanan Superpowers Audit)
+        if (app()->isProduction()) {
+            abort(404, 'Fitur demo switch role tidak tersedia di lingkungan produksi.');
+        }
+
         $roleMap = [
             'admin' => [
                 'email' => 'admin@foodflow.test',

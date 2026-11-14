@@ -184,8 +184,18 @@ class ProductController extends Controller
             $hasRelations = true;
         }
 
-        if (Schema::hasTable('productions') && DB::table('productions')->where('product_id', $product->id)->exists()) {
-            $hasRelations = true;
+        if (Schema::hasTable('productions')) {
+            $hasProductionDirect = Schema::hasColumn('productions', 'product_id')
+                && DB::table('productions')->where('product_id', $product->id)->exists();
+
+            $hasProductionViaPlan = Schema::hasTable('production_plan_details')
+                && DB::table('productions')->whereIn('production_plan_detail_id', function ($query) use ($product) {
+                    $query->select('id')->from('production_plan_details')->where('product_id', $product->id);
+                })->exists();
+
+            if ($hasProductionDirect || $hasProductionViaPlan) {
+                $hasRelations = true;
+            }
         }
 
         if ($hasRelations) {

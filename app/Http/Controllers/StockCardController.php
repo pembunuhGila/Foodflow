@@ -95,12 +95,12 @@ class StockCardController extends Controller
             'notes.max' => 'Alasan penyesuaian maksimal 500 karakter.',
         ]);
 
-        $ingredient = Ingredient::lockForUpdate()->findOrFail($validated['ingredient_id']);
-        $currentStock = (float) ($ingredient->current_stock ?? 0);
-        $physicalCount = (float) $validated['physical_count'];
-        $difference = round($physicalCount - $currentStock, 3);
+        [$ingredient, $currentStock, $physicalCount, $difference] = DB::transaction(function () use ($validated, $request) {
+            $ingredient = Ingredient::lockForUpdate()->findOrFail($validated['ingredient_id']);
+            $currentStock = (float) ($ingredient->current_stock ?? 0);
+            $physicalCount = (float) $validated['physical_count'];
+            $difference = round($physicalCount - $currentStock, 3);
 
-        DB::transaction(function () use ($ingredient, $physicalCount, $currentStock, $difference, $validated, $request) {
             // Catat record transaksi adjustment
             IngredientStockTransaction::create([
                 'ingredient_id' => $ingredient->id,
@@ -113,10 +113,12 @@ class StockCardController extends Controller
                 'created_by' => $request->user()->id,
             ]);
 
-            // Update current_stock bahan baku
+            // Update current_stock bahan baku secara atomik
             $ingredient->update([
                 'current_stock' => $physicalCount,
             ]);
+
+            return [$ingredient, $currentStock, $physicalCount, $difference];
         });
 
         $diffFormatted = ($difference >= 0 ? "+{$difference}" : "{$difference}")." {$ingredient->unit}";

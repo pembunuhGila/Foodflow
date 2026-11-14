@@ -71,4 +71,15 @@ class DemoRoleSwitcherTest extends TestCase
         $response = $this->get(route('demo.switch-role', ['role' => 'hacker_role']));
         $response->assertSessionHasErrors('demo');
     }
+
+    /**
+     * Pastikan demo switch role tidak dapat diakses di lingkungan produksi (Superpowers Security Guard).
+     */
+    public function test_demo_switch_role_aborts_with_404_in_production(): void
+    {
+        $this->app->detectEnvironment(fn () => 'production');
+
+        $response = $this->get(route('demo.switch-role', ['role' => 'admin']));
+        $response->assertNotFound();
+    }
 }
