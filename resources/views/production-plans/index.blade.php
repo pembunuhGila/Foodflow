@@ -42,12 +42,20 @@
     <x-page-header eyebrow="Operasional Dapur" :title="__('Daftar Rencana Produksi Dapur')"
         subtitle="Pantau jadwal memasak, target porsi hidangan, dan status operasional dapur.">
         <x-slot name="actions">
-            @if ($canManage)
-            <x-button :href="route('production-plans.create')" id="btn-create-production-plan">
-                <x-icon name="plus" class="h-4 w-4" />
-                Buat Rencana Baru
-            </x-button>
-            @endif
+            <div class="flex items-center gap-2.5">
+                <a href="{{ route('production-plans.calendar') }}"
+                   class="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:text-primary transition">
+                    <x-icon name="calendar" class="h-4 w-4 text-primary" />
+                    <span>Kalender Masak Dapur</span>
+                </a>
+
+                @if ($canManage)
+                <x-button :href="route('production-plans.create')" id="btn-create-production-plan">
+                    <x-icon name="plus" class="h-4 w-4" />
+                    Buat Rencana Baru
+                </x-button>
+                @endif
+            </div>
         </x-slot>
     </x-page-header>
 

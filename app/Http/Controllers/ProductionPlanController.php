@@ -99,6 +99,96 @@ class ProductionPlanController extends Controller
     }
 
     /**
+     * Menampilkan kalender visual jadwal masak dapur katering terpadu.
+     */
+    public function calendar(Request $request): View
+    {
+        $month = (int) $request->input('month', now()->month);
+        $year = (int) $request->input('year', now()->year);
+
+        if ($month < 1 || $month > 12) {
+            $month = (int) now()->month;
+        }
+        if ($year < 2020 || $year > 2040) {
+            $year = (int) now()->year;
+        }
+
+        $currentDate = Carbon::createFromDate($year, $month, 1);
+        $startOfMonth = $currentDate->copy()->startOfMonth();
+        $endOfMonth = $currentDate->copy()->endOfMonth();
+
+        // Rentang grid kalender (Senin s/d Minggu)
+        $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
+        $gridEnd = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
+
+        $plans = ProductionPlan::query()
+            ->with([
+                'cateringOrder.customer',
+                'details.product',
+                'creator',
+            ])
+            ->whereBetween('production_date', [
+                $gridStart->toDateString(),
+                $gridEnd->toDateString(),
+            ])
+            ->orderBy('production_date')
+            ->get();
+
+        $plansByDate = $plans->groupBy(function ($plan) {
+            return $plan->production_date ? $plan->production_date->format('Y-m-d') : '';
+        });
+
+        // Metrik ringkasan bulan terpilih
+        $monthPlans = $plans->filter(function ($plan) use ($month, $year) {
+            return $plan->production_date &&
+                $plan->production_date->month === $month &&
+                $plan->production_date->year === $year;
+        });
+
+        $totalPlans = $monthPlans->count();
+        $totalPortions = (int) $monthPlans->sum(fn ($plan) => $plan->totalPlannedQuantity());
+        $activeBatches = $monthPlans->whereIn('status', [
+            ProductionPlanStatus::Scheduled,
+            ProductionPlanStatus::InProgress,
+        ])->count();
+        $completedBatches = $monthPlans->where('status', ProductionPlanStatus::Completed)->count();
+
+        // Susun slot hari kalender
+        $calendarDays = [];
+        $cursor = $gridStart->copy();
+        while ($cursor->lte($gridEnd)) {
+            $dateString = $cursor->format('Y-m-d');
+            $calendarDays[] = [
+                'date' => $cursor->copy(),
+                'date_string' => $dateString,
+                'is_current_month' => $cursor->month === $month,
+                'is_today' => $cursor->isToday(),
+                'day_number' => $cursor->day,
+                'plans' => $plansByDate->get($dateString, collect()),
+            ];
+            $cursor->addDay();
+        }
+
+        $prevDate = $currentDate->copy()->subMonth();
+        $nextDate = $currentDate->copy()->addMonth();
+
+        return view('production-plans.calendar', [
+            'currentDate' => $currentDate,
+            'calendarDays' => $calendarDays,
+            'selectedMonth' => $month,
+            'selectedYear' => $year,
+            'prevMonth' => $prevDate->month,
+            'prevYear' => $prevDate->year,
+            'nextMonth' => $nextDate->month,
+            'nextYear' => $nextDate->year,
+            'totalPlans' => $totalPlans,
+            'totalPortions' => $totalPortions,
+            'activeBatches' => $activeBatches,
+            'completedBatches' => $completedBatches,
+        ]);
+    }
+
+    /**
      * Menampilkan formulir pembuatan rencana produksi baru.
      */
     public function create(): View

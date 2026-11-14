@@ -239,6 +239,11 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:admin,produksi')
         ->name('production-plans.index');
 
+    // 1.1 Kalender visual jadwal masak dapur katering (semua role)
+    Route::get('/production-plans/calendar', [ProductionPlanController::class, 'calendar'])
+        ->middleware('role:admin,produksi,gudang,owner')
+        ->name('production-plans.calendar');
+
     // 2. Form create & store (khusus Admin & Produksi) - sebelum wildcard {productionPlan}
     Route::get('/production-plans/create', [ProductionPlanController::class, 'create'])
         ->middleware('role:admin,produksi')
