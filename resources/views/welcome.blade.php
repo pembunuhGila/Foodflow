@@ -192,28 +192,31 @@
 
     $heroStats = [['4', 'Role Terintegrasi'], ['18+', 'Modul Katering'], ['Real-time', 'Dashboard Operasional']];
 
-    $btnPrimary = 'inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-body font-medium text-white shadow-card transition hover:bg-primary-dark active:scale-[0.98]';
-    $btnLight = 'inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-body font-semibold text-secondary shadow-card transition hover:bg-primary/5 active:scale-[0.98]';
-    $sectionTag = 'mb-4 inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-label uppercase text-primary';
+    $btnPrimary = 'inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body font-semibold text-white shadow-sm transition hover:bg-primary-dark active:scale-[0.99]';
+    $btnLight = 'inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-body font-semibold text-primary shadow-sm border border-line transition hover:bg-slate-50 active:scale-[0.99]';
+    $sectionTag = 'mb-4 inline-flex items-center rounded-md bg-primary/10 px-3 py-1 text-label uppercase text-primary font-bold';
     @endphp
 
-    {{-- ===== NAVBAR (melayang) ===== --}}
-<nav class="fixed inset-x-4 top-3 z-50 mx-auto max-w-7xl rounded-full border border-line transition-all duration-300 print:hidden"
-    :class="scrolled ? 'bg-white/90 shadow-card backdrop-blur-md' : 'bg-white/70 backdrop-blur-md'">
+    {{-- ===== NAVBAR (melayang rapi) ===== --}}
+<nav class="fixed inset-x-4 top-3 z-50 mx-auto max-w-7xl rounded-2xl border border-line transition-all duration-300 print:hidden"
+    :class="scrolled ? 'bg-white/95 shadow-sm' : 'bg-white/85 backdrop-blur-sm'">
     <div class="w-full px-4 sm:px-6 lg:px-10">
         <div class="flex h-16 items-center justify-between">
 
             <a href="#beranda" class="flex items-center gap-3" @click="mobileMenuOpen = false">
-                <x-brand-logo class="h-10 w-14" />
+                <x-brand-logo class="h-9 w-12" />
                 <div class="leading-tight">
-                    <div class="font-display text-h3 text-ink">FoodFlow</div>
-                    <div class="text-small text-muted">Sistem Katering &amp; Dapur Sentral</div>
+                    <div class="font-display text-h3 text-ink flex items-center gap-1.5">
+                        FoodFlow
+                        <span class="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary tracking-normal uppercase">Katering</span>
+                    </div>
+                    <div class="text-small text-muted">Sistem ERP Katering &amp; Dapur</div>
                 </div>
             </a>
 
             <div class="hidden items-center gap-1 lg:flex">
                 @foreach ($nav as [$href, $label])
-                <a href="{{ $href }}" class="rounded-full px-4 py-2 text-body font-medium text-ink transition hover:bg-primary/10 hover:text-primary">{{ $label }}</a>
+                <a href="{{ $href }}" class="rounded-lg px-3.5 py-2 text-body font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink">{{ $label }}</a>
                 @endforeach
             </div>
 
@@ -227,19 +230,19 @@
                 @endauth
             </div>
 
-            <button type="button" class="rounded-full p-2 text-ink transition hover:bg-primary/10 lg:hidden" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
+            <button type="button" class="rounded-lg p-2 text-ink transition hover:bg-slate-100 lg:hidden" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
                 <x-icon name="menu" class="h-6 w-6" x-show="!mobileMenuOpen" />
                 <x-icon name="close" class="h-6 w-6" x-show="mobileMenuOpen" x-cloak />
             </button>
         </div>
     </div>
 
-    {{-- Menu mobile (turun di bawah pil navbar) --}}
+    {{-- Menu mobile --}}
     <div x-show="mobileMenuOpen" x-cloak x-transition.opacity
-        class="absolute inset-x-0 top-full mt-2 rounded-3xl border border-line bg-white px-4 py-3 shadow-card lg:hidden">
+        class="absolute inset-x-0 top-full mt-2 rounded-2xl border border-line bg-white px-4 py-3 shadow-dropdown lg:hidden">
         <div class="flex flex-col gap-1">
             @foreach ($nav as [$href, $label])
-            <a href="{{ $href }}" @click="mobileMenuOpen = false" class="rounded-full px-4 py-2.5 text-body font-medium text-ink transition hover:bg-primary/10">{{ $label }}</a>
+            <a href="{{ $href }}" @click="mobileMenuOpen = false" class="rounded-lg px-3.5 py-2 text-body font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink">{{ $label }}</a>
             @endforeach
             @auth
             <a href="{{ route('dashboard') }}" class="{{ $btnPrimary }} mt-2">Buka Dashboard</a>
@@ -286,7 +289,7 @@
                         <a href="{{ route('login') }}" class="{{ $btnPrimary }}"><x-icon name="arrow" class="h-4 w-4" /> Masuk ke Sistem</a>
                         @endif
                         @endauth
-                        <a href="#erp" class="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-body font-medium text-ink shadow-card transition hover:bg-primary/5">
+                        <a href="#erp" class="inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-2.5 text-body font-medium text-ink shadow-sm transition hover:bg-slate-50">
                             Lihat Fitur ERP
                             <x-icon name="chevron" class="h-4 w-4 text-primary" />
                         </a>
