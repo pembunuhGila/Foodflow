@@ -48,6 +48,12 @@
                     <span>PDF</span>
                 </a>
                 @if ($canManage)
+                <button type="button" @click="$dispatch('open-modal', 'import-ingredients-modal')"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Import bahan baku dari berkas CSV">
+                    <x-icon name="inbox" class="h-4 w-4 text-primary" />
+                    <span>Import CSV</span>
+                </button>
                 <x-button :href="route('ingredients.create')">
                     <x-icon name="plus" class="h-4 w-4" />
                     Tambah Bahan Baku Baru
@@ -277,6 +283,45 @@
             </div>
             @endif
         </x-card>
+
+        @if ($canManage)
+        <x-modal name="import-ingredients-modal" maxWidth="lg">
+            <form method="POST" action="{{ route('ingredients.import') }}" enctype="multipart/form-data" class="p-6">
+                @csrf
+                <h2 class="text-h3 font-semibold text-ink">
+                    Import Master Bahan Baku (CSV)
+                </h2>
+                <p class="mt-1 text-small text-muted">
+                    Unggah berkas CSV untuk memperbarui atau menambahkan daftar bahan baku secara massal (Materi Pertemuan 9). Proses bersifat <em>idempotent</em> (aman diulang tanpa data ganda).
+                </p>
+
+                <div class="mt-4">
+                    <label class="block text-small font-medium text-ink">Berkas CSV</label>
+                    <input type="file" name="csv" accept=".csv,.txt" required
+                        class="mt-1.5 block w-full rounded-input border border-line bg-white p-2.5 text-small text-ink file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-1.5 file:text-small file:font-medium file:text-white hover:file:bg-primary-dark">
+                    <p class="mt-2 text-xs text-muted">
+                        Format kolom yang didukung: <code class="rounded bg-primary/5 px-1 py-0.5 text-primary">name, category, unit, minimum_stock, current_stock, price_per_unit</code>
+                    </p>
+                </div>
+
+                <div class="mt-4 flex items-center gap-2">
+                    <input type="checkbox" id="queue_import" name="queue" value="1" class="rounded border-line text-primary focus:ring-primary">
+                    <label for="queue_import" class="text-small text-ink">
+                        Jalankan di latar belakang (Background Queue Worker)
+                    </label>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" x-on:click="$dispatch('close')" class="rounded-full border border-line bg-white px-4 py-2 text-small font-medium text-ink hover:bg-gray-50">
+                        Batal
+                    </button>
+                    <x-primary-button type="submit">
+                        Mulai Import
+                    </x-primary-button>
+                </div>
+            </form>
+        </x-modal>
+        @endif
 
     </div>
 </x-app-layout>

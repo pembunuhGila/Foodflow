@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreIngredientRequest;
 use App\Http\Requests\UpdateIngredientRequest;
+use App\Jobs\ProcessIngredientImport;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
 class IngredientController extends Controller
@@ -197,5 +199,85 @@ class IngredientController extends Controller
         return redirect()
             ->route('ingredients.index')
             ->with('success', "Bahan baku \"{$name}\" berhasil dihapus.");
+    }
+
+    /**
+     * Import master data bahan baku dari berkas CSV (Materi Pertemuan 9 - Langkah 7 & 8).
+     * Aman diulang (idempotent) dan mendukung pemrosesan latar belakang via queue.
+     */
+    public function import(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'csv' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ], [
+            'csv.required' => 'Berkas CSV bahan baku wajib dipilih.',
+            'csv.mimes' => 'Format berkas harus berupa CSV (.csv atau .txt).',
+            'csv.max' => 'Ukuran berkas maksimal 5 MB.',
+        ]);
+
+        if ($request->boolean('queue')) {
+            $path = $request->file('csv')->store('imports');
+            ProcessIngredientImport::dispatch($path, (int) auth()->id());
+
+            return back()->with('success', 'Berkas CSV berhasil diunggah dan sedang diproses di antrean latar belakang.');
+        }
+
+        $lines = file($request->file('csv')->getRealPath(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if (empty($lines)) {
+            return back()->withErrors(['csv' => 'Berkas CSV kosong atau tidak memiliki baris data.']);
+        }
+
+        $rows = array_map('str_getcsv', $lines);
+        $header = array_shift($rows);
+        $header = array_map(fn ($h) => trim(str_replace("\xEF\xBB\xBF", '', (string) $h)), $header);
+
+        $created = 0;
+        $updated = 0;
+        $skipped = 0;
+
+        foreach ($rows as $row) {
+            if (count($row) !== count($header)) {
+                $skipped++;
+
+                continue;
+            }
+
+            $rowData = array_combine($header, $row);
+
+            $validator = Validator::make($rowData, [
+                'name' => ['required', 'string', 'max:255'],
+                'category' => ['nullable', 'string', 'max:100'],
+                'unit' => ['required', 'string', 'max:50'],
+                'minimum_stock' => ['nullable', 'numeric', 'min:0'],
+                'current_stock' => ['nullable', 'numeric', 'min:0'],
+                'price_per_unit' => ['nullable', 'numeric', 'min:0'],
+            ]);
+
+            if ($validator->fails()) {
+                $skipped++;
+
+                continue;
+            }
+
+            $validated = $validator->validated();
+
+            $ingredient = Ingredient::updateOrCreate(
+                ['name' => trim($validated['name'])],
+                [
+                    'category' => ! empty($validated['category']) ? trim($validated['category']) : 'Umum',
+                    'unit' => trim($validated['unit']),
+                    'minimum_stock' => isset($validated['minimum_stock']) ? (float) $validated['minimum_stock'] : 0,
+                    'current_stock' => isset($validated['current_stock']) ? (float) $validated['current_stock'] : 0,
+                    'price_per_unit' => isset($validated['price_per_unit']) ? (float) $validated['price_per_unit'] : null,
+                    'is_active' => true,
+                ]
+            );
+
+            $ingredient->wasRecentlyCreated ? $created++ : $updated++;
+        }
+
+        $skippedMsg = $skipped > 0 ? " ({$skipped} baris dilewati karena format tidak sesuai)" : '';
+
+        return back()->with('success', "Import berhasil: {$created} bahan baku baru, {$updated} diperbarui{$skippedMsg}.");
     }
 }

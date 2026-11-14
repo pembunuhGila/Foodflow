@@ -16,6 +16,15 @@ class ExportDataJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * Konfigurasi ketahanan antrean job (Materi Pertemuan 9 - Langkah 8).
+     */
+    public int $tries = 3;
+
+    public array $backoff = [10, 60];
+
+    public int $timeout = 120;
+
+    /**
      * Create a new job instance.
      */
     public function __construct(
@@ -59,5 +68,13 @@ class ExportDataJob implements ShouldQueue
         Storage::disk('local')->put($filename, $content);
 
         Log::info("Worker berhasil menyelesaikan ekspor berkas: {$filename}");
+    }
+
+    /**
+     * Penanganan kegagalan job antrean.
+     */
+    public function failed(\Throwable $exception): void
+    {
+        Log::error("ExportDataJob gagal untuk modul {$this->module}: ".$exception->getMessage());
     }
 }

@@ -123,6 +123,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ingredients', [IngredientController::class, 'store'])
         ->middleware('role:admin,gudang')
         ->name('ingredients.store');
+    Route::post('/ingredients/import', [IngredientController::class, 'import'])
+        ->middleware('role:admin,gudang')
+        ->name('ingredients.import');
 
     // 3. Rute detail view (semua 4 role)
     Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])
