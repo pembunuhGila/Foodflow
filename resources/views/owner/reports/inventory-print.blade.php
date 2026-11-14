@@ -58,7 +58,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-canvas p-6 font-sans text-ink" x-data="digitalSignatureApp('Yola Nur Aida', 'Rachmad Zaki Setyawan')" x-init="initSignatures()">
+<body class="min-h-screen bg-canvas p-6 font-sans text-ink" x-data="digitalSignatureApp('', '')" x-init="initSignatures()">
 
     <div class="print-container mx-auto max-w-4xl rounded-card bg-white p-8 shadow-card print:rounded-none print:p-0 print:shadow-none">
 
@@ -188,7 +188,7 @@
                     <input type="text" x-model="signer1Name" 
                         class="no-print bg-transparent text-center font-semibold text-ink border-0 focus:ring-1 focus:ring-primary rounded px-2 py-0.5 text-small w-64 hover:bg-slate-50 transition"
                         placeholder="Ketik nama staf gudang...">
-                    <span class="hidden print:inline font-semibold text-ink" x-text="signer1Name"></span>
+                    <span class="hidden print:inline font-semibold text-ink" x-text="signer1Name || '( ............................................ )'"></span>
                 </div>
                 <p class="mt-1 text-small text-muted">Divisi Persediaan &amp; Gudang</p>
             </div>
@@ -228,7 +228,7 @@
                     <input type="text" x-model="signer2Name" 
                         class="no-print bg-transparent text-center font-semibold text-ink border-0 focus:ring-1 focus:ring-primary rounded px-2 py-0.5 text-small w-64 hover:bg-slate-50 transition"
                         placeholder="Ketik nama owner / direktur...">
-                    <span class="hidden print:inline font-semibold text-ink" x-text="signer2Name"></span>
+                    <span class="hidden print:inline font-semibold text-ink" x-text="signer2Name || '( ............................................ )'"></span>
                 </div>
                 <p class="mt-1 text-small text-muted">Owner / Direktur Operasional</p>
             </div>

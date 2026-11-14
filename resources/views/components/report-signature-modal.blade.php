@@ -74,7 +74,7 @@
 </div>
 
 <script>
-function digitalSignatureApp(defaultSigner1 = 'Penanggung Jawab', defaultSigner2 = 'Rachmad Zaki Setyawan') {
+function digitalSignatureApp(defaultSigner1 = '', defaultSigner2 = '') {
     return {
         signer1Name: defaultSigner1,
         signer2Name: defaultSigner2,
