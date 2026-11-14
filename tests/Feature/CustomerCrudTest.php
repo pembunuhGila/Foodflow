@@ -147,7 +147,7 @@ class CustomerCrudTest extends TestCase
         $response->assertRedirect(route('customers.index'));
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseMissing('customers', [
+        $this->assertSoftDeleted('customers', [
             'id' => $customer->id,
         ]);
     }

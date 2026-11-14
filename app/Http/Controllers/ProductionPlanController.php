@@ -288,6 +288,7 @@ class ProductionPlanController extends Controller
         }
 
         $planNumber = $productionPlan->plan_number;
+        $productionPlan->details()->delete();
         $productionPlan->delete();
 
         return redirect()

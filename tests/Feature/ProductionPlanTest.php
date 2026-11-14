@@ -284,7 +284,7 @@ class ProductionPlanTest extends TestCase
 
         $this->assertEquals('2026-10-17', $plan->fresh()->production_date->format('Y-m-d'));
 
-        $this->assertDatabaseMissing('production_plan_details', [
+        $this->assertSoftDeleted('production_plan_details', [
             'product_id' => $this->product1->id,
         ]);
 
@@ -332,7 +332,7 @@ class ProductionPlanTest extends TestCase
 
         $response->assertRedirect(route('production-plans.index'));
 
-        $this->assertDatabaseMissing('production_plans', ['id' => $plan->id]);
-        $this->assertDatabaseMissing('production_plan_details', ['production_plan_id' => $plan->id]);
+        $this->assertSoftDeleted('production_plans', ['id' => $plan->id]);
+        $this->assertSoftDeleted('production_plan_details', ['production_plan_id' => $plan->id]);
     }
 }

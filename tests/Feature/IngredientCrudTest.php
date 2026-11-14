@@ -155,7 +155,7 @@ class IngredientCrudTest extends TestCase
         $response->assertRedirect(route('ingredients.index'));
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseMissing('ingredients', [
+        $this->assertSoftDeleted('ingredients', [
             'id' => $ingredient->id,
         ]);
     }

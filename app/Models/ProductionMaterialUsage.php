@@ -6,11 +6,14 @@ use Database\Factories\ProductionMaterialUsageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductionMaterialUsage extends Model
 {
     /** @use HasFactory<ProductionMaterialUsageFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     protected $table = 'production_material_usages';
 

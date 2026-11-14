@@ -267,7 +267,7 @@ class ProductCrudTest extends TestCase
 
         $response->assertRedirect(route('products.index'));
         $response->assertSessionHas('success');
-        $this->assertDatabaseMissing('products', ['id' => $product->id]);
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
 
     public function test_product_with_relations_is_soft_deactivated_instead_of_hard_deleted(): void

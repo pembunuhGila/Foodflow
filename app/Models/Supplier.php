@@ -6,11 +6,14 @@ use Database\Factories\SupplierFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplier extends Model
 {
     /** @use HasFactory<SupplierFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     /**
      * The table associated with the model.

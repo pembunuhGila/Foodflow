@@ -145,7 +145,7 @@ class SupplierCrudTest extends TestCase
         $response->assertRedirect(route('suppliers.index'));
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseMissing('vendors', [
+        $this->assertSoftDeleted('vendors', [
             'id' => $supplier->id,
         ]);
     }
