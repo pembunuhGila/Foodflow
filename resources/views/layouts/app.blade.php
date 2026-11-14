@@ -32,12 +32,12 @@
 
         {{-- Latar gelap saat sidebar terbuka di layar kecil --}}
         <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
-            class="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm lg:hidden"></div>
+            class="fixed inset-0 z-30 bg-slate-950/60 backdrop-blur-sm lg:hidden"></div>
 
         <div class="flex min-w-0 flex-1 flex-col">
 
             {{-- Topbar Operasional Katering --}}
-            <header class="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line bg-white px-6 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            <header class="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line bg-white/95 px-6 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
                 <div class="flex items-center gap-3">
                     <button type="button" class="rounded-lg p-2 text-ink hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
                         <x-icon name="menu" class="h-5 w-5" />
@@ -63,16 +63,17 @@
                         <x-demo-role-switcher />
                     @endif
 
-                    {{-- User Profile Pill --}}
-                    <div class="flex items-center gap-3 pl-2 border-l border-line">
+                    {{-- User Profile Pill (bisa diklik menuju Pengaturan Profil) --}}
+                    <a href="{{ route('profile.edit') }}" title="Buka Pengaturan Akun &amp; Profil"
+                       class="flex items-center gap-3 pl-2 border-l border-line group">
                         <div class="hidden text-right leading-tight sm:block">
-                            <div class="text-sm font-semibold text-ink">{{ $user->name }}</div>
+                            <div class="text-sm font-semibold text-ink group-hover:text-primary transition-colors">{{ $user->name }}</div>
                             <div class="text-xs text-muted font-medium">{{ $roleLabel }}</div>
                         </div>
-                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-white shadow-sm ring-2 ring-primary/20">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-white shadow-sm ring-2 ring-primary/20 group-hover:bg-primary-dark transition">
                             {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($user->name, 0, 1)) }}
                         </div>
-                    </div>
+                    </a>
                 </div>
             </header>
 
