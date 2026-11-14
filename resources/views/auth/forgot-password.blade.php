@@ -54,9 +54,18 @@
         </div>
 
         <button type="submit"
+            x-data="{ loading: false }"
+            @click="if ($el.form && $el.form.checkValidity()) { setTimeout(() => { loading = true }, 50) }"
+            :disabled="loading"
+            :class="{ 'opacity-75 cursor-wait pointer-events-none': loading }"
             class="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary text-body font-medium text-white shadow-card transition hover:bg-primary-dark active:scale-[0.98]">
-            Kirim Permintaan
-            <x-icon name="send" class="h-4 w-4" />
+            <svg x-show="loading" x-cloak class="h-4 w-4 animate-spin shrink-0 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span x-show="!loading">Kirim Permintaan</span>
+            <span x-show="loading" x-cloak>Mengirim Permintaan...</span>
+            <x-icon x-show="!loading" name="send" class="h-4 w-4" />
         </button>
 
         {{-- Alternatif Masuk Cepat Google jika lupa password --}}

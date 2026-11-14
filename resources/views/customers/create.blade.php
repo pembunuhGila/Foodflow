@@ -105,10 +105,9 @@
                         class="rounded-input border border-line bg-white px-5 py-2.5 text-label uppercase text-ink transition hover:bg-primary/5">
                         Batal
                     </a>
-                    <button type="submit"
-                        class="rounded-input bg-primary px-5 py-2.5 text-label uppercase text-white transition hover:bg-primary-dark">
+                    <x-button type="submit">
                         Simpan Pelanggan
-                    </button>
+                    </x-button>
                 </div>
             </form>
         </x-card>
