@@ -72,6 +72,7 @@ FoodFlow adalah aplikasi web ERP (*Enterprise Resource Planning*) khusus manajem
   - Setiap commit yang di-merge ke branch `main` otomatis memicu pipeline.
   - Menjalankan `git pull`, `composer install --no-dev`, `php artisan migrate --force`, `npm run build`, dan pembersihan cache aplikasi di EC2 tanpa perlu login SSH manual.
 - **Dokumentasi Deployment:** Telah didokumentasikan lengkap di `docs/deployment/ALUR_DEPLOYMENT_DAN_SSH.md` beserta simulasi tanya-jawab dosen penguji.
+- **Standar Git & Dependency Management (.gitignore, vendor, node_modules):** Telah didokumentasikan secara komprehensif di `docs/system/PANDUAN_GIT_DAN_DEPENDENCY_MANAGEMENT.md` mencakup alasan pemisahan kode sumber vs dependensi, peran manifest & lockfile, dan simulasi tanya-jawab dosen penguji.
 
 ---
 
