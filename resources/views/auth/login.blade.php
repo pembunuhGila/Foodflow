@@ -29,34 +29,6 @@
     <form method="POST" action="{{ route('login') }}" x-data="{ show: false }" class="space-y-4">
         @csrf
 
-        {{-- Bantuan Akun Uji Coba (Khusus Lingkungan Demo/Lokal) --}}
-        @if (!app()->isProduction())
-            <div class="rounded-lg border border-line bg-slate-50 p-3 text-xs">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-slate-600 uppercase text-[10px] tracking-wider">Isi Cepat Akun Demo:</span>
-                    <span class="text-[10px] text-muted">Password: <code>password</code></span>
-                </div>
-                <div class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-                    <button type="button" @click="$refs.emailInput.value='admin@foodflow.test'; $refs.passwordInput.value='password'"
-                            class="rounded-md border border-line bg-white px-2 py-1 text-center text-xs font-semibold text-slate-700 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition shadow-2xs">
-                        Admin
-                    </button>
-                    <button type="button" @click="$refs.emailInput.value='gudang@foodflow.test'; $refs.passwordInput.value='password'"
-                            class="rounded-md border border-line bg-white px-2 py-1 text-center text-xs font-semibold text-slate-700 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition shadow-2xs">
-                        Gudang
-                    </button>
-                    <button type="button" @click="$refs.emailInput.value='produksi@foodflow.test'; $refs.passwordInput.value='password'"
-                            class="rounded-md border border-line bg-white px-2 py-1 text-center text-xs font-semibold text-slate-700 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition shadow-2xs">
-                        Produksi
-                    </button>
-                    <button type="button" @click="$refs.emailInput.value='owner@foodflow.test'; $refs.passwordInput.value='password'"
-                            class="rounded-md border border-line bg-white px-2 py-1 text-center text-xs font-semibold text-slate-700 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition shadow-2xs">
-                        Owner
-                    </button>
-                </div>
-            </div>
-        @endif
-
         {{-- Email --}}
         <div>
             <label for="email" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Alamat Email</label>

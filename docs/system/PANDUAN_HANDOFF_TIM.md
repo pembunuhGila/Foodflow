@@ -106,6 +106,8 @@ php artisan test --compact
 
 Berikut adalah pembagian urutan kerja yang adil, seimbang, dan runtut secara kronologis rantai pasok sistem:
 
+> ℹ️ **Catatan Tata Kelola (Governance Note)**: Rekan **Izam** telah menyelesaikan seluruh tanggung jawab fiturnya (Urutan 2, 3, 4, 5, 18) 100% dan telah dimerge ke `main` sebelum mengundurkan diri dari perkuliahan. Rekam jejak kontribusinya dilindungi penuh dan tanggung jawab pemeliharaannya dialihkan secara resmi sesuai dokumen [GOVERNANCE_LOG.md](file:///c:/laragon/www/Foodflow/docs/system/GOVERNANCE_LOG.md).
+
 | Urutan | Penanggung Jawab | Modul / Fitur | Branch Resmi | Status |
 |:---:|:---|:---|:---|:---:|
 | **1** | **Syafrida** | Kontrol Batas Minimum Stok & Badge Alert Gudang | `feat/ingredients-min-stock` | **DONE (PR #14)** ✅ |

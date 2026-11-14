@@ -23,7 +23,7 @@
     <div class="min-h-screen lg:grid lg:grid-cols-2">
 
         {{-- Panel kiri: branding katering operasional --}}
-        <aside class="relative hidden overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-blue-900 p-12 text-white lg:flex lg:flex-col lg:justify-between shadow-2xl">
+        <aside class="relative hidden min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-blue-900 px-10 py-10 lg:px-12 lg:py-10 text-white lg:flex lg:flex-col lg:justify-between shadow-2xl">
             <div class="relative flex items-center gap-3">
                 <span class="flex h-11 w-14 items-center justify-center rounded-lg bg-white/10 p-2 border border-white/20">
                     <x-brand-logo class="h-full w-full object-contain" />
@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="relative max-w-lg my-auto py-8">
+            <div class="relative max-w-lg mt-8 mb-auto pt-2 pb-6">
                 <div class="inline-flex items-center gap-2 rounded-md bg-blue-500/10 border border-blue-400/20 px-3 py-1 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-4">
                     <span class="h-1.5 w-1.5 rounded-full bg-blue-400"></span>
                     Sistem Operasional Katering
@@ -69,7 +69,7 @@
                 </ul>
             </div>
 
-            <div class="relative flex items-center justify-between border-t border-white/10 pt-5 text-xs text-blue-200/60">
+            <div class="relative mt-auto flex items-center justify-between border-t border-white/10 pt-4 pb-1 text-xs text-blue-200/60">
                 <span>Khusus staf operasional: Admin, Gudang, Dapur, &amp; Manajemen</span>
                 <span>Versi 0.1</span>
             </div>

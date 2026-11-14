@@ -29,7 +29,8 @@ Dokumen ini adalah acuan resmi urutan pengerjaan (*roadmap*), matriks pembagian 
 ---
 
 ### 👤 2. Izam — Divisi Admin Penjualan & Pengadaan Bahan (Siklus Pesanan Katering & Pelaporan Gizi)
-> **Tanggung Jawab**: Master Pelanggan Catering, Siklus Lengkap Transaksi Pesanan Pelanggan (Catering Orders), Evaluasi Kepatuhan Gizi, dan Cetak Laporan PDF Owner.
+> **Status Tim**: *Honorably Departed / Contribution Freeze* (Lihat [GOVERNANCE_LOG.md](file:///c:/laragon/www/Foodflow/docs/system/GOVERNANCE_LOG.md)). Tanggung jawab pemeliharaan dialihkan ke Zaki & Syafrida.
+> **Tanggung Jawab yang Telah Diselesaikan (100% Selesai & Merged)**: Master Pelanggan Catering, Siklus Lengkap Transaksi Pesanan Pelanggan (Catering Orders), Evaluasi Kepatuhan Gizi, dan Cetak Laporan PDF Owner.
 - [x] `feat/customers-crud` ✅ *(Merged to `main` via PR #8)*
 - [x] `feat/orders-migration-model` ✅ *(Merged to `main` via PR #12)*
 - [x] `feat/orders-create-form` ✅ *(Merged to `main` via PR #15)*
