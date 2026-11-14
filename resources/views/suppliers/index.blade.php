@@ -1,12 +1,26 @@
 <x-app-layout>
     <x-page-header eyebrow="Master Data" :title="__('Master Data Supplier')">
         <x-slot name="actions">
-            @if (auth()->user()->isAdmin())
-            <x-button :href="route('suppliers.create')">
-                <x-icon name="plus" class="h-4 w-4" />
-                Tambah Supplier Baru
-            </x-button>
-            @endif
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('export.data', ['module' => 'suppliers', 'format' => 'excel', 'search' => request('search')]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Ekspor format Excel / Spreadsheet">
+                    <x-icon name="file" class="h-4 w-4 text-success-text" />
+                    <span>Excel</span>
+                </a>
+                <a href="{{ route('export.data', ['module' => 'suppliers', 'format' => 'pdf', 'search' => request('search')]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Cetak Laporan / Simpan PDF">
+                    <x-icon name="printer" class="h-4 w-4 text-primary" />
+                    <span>PDF</span>
+                </a>
+                @if (auth()->user()->isAdmin())
+                <x-button :href="route('suppliers.create')">
+                    <x-icon name="plus" class="h-4 w-4" />
+                    Tambah Supplier Baru
+                </x-button>
+                @endif
+            </div>
         </x-slot>
     </x-page-header>
 

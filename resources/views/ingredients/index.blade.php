@@ -34,12 +34,26 @@
     <x-page-header eyebrow="Master Data" :title="__('Master Data Bahan Baku')"
                    subtitle="Kelola data bahan makanan mentah, satuan unit, dan batas minimum stok persediaan.">
         <x-slot name="actions">
-            @if ($canManage)
-            <x-button :href="route('ingredients.create')">
-                <x-icon name="plus" class="h-4 w-4" />
-                Tambah Bahan Baku Baru
-            </x-button>
-            @endif
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('export.data', ['module' => 'ingredients', 'format' => 'excel', 'search' => request('search')]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Ekspor format Excel / Spreadsheet">
+                    <x-icon name="file" class="h-4 w-4 text-success-text" />
+                    <span>Excel</span>
+                </a>
+                <a href="{{ route('export.data', ['module' => 'ingredients', 'format' => 'pdf', 'search' => request('search')]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Cetak Laporan / Simpan PDF">
+                    <x-icon name="printer" class="h-4 w-4 text-primary" />
+                    <span>PDF</span>
+                </a>
+                @if ($canManage)
+                <x-button :href="route('ingredients.create')">
+                    <x-icon name="plus" class="h-4 w-4" />
+                    Tambah Bahan Baku Baru
+                </x-button>
+                @endif
+            </div>
         </x-slot>
     </x-page-header>
 

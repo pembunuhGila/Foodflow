@@ -40,12 +40,26 @@
     <x-page-header eyebrow="Penjualan" :title="__('Daftar Pesanan Katering')"
                    subtitle="Kelola pesanan pelanggan, pantau jadwal kirim, total porsi, nominal transaksi, dan status pesanan.">
         <x-slot name="actions">
-            @if ($isAdmin)
-            <x-button :href="route('catering-orders.create')" id="btn-create-catering-order">
-                <x-icon name="plus" class="h-4 w-4" />
-                Buat Pesanan Baru
-            </x-button>
-            @endif
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('export.data', ['module' => 'catering-orders', 'format' => 'excel', 'search' => request('search')]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Ekspor format Excel / Spreadsheet">
+                    <x-icon name="file" class="h-4 w-4 text-success-text" />
+                    <span>Excel</span>
+                </a>
+                <a href="{{ route('export.data', ['module' => 'catering-orders', 'format' => 'pdf', 'search' => request('search')]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-small font-medium text-ink shadow-sm transition hover:bg-primary/5"
+                    title="Cetak Laporan / Simpan PDF">
+                    <x-icon name="printer" class="h-4 w-4 text-primary" />
+                    <span>PDF</span>
+                </a>
+                @if ($isAdmin)
+                <x-button :href="route('catering-orders.create')" id="btn-create-catering-order">
+                    <x-icon name="plus" class="h-4 w-4" />
+                    Buat Pesanan Baru
+                </x-button>
+                @endif
+            </div>
         </x-slot>
     </x-page-header>
 

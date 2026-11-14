@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CateringOrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DemoRoleSwitcherController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MaterialReceiptController;
 use App\Http\Controllers\MaterialRequestController;
@@ -410,6 +411,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Fasilitas Ekspor Data Excel, Cetak PDF, & Background Queue Worker Job
+Route::middleware('auth')->group(function () {
+    Route::get('/export/{module}/{format}', [ExportController::class, 'export'])
+        ->name('export.data');
 });
 
 // Fitur Pengganti Peran Instan untuk Presentasi & Live Demo (FR-Demo)
