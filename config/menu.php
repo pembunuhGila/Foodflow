@@ -1,4 +1,5 @@
 <?php
+
 $dashboard = ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'grid'];
 
 $kartuStok = ['label' => 'Kartu Stok', 'route' => ['stock-cards.index'], 'icon' => 'bar'];
