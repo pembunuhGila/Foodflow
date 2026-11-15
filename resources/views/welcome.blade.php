@@ -192,68 +192,102 @@
 
     $heroStats = [['4', 'Role Terintegrasi'], ['18+', 'Modul Katering'], ['Real-time', 'Dashboard Operasional']];
 
-    $btnPrimary = 'inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body font-semibold text-white shadow-sm transition hover:bg-primary-dark active:scale-[0.99]';
-    $btnLight = 'inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-body font-semibold text-primary shadow-sm border border-line transition hover:bg-slate-50 active:scale-[0.99]';
-    $sectionTag = 'mb-4 inline-flex items-center rounded-md bg-primary/10 px-3 py-1 text-label uppercase text-primary font-bold';
+    $btnPrimary = 'inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-body font-semibold text-white shadow-sm transition hover:bg-primary-dark active:scale-[0.98]';
+    $btnLight = 'inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-body font-semibold text-primary shadow-sm border border-line transition hover:bg-slate-50 active:scale-[0.98]';
+    $sectionTag = 'mb-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-label uppercase text-primary font-bold';
     @endphp
 
     {{-- ===== NAVBAR (melayang rapi) ===== --}}
-<nav class="fixed inset-x-4 top-3 z-50 mx-auto max-w-7xl rounded-2xl border border-line transition-all duration-300 print:hidden"
-    :class="scrolled ? 'bg-white/95 shadow-sm' : 'bg-white/85 backdrop-blur-sm'">
-    <div class="w-full px-4 sm:px-6 lg:px-10">
-        <div class="flex h-16 items-center justify-between">
+    {{-- ===== NAVBAR (pill melayang) ===== --}}
+    <nav class="fixed left-1/2 top-3 z-50 w-[calc(100%-1.5rem)] max-w-6xl -translate-x-1/2 rounded-full border border-line transition-all duration-300 print:hidden sm:top-4 sm:w-[calc(100%-3rem)]"
+        :class="scrolled
+        ? 'bg-white/95 shadow-[0_10px_30px_-10px_rgba(29,78,216,0.25)] backdrop-blur-md'
+        : 'bg-white/80 shadow-sm backdrop-blur-md'">
 
-            <a href="#beranda" class="flex items-center gap-3" @click="mobileMenuOpen = false">
-                <x-brand-logo class="h-9 w-12" />
+        <div class="grid h-14 grid-cols-[auto_1fr] items-center gap-3 pl-3 pr-2 sm:h-16 sm:pl-4 sm:pr-3 lg:grid-cols-[1fr_auto_1fr] lg:pl-5">
+
+            {{-- Logo --}}
+            <a href="#beranda" class="flex items-center gap-2.5 justify-self-start" @click="mobileMenuOpen = false">
+                <x-brand-logo class="h-8 w-11 sm:h-9 sm:w-12" />
                 <div class="leading-tight">
-                    <div class="font-display text-h3 text-ink flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5 font-display text-h3 text-ink">
                         FoodFlow
-                        <span class="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary tracking-normal uppercase">Katering</span>
+                        <span class="hidden rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-normal text-primary sm:inline">Katering</span>
                     </div>
-                    <div class="text-small text-muted">Sistem ERP Katering &amp; Dapur</div>
+                    <div class="hidden text-small text-muted sm:block">Sistem ERP Katering &amp; Dapur</div>
                 </div>
             </a>
 
+            {{-- Menu desktop (tepat di tengah) --}}
             <div class="hidden items-center gap-1 lg:flex">
                 @foreach ($nav as [$href, $label])
-                <a href="{{ $href }}" class="rounded-lg px-3.5 py-2 text-body font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink">{{ $label }}</a>
+                <a href="{{ $href }}"
+                    class="rounded-full px-4 py-2 text-body font-medium text-slate-600 transition hover:bg-primary/10 hover:text-primary">
+                    {{ $label }}
+                </a>
                 @endforeach
             </div>
 
-            <div class="hidden lg:block">
+            {{-- Tombol aksi desktop --}}
+            <div class="hidden justify-self-end lg:block">
                 @auth
-                <x-button :href="route('dashboard')"><x-icon name="grid" class="h-4 w-4" /> Buka Dashboard</x-button>
+                <a href="{{ route('dashboard') }}"
+                    class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-body font-semibold text-white shadow-sm transition hover:bg-primary-dark active:scale-[0.98]">
+                    <x-icon name="grid" class="h-4 w-4" /> Buka Dashboard
+                </a>
                 @else
                 @if (Route::has('login'))
-                <x-button :href="route('login')"><x-icon name="arrow" class="h-4 w-4" /> Login Petugas</x-button>
+                <a href="{{ route('login') }}"
+                    class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-body font-semibold text-white shadow-sm transition hover:bg-primary-dark active:scale-[0.98]">
+                    <x-icon name="arrow" class="h-4 w-4" /> Login Petugas
+                </a>
                 @endif
                 @endauth
             </div>
 
-            <button type="button" class="rounded-lg p-2 text-ink transition hover:bg-slate-100 lg:hidden" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
+            {{-- Tombol hamburger (mobile) --}}
+            <button type="button"
+                class="flex h-10 w-10 items-center justify-center justify-self-end rounded-full text-ink transition hover:bg-primary/10 hover:text-primary lg:hidden"
+                @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu" :aria-expanded="mobileMenuOpen">
                 <x-icon name="menu" class="h-6 w-6" x-show="!mobileMenuOpen" />
                 <x-icon name="close" class="h-6 w-6" x-show="mobileMenuOpen" x-cloak />
             </button>
         </div>
-    </div>
 
-    {{-- Menu mobile --}}
-    <div x-show="mobileMenuOpen" x-cloak x-transition.opacity
-        class="absolute inset-x-0 top-full mt-2 rounded-2xl border border-line bg-white px-4 py-3 shadow-dropdown lg:hidden">
-        <div class="flex flex-col gap-1">
-            @foreach ($nav as [$href, $label])
-            <a href="{{ $href }}" @click="mobileMenuOpen = false" class="rounded-lg px-3.5 py-2 text-body font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink">{{ $label }}</a>
-            @endforeach
-            @auth
-            <a href="{{ route('dashboard') }}" class="{{ $btnPrimary }} mt-2">Buka Dashboard</a>
-            @else
-            @if (Route::has('login'))
-            <a href="{{ route('login') }}" class="{{ $btnPrimary }} mt-2">Login Petugas</a>
-            @endif
-            @endauth
+        {{-- Menu mobile --}}
+        <div x-show="mobileMenuOpen" x-cloak
+            x-transition:enter="transition ease-out duration-150"
+            x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click.outside="mobileMenuOpen = false"
+            class="absolute inset-x-0 top-full mt-2 rounded-3xl border border-line bg-white p-3 shadow-dropdown lg:hidden">
+            <div class="flex flex-col gap-1">
+                @foreach ($nav as [$href, $label])
+                <a href="{{ $href }}" @click="mobileMenuOpen = false"
+                    class="rounded-full px-4 py-2.5 text-body font-medium text-slate-600 transition hover:bg-primary/10 hover:text-primary">
+                    {{ $label }}
+                </a>
+                @endforeach
+
+                @auth
+                <a href="{{ route('dashboard') }}"
+                    class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-body font-semibold text-white">
+                    Buka Dashboard
+                </a>
+                @else
+                @if (Route::has('login'))
+                <a href="{{ route('login') }}"
+                    class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-body font-semibold text-white">
+                    Login Petugas
+                </a>
+                @endif
+                @endauth
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     {{-- ===== HERO ===== --}}
     <section id="beranda" class="relative flex min-h-[88vh] items-center overflow-hidden bg-gradient-to-br from-wash-from via-wash-via to-wash-to">
@@ -289,7 +323,7 @@
                         <a href="{{ route('login') }}" class="{{ $btnPrimary }}"><x-icon name="arrow" class="h-4 w-4" /> Masuk ke Sistem</a>
                         @endif
                         @endauth
-                        <a href="#erp" class="inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-2.5 text-body font-medium text-ink shadow-sm transition hover:bg-slate-50">
+                        <a href="#erp" class="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-body font-medium text-ink shadow-sm transition hover:bg-slate-50">
                             Lihat Fitur ERP
                             <x-icon name="chevron" class="h-4 w-4 text-primary" />
                         </a>
