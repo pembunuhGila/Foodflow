@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use App\Models\CateringOrder;
+use App\Models\CateringOrderDetail;
 use App\Models\Customer;
 use App\Models\Ingredient;
 use App\Models\Product;
@@ -155,6 +157,58 @@ class ApiTest extends TestCase
 
         // Pastikan hanya 1 pesanan katering yang tercatat di database
         $this->assertDatabaseCount('catering_orders', 1);
+    }
+
+    public function test_authenticated_can_list_catering_orders(): void
+    {
+        $customer = Customer::factory()->create();
+        CateringOrder::factory()->count(3)->create(['customer_id' => $customer->id]);
+
+        Sanctum::actingAs($this->admin, ['orders:read']);
+
+        $response = $this->getJson('/api/v1/catering-orders');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'order_number', 'delivery_date', 'total_amount', 'status', 'status_label'],
+                ],
+                'links',
+                'meta',
+            ]);
+    }
+
+    public function test_authenticated_can_view_catering_order_detail(): void
+    {
+        $customer = Customer::factory()->create();
+        $product = Product::factory()->create(['selling_price' => 25000]);
+        $order = CateringOrder::factory()->create(['customer_id' => $customer->id]);
+        CateringOrderDetail::create([
+            'catering_order_id' => $order->id,
+            'product_id' => $product->id,
+            'quantity' => 10,
+            'unit_price' => 25000,
+            'subtotal' => 250000,
+        ]);
+
+        Sanctum::actingAs($this->admin, ['orders:read']);
+
+        $response = $this->getJson("/api/v1/catering-orders/{$order->id}");
+
+        $response->assertOk()
+            ->assertJsonPath('data.id', $order->id)
+            ->assertJsonPath('data.customer.id', $customer->id)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'order_number',
+                    'total_amount',
+                    'customer' => ['id', 'name', 'phone'],
+                    'items' => [
+                        '*' => ['id', 'product_id', 'product_name', 'quantity', 'unit_price', 'subtotal'],
+                    ],
+                ],
+            ]);
     }
 
     public function test_logout_revokes_token(): void

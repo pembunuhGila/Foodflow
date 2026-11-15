@@ -20,7 +20,7 @@ class CateringOrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'order_number' => CateringOrder::generateOrderNumber(),
+            'order_number' => fn () => 'ORD-'.now()->format('Ymd').'-'.str_pad((string) fake()->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
             'customer_id' => Customer::factory(),
             'created_by' => User::factory(),
             'order_date' => $this->faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),

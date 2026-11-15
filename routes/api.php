@@ -41,6 +41,12 @@ Route::prefix('v1')->group(function () {
             ->name('api.v1.products.show');
 
         // Transaksi Pesanan Katering dengan Pengaman Idempotency Key
+        Route::get('/catering-orders', [CateringOrderController::class, 'index'])
+            ->middleware('abilities:orders:read')
+            ->name('api.v1.catering-orders.index');
+        Route::get('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'show'])
+            ->middleware('abilities:orders:read')
+            ->name('api.v1.catering-orders.show');
         Route::post('/catering-orders', [CateringOrderController::class, 'store'])
             ->middleware(['abilities:orders:create', 'idempotent'])
             ->name('api.v1.catering-orders.store');
@@ -53,4 +59,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/products', [ProductController::class, 'index'])->middleware('abilities:products:read');
     Route::get('/ingredients', [IngredientController::class, 'index'])->middleware('abilities:ingredients:read');
+    Route::get('/catering-orders', [CateringOrderController::class, 'index'])->middleware('abilities:orders:read');
+    Route::get('/catering-orders/{cateringOrder}', [CateringOrderController::class, 'show'])->middleware('abilities:orders:read');
 });

@@ -3,16 +3,69 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CateringOrderResource;
 use App\Models\CateringOrder;
 use App\Models\CateringOrderDetail;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CateringOrderController extends Controller
 {
+    /**
+     * Menampilkan daftar pesanan katering berpaginasi (Materi Pertemuan 10 - Langkah 3 & 7).
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'in:pending,confirmed,processing,delivered,cancelled'],
+            'sort' => ['nullable', 'in:id,-id,order_number,-order_number,delivery_date,-delivery_date,total_amount,-total_amount'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $query = CateringOrder::query()
+            ->with(['customer', 'creator', 'details.product']);
+
+        if ($request->filled('q')) {
+            $search = strtolower($request->string('q')->trim());
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(order_number) LIKE ?', ["%{$search}%"])
+                    ->orWhereHas('customer', function ($cq) use ($search) {
+                        $cq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                    });
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $sort = $request->input('sort', '-id');
+        $direction = str_starts_with($sort, '-') ? 'desc' : 'asc';
+        $column = ltrim($sort, '-');
+
+        $query->orderBy($column, $direction);
+
+        $perPage = (int) $request->input('per_page', 15);
+        $orders = $query->paginate($perPage)->withQueryString();
+
+        return CateringOrderResource::collection($orders);
+    }
+
+    /**
+     * Menampilkan detail pesanan katering beserta menu dan pemesan (Materi Pertemuan 10 - Langkah 3).
+     */
+    public function show(CateringOrder $cateringOrder): CateringOrderResource
+    {
+        $cateringOrder->load(['customer', 'creator', 'details.product']);
+
+        return new CateringOrderResource($cateringOrder);
+    }
+
     /**
      * Membuat pesanan katering baru via REST API dengan Idempotency Key (Materi Pertemuan 10 - Langkah 4 & 8).
      */
@@ -74,16 +127,11 @@ class CateringOrderController extends Controller
             return $order;
         });
 
-        return response()->json([
-            'message' => 'Pesanan katering berhasil dicatat.',
-            'data' => [
-                'id' => $order->id,
-                'order_number' => $order->order_number,
-                'delivery_date' => $order->delivery_date?->format('Y-m-d'),
-                'total_amount' => (float) $order->total_amount,
-                'status' => $order->status,
-                'created_at' => $order->created_at?->toIso8601String(),
-            ],
-        ], 201);
+        $order->load(['customer', 'creator', 'details.product']);
+
+        return (new CateringOrderResource($order))
+            ->additional(['message' => 'Pesanan katering berhasil dicatat.'])
+            ->response()
+            ->setStatusCode(201);
     }
 }

@@ -140,6 +140,39 @@ paths:
           description: Tidak terautentikasi
 
   /catering-orders:
+    get:
+      summary: Ambil daftar pesanan katering berpaginasi
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Pencarian nomor order atau nama pemesan
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter status pesanan (pending, confirmed, processing, delivered, cancelled)
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Urutan data (id, -id, order_number, -order_number, delivery_date, -delivery_date, total_amount, -total_amount)
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          description: Jumlah baris per halaman (1-100)
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Daftar pesanan katering berhasil diambil
+        '401':
+          description: Tidak terautentikasi
+        '403':
+          description: Token tidak memiliki ability orders:read
+
     post:
       summary: Buat pesanan katering baru (Dilindungi Idempotency-Key)
       security:
@@ -196,6 +229,28 @@ paths:
           description: Request dengan key yang sama sedang diproses
         '422':
           description: Data input tidak valid atau key digunakan untuk muatan data berbeda
+
+  /catering-orders/{id}:
+    get:
+      summary: Ambil detail pesanan katering beserta item menu dan informasi pemesan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID pesanan katering
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detail pesanan katering berhasil diambil
+        '401':
+          description: Tidak terautentikasi
+        '403':
+          description: Token tidak memiliki ability orders:read
+        '404':
+          description: Resource tidak ditemukan
 
 components:
   securitySchemes:
