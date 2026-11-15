@@ -5,7 +5,9 @@ namespace App\Jobs;
 use App\Services\ExportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
@@ -36,20 +38,37 @@ class ExportDataJob implements ShouldQueue
 
     /**
      * Execute the job via Laravel Queue Worker.
+     * Menggunakan lazyById() chunking untuk penulisan berkas bertahap dengan konsumsi memori konstan O(1).
      */
     public function handle(ExportService $exportService): void
     {
         Log::info("Worker memulai proses latar belakang ekspor {$this->module} ({$this->format}) untuk user ID {$this->userId}");
 
-        $result = match ($this->module) {
-            'customers' => $exportService->exportCustomers($this->search),
-            'ingredients' => $exportService->exportIngredients($this->search),
-            'catering-orders' => $exportService->exportCateringOrders($this->search),
-            'suppliers' => $exportService->exportSuppliers($this->search),
+        $config = match ($this->module) {
+            'customers' => [
+                'query' => $exportService->customerQuery($this->search),
+                'headers' => $exportService->customerHeaders(),
+                'mapper' => fn ($c) => $exportService->mapCustomer($c),
+            ],
+            'ingredients' => [
+                'query' => $exportService->ingredientQuery($this->search),
+                'headers' => $exportService->ingredientHeaders(),
+                'mapper' => fn ($i) => $exportService->mapIngredient($i),
+            ],
+            'catering-orders' => [
+                'query' => $exportService->cateringOrderQuery($this->search),
+                'headers' => $exportService->cateringOrderHeaders(),
+                'mapper' => fn ($o) => $exportService->mapCateringOrder($o),
+            ],
+            'suppliers' => [
+                'query' => $exportService->supplierQuery($this->search),
+                'headers' => $exportService->supplierHeaders(),
+                'mapper' => fn ($s) => $exportService->mapSupplier($s),
+            ],
             default => null,
         };
 
-        if (! $result) {
+        if (! $config) {
             Log::warning("Modul ekspor {$this->module} tidak ditemukan oleh worker.");
 
             return;
@@ -57,15 +76,34 @@ class ExportDataJob implements ShouldQueue
 
         $filename = "exports/{$this->module}-".now()->format('Ymd-His').'.csv';
 
-        // Format baris CSV
-        $content = "\xEF\xBB\xBF";
-        $content .= implode(',', array_map(fn ($h) => '"'.str_replace('"', '""', $h).'"', $result['headers']))."\n";
+        // Tulis CSV baris demi baris menggunakan lazyById() chunking ke file sementara
+        $tempPath = tempnam(sys_get_temp_dir(), 'foodflow_export_');
+        if (! $tempPath) {
+            Log::error("Gagal membuat temporary file untuk ekspor {$this->module}");
 
-        foreach ($result['rows'] as $row) {
-            $content .= implode(',', array_map(fn ($col) => '"'.str_replace('"', '""', (string) $col).'"', $row))."\n";
+            return;
         }
 
-        Storage::disk('local')->put($filename, $content);
+        $handle = fopen($tempPath, 'w');
+
+        // UTF-8 BOM untuk Microsoft Excel
+        fwrite($handle, "\xEF\xBB\xBF");
+        fputcsv($handle, $config['headers']);
+
+        /** @var Builder $query */
+        $query = $config['query'];
+        $mapper = $config['mapper'];
+
+        // Streaming per-chunk 100 baris dengan lazyById()
+        foreach ($query->lazyById(100) as $record) {
+            fputcsv($handle, $mapper($record));
+        }
+
+        fclose($handle);
+
+        // Pindahkan berkas hasil ekspor ke storage aplikasi
+        Storage::disk('local')->putFileAs('exports', new File($tempPath), basename($filename));
+        @unlink($tempPath);
 
         Log::info("Worker berhasil menyelesaikan ekspor berkas: {$filename}");
     }

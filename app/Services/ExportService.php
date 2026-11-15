@@ -6,7 +6,9 @@ use App\Models\CateringOrder;
 use App\Models\Customer;
 use App\Models\Ingredient;
 use App\Models\Supplier;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportService
@@ -47,11 +49,43 @@ class ExportService
     }
 
     /**
-     * Siapkan dataset ekspor pelanggan.
+     * Ekspor query ke format CSV secara streaming dengan konsumsi memori konstan O(1).
+     * Menggunakan lazyById() chunking generator sesuai materi Pertemuan 9 (Langkah 3-4).
+     *
+     * @param  list<string>  $headers
+     * @param  Closure(Model): list<mixed>  $rowMapper
      */
-    public function exportCustomers(?string $search = null): array
+    public function streamCsv(string $filename, Builder $query, array $headers, Closure $rowMapper): StreamedResponse
     {
-        $query = Customer::query()->latest();
+        return response()->streamDownload(function () use ($query, $headers, $rowMapper) {
+            $handle = fopen('php://output', 'w');
+
+            // UTF-8 BOM untuk Microsoft Excel
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Header kolom
+            fputcsv($handle, $headers);
+
+            // Chunk reading via generator lazyById() agar memori RAM server tetap datar O(1)
+            foreach ($query->lazyById(100) as $record) {
+                fputcsv($handle, $rowMapper($record));
+            }
+
+            fclose($handle);
+        }, "{$filename}.csv", [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ]);
+    }
+
+    /**
+     * Query builder ekspor pelanggan.
+     */
+    public function customerQuery(?string $search = null): Builder
+    {
+        $query = Customer::query()->orderBy('id');
 
         if ($search) {
             $query->where(function (Builder $q) use ($search) {
@@ -61,33 +95,62 @@ class ExportService
             });
         }
 
-        $customers = $query->get();
-
-        $headers = ['ID', 'Nama Pelanggan', 'No. Telepon', 'Email', 'Alamat', 'Catatan', 'Status', 'Tanggal Terdaftar'];
-        $rows = [];
-
-        foreach ($customers as $c) {
-            $rows[] = [
-                $c->id,
-                $c->name,
-                $c->phone ?? '-',
-                $c->email ?? '-',
-                $c->address ?? '-',
-                $c->notes ?? '-',
-                $c->is_active ? 'Aktif' : 'Non-Aktif',
-                $c->created_at?->format('d/m/Y H:i') ?? '-',
-            ];
-        }
-
-        return ['headers' => $headers, 'rows' => $rows, 'data' => $customers];
+        return $query;
     }
 
     /**
-     * Siapkan dataset ekspor bahan baku.
+     * Header kolom ekspor pelanggan.
+     *
+     * @return list<string>
      */
-    public function exportIngredients(?string $search = null): array
+    public function customerHeaders(): array
     {
-        $query = Ingredient::query()->orderBy('name');
+        return ['ID', 'Nama Pelanggan', 'No. Telepon', 'Email', 'Alamat', 'Catatan', 'Status', 'Tanggal Terdaftar'];
+    }
+
+    /**
+     * Pemetaan baris pelanggan.
+     *
+     * @return list<mixed>
+     */
+    public function mapCustomer(Customer $c): array
+    {
+        return [
+            $c->id,
+            $c->name,
+            $c->phone ?? '-',
+            $c->email ?? '-',
+            $c->address ?? '-',
+            $c->notes ?? '-',
+            $c->is_active ? 'Aktif' : 'Non-Aktif',
+            $c->created_at?->format('d/m/Y H:i') ?? '-',
+        ];
+    }
+
+    /**
+     * Siapkan dataset ekspor pelanggan.
+     */
+    public function exportCustomers(?string $search = null): array
+    {
+        $headers = $this->customerHeaders();
+        $rows = [];
+        $data = [];
+
+        // Menggunakan lazyById() chunking generator untuk memetakan dataset
+        foreach ($this->customerQuery($search)->lazyById(100) as $c) {
+            $rows[] = $this->mapCustomer($c);
+            $data[] = $c;
+        }
+
+        return ['headers' => $headers, 'rows' => $rows, 'data' => $data];
+    }
+
+    /**
+     * Query builder ekspor bahan baku.
+     */
+    public function ingredientQuery(?string $search = null): Builder
+    {
+        $query = Ingredient::query()->orderBy('id');
 
         if ($search) {
             $query->where(function (Builder $q) use ($search) {
@@ -96,40 +159,69 @@ class ExportService
             });
         }
 
-        $ingredients = $query->get();
-
-        $headers = ['ID', 'Nama Bahan', 'Kategori', 'Satuan', 'Stok Saat Ini', 'Stok Minimum', 'Status Stok', 'Harga Beli Terakhir'];
-        $rows = [];
-
-        foreach ($ingredients as $i) {
-            $status = 'Aman';
-            if ($i->current_stock <= 0) {
-                $status = 'Habis';
-            } elseif ($i->current_stock <= $i->minimum_stock) {
-                $status = 'Kritis';
-            }
-
-            $rows[] = [
-                $i->id,
-                $i->name,
-                $i->category ?? 'Umum',
-                $i->unit,
-                $i->current_stock,
-                $i->minimum_stock,
-                $status,
-                $i->last_purchase_price ? 'Rp '.number_format((float) $i->last_purchase_price, 0, ',', '.') : '-',
-            ];
-        }
-
-        return ['headers' => $headers, 'rows' => $rows, 'data' => $ingredients];
+        return $query;
     }
 
     /**
-     * Siapkan dataset ekspor pesanan katering.
+     * Header kolom ekspor bahan baku.
+     *
+     * @return list<string>
      */
-    public function exportCateringOrders(?string $search = null): array
+    public function ingredientHeaders(): array
     {
-        $query = CateringOrder::query()->with('customer')->latest();
+        return ['ID', 'Nama Bahan', 'Kategori', 'Satuan', 'Stok Saat Ini', 'Stok Minimum', 'Status Stok', 'Harga Beli Terakhir'];
+    }
+
+    /**
+     * Pemetaan baris bahan baku.
+     *
+     * @return list<mixed>
+     */
+    public function mapIngredient(Ingredient $i): array
+    {
+        $status = 'Aman';
+        if ($i->current_stock <= 0) {
+            $status = 'Habis';
+        } elseif ($i->current_stock <= $i->minimum_stock) {
+            $status = 'Kritis';
+        }
+
+        return [
+            $i->id,
+            $i->name,
+            $i->category ?? 'Umum',
+            $i->unit,
+            $i->current_stock,
+            $i->minimum_stock,
+            $status,
+            $i->last_purchase_price ? 'Rp '.number_format((float) $i->last_purchase_price, 0, ',', '.') : '-',
+        ];
+    }
+
+    /**
+     * Siapkan dataset ekspor bahan baku.
+     */
+    public function exportIngredients(?string $search = null): array
+    {
+        $headers = $this->ingredientHeaders();
+        $rows = [];
+        $data = [];
+
+        // Menggunakan lazyById() chunking generator untuk memetakan dataset
+        foreach ($this->ingredientQuery($search)->lazyById(100) as $i) {
+            $rows[] = $this->mapIngredient($i);
+            $data[] = $i;
+        }
+
+        return ['headers' => $headers, 'rows' => $rows, 'data' => $data];
+    }
+
+    /**
+     * Query builder ekspor pesanan katering.
+     */
+    public function cateringOrderQuery(?string $search = null): Builder
+    {
+        $query = CateringOrder::query()->with('customer')->orderBy('id');
 
         if ($search) {
             $query->where(function (Builder $q) use ($search) {
@@ -138,31 +230,60 @@ class ExportService
             });
         }
 
-        $orders = $query->get();
-
-        $headers = ['No. Pesanan', 'Pelanggan', 'Tanggal Kirim', 'Total Tagihan', 'Status Pesanan', 'Catatan'];
-        $rows = [];
-
-        foreach ($orders as $o) {
-            $rows[] = [
-                $o->order_number,
-                $o->customer?->name ?? 'Pelanggan Umum',
-                $o->delivery_date?->format('d/m/Y') ?? '-',
-                'Rp '.number_format((float) $o->total_amount, 0, ',', '.'),
-                $o->status instanceof \BackedEnum ? $o->status->value : (string) $o->status,
-                $o->notes ?? '-',
-            ];
-        }
-
-        return ['headers' => $headers, 'rows' => $rows, 'data' => $orders];
+        return $query;
     }
 
     /**
-     * Siapkan dataset ekspor supplier.
+     * Header kolom ekspor pesanan katering.
+     *
+     * @return list<string>
      */
-    public function exportSuppliers(?string $search = null): array
+    public function cateringOrderHeaders(): array
     {
-        $query = Supplier::query()->latest();
+        return ['No. Pesanan', 'Pelanggan', 'Tanggal Kirim', 'Total Tagihan', 'Status Pesanan', 'Catatan'];
+    }
+
+    /**
+     * Pemetaan baris pesanan katering.
+     *
+     * @return list<mixed>
+     */
+    public function mapCateringOrder(CateringOrder $o): array
+    {
+        return [
+            $o->order_number,
+            $o->customer?->name ?? 'Pelanggan Umum',
+            $o->delivery_date?->format('d/m/Y') ?? '-',
+            'Rp '.number_format((float) $o->total_amount, 0, ',', '.'),
+            $o->status instanceof \BackedEnum ? $o->status->value : (string) $o->status,
+            $o->notes ?? '-',
+        ];
+    }
+
+    /**
+     * Siapkan dataset ekspor pesanan katering.
+     */
+    public function exportCateringOrders(?string $search = null): array
+    {
+        $headers = $this->cateringOrderHeaders();
+        $rows = [];
+        $data = [];
+
+        // Menggunakan lazyById() chunking generator untuk memetakan dataset
+        foreach ($this->cateringOrderQuery($search)->lazyById(100) as $o) {
+            $rows[] = $this->mapCateringOrder($o);
+            $data[] = $o;
+        }
+
+        return ['headers' => $headers, 'rows' => $rows, 'data' => $data];
+    }
+
+    /**
+     * Query builder ekspor supplier.
+     */
+    public function supplierQuery(?string $search = null): Builder
+    {
+        $query = Supplier::query()->orderBy('id');
 
         if ($search) {
             $query->where(function (Builder $q) use ($search) {
@@ -171,23 +292,52 @@ class ExportService
             });
         }
 
-        $suppliers = $query->get();
+        return $query;
+    }
 
-        $headers = ['ID', 'Nama Supplier', 'No. Telepon', 'Email', 'Alamat', 'Catatan', 'Status'];
+    /**
+     * Header kolom ekspor supplier.
+     *
+     * @return list<string>
+     */
+    public function supplierHeaders(): array
+    {
+        return ['ID', 'Nama Supplier', 'No. Telepon', 'Email', 'Alamat', 'Catatan', 'Status'];
+    }
+
+    /**
+     * Pemetaan baris supplier.
+     *
+     * @return list<mixed>
+     */
+    public function mapSupplier(Supplier $s): array
+    {
+        return [
+            $s->id,
+            $s->name,
+            $s->phone ?? '-',
+            $s->email ?? '-',
+            $s->address ?? '-',
+            $s->notes ?? '-',
+            $s->is_active ? 'Aktif' : 'Non-Aktif',
+        ];
+    }
+
+    /**
+     * Siapkan dataset ekspor supplier.
+     */
+    public function exportSuppliers(?string $search = null): array
+    {
+        $headers = $this->supplierHeaders();
         $rows = [];
+        $data = [];
 
-        foreach ($suppliers as $s) {
-            $rows[] = [
-                $s->id,
-                $s->name,
-                $s->phone ?? '-',
-                $s->email ?? '-',
-                $s->address ?? '-',
-                $s->notes ?? '-',
-                $s->is_active ? 'Aktif' : 'Non-Aktif',
-            ];
+        // Menggunakan lazyById() chunking generator untuk memetakan dataset
+        foreach ($this->supplierQuery($search)->lazyById(100) as $s) {
+            $rows[] = $this->mapSupplier($s);
+            $data[] = $s;
         }
 
-        return ['headers' => $headers, 'rows' => $rows, 'data' => $suppliers];
+        return ['headers' => $headers, 'rows' => $rows, 'data' => $data];
     }
 }

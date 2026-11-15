@@ -5,9 +5,11 @@ namespace App\Jobs;
 use App\Models\Ingredient;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class ProcessIngredientImport implements ShouldQueue
 {
@@ -28,7 +30,8 @@ class ProcessIngredientImport implements ShouldQueue
     ) {}
 
     /**
-     * Eksekusi import bahan baku di latar belakang secara idempotent.
+     * Eksekusi import bahan baku di latar belakang secara idempotent dan per-chunk.
+     * Menggunakan chunking batch transaksi (Materi Pertemuan 9 - Langkah 7 & 8).
      */
     public function handle(): void
     {
@@ -56,41 +59,50 @@ class ProcessIngredientImport implements ShouldQueue
         $created = 0;
         $updated = 0;
 
-        foreach ($rows as $row) {
-            if (count($row) !== count($header)) {
-                continue; // Lewati baris cacat / kolom tidak sesuai
-            }
+        // Pertemuan 9: Proses import dalam potongan chunk (100 baris per transaksi)
+        // untuk menjaga kestabilan memori dan atomisitas batch
+        $chunks = array_chunk($rows, 100);
 
-            $rowData = array_combine($header, $row);
+        foreach ($chunks as $chunk) {
+            DB::transaction(function () use ($chunk, $header, &$created, &$updated) {
+                foreach ($chunk as $row) {
+                    if (count($row) !== count($header)) {
+                        continue; // Lewati baris cacat / kolom tidak sesuai
+                    }
 
-            $validator = Validator::make($rowData, [
-                'name' => ['required', 'string', 'max:255'],
-                'category' => ['nullable', 'string', 'max:100'],
-                'unit' => ['required', 'string', 'max:50'],
-                'minimum_stock' => ['nullable', 'numeric', 'min:0'],
-                'current_stock' => ['nullable', 'numeric', 'min:0'],
-                'price_per_unit' => ['nullable', 'numeric', 'min:0'],
-            ]);
+                    $rowData = array_combine($header, $row);
 
-            if ($validator->fails()) {
-                continue; // Lewati baris tidak valid tanpa menghentikan batch
-            }
+                    $validator = Validator::make($rowData, [
+                        'name' => ['required', 'string', 'max:255'],
+                        'category' => ['nullable', 'string', 'max:100'],
+                        'unit' => ['required', 'string', 'max:50'],
+                        'minimum_stock' => ['nullable', 'numeric', 'min:0'],
+                        'current_stock' => ['nullable', 'numeric', 'min:0'],
+                        'price_per_unit' => ['nullable', 'numeric', 'min:0'],
+                    ]);
 
-            $validated = $validator->validated();
+                    if ($validator->fails()) {
+                        continue; // Lewati baris tidak valid tanpa menghentikan batch
+                    }
 
-            $ingredient = Ingredient::updateOrCreate(
-                ['name' => trim($validated['name'])],
-                [
-                    'category' => ! empty($validated['category']) ? trim($validated['category']) : 'Umum',
-                    'unit' => trim($validated['unit']),
-                    'minimum_stock' => isset($validated['minimum_stock']) ? (float) $validated['minimum_stock'] : 0,
-                    'current_stock' => isset($validated['current_stock']) ? (float) $validated['current_stock'] : 0,
-                    'price_per_unit' => isset($validated['price_per_unit']) ? (float) $validated['price_per_unit'] : null,
-                    'is_active' => true,
-                ]
-            );
+                    $validated = $validator->validated();
 
-            $ingredient->wasRecentlyCreated ? $created++ : $updated++;
+                    // Idempoten via updateOrCreate: aman diulang berkali-kali tanpa duplikasi data
+                    $ingredient = Ingredient::updateOrCreate(
+                        ['name' => trim($validated['name'])],
+                        [
+                            'category' => ! empty($validated['category']) ? trim($validated['category']) : 'Umum',
+                            'unit' => trim($validated['unit']),
+                            'minimum_stock' => isset($validated['minimum_stock']) ? (float) $validated['minimum_stock'] : 0,
+                            'current_stock' => isset($validated['current_stock']) ? (float) $validated['current_stock'] : 0,
+                            'price_per_unit' => isset($validated['price_per_unit']) ? (float) $validated['price_per_unit'] : null,
+                            'is_active' => true,
+                        ]
+                    );
+
+                    $ingredient->wasRecentlyCreated ? $created++ : $updated++;
+                }
+            });
         }
 
         Storage::delete($this->csvPath);
@@ -101,7 +113,7 @@ class ProcessIngredientImport implements ShouldQueue
     /**
      * Penanganan kegagalan job.
      */
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         Log::error('ProcessIngredientImport gagal: '.$exception->getMessage());
         Storage::delete($this->csvPath);

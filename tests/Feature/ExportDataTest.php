@@ -42,6 +42,17 @@ class ExportDataTest extends TestCase
         $this->assertStringContainsString('data-pelanggan-', $response->headers->get('content-disposition'));
     }
 
+    public function test_authenticated_user_can_stream_csv_using_lazy_by_id(): void
+    {
+        Customer::factory()->create(['name' => 'Katering Pelanggan Streaming']);
+
+        $response = $this->actingAs($this->admin)->get(route('export.data', ['module' => 'customers', 'format' => 'csv']));
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', $response->headers->get('content-type'));
+        $this->assertStringContainsString('data-pelanggan-', $response->headers->get('content-disposition'));
+    }
+
     public function test_authenticated_user_can_view_pdf_printable_view(): void
     {
         Ingredient::factory()->create(['name' => 'Bawang Merah Brebes']);
@@ -78,5 +89,11 @@ class ExportDataTest extends TestCase
         $this->assertNotEmpty($files);
         $content = Storage::disk('local')->get($files[0]);
         $this->assertStringContainsString('Rumah Sakit Bunda', $content);
+    }
+
+    public function test_benchmark_memory_command_runs_successfully(): void
+    {
+        $this->artisan('benchmark:memory')
+            ->assertSuccessful();
     }
 }
