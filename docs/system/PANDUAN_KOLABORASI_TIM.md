@@ -37,7 +37,7 @@ Setiap kali ingin memulai fitur baru:
 ---
 
 ### 2. Standar Arsitektur & UI
-- **Tech Stack**: Laravel 12/13, PHP 8.4, Tailwind CSS, Alpine.js, PostgreSQL (Supabase).
+- **Tech Stack**: Laravel 13, PHP 8.4, Tailwind CSS, Alpine.js, PostgreSQL (Supabase).
 - **Layout Utama**: Selalu gunakan `<x-app-layout>` atau `@extends('layouts.app')` yang sudah ada agar sidebar, navigasi, dan flash alert seragam.
 - **Validasi**: Gunakan Form Request khusus (`php artisan make:request ...`), jangan validasi manual di dalam Controller yang membengkak.
 - **Status & Tipe Data**: Gunakan PHP Typed Enum di namespace `App\Enums` (seperti `UserRole` dan `UserStatus` yang sudah ada di Modul 1).
@@ -60,7 +60,7 @@ Berikut adalah aturan baku proyek yang WAJIB kamu patuhi tanpa pengecualian:
 1. **Bahasa Commit**: SEMUA git commit message WAJIB menggunakan Bahasa Indonesia dengan format Conventional Commits (contoh: `feat: tambahkan crud bahan baku`, `fix: perbaiki validasi satuan unit`).
 2. **Nama Branch**: Selalu gunakan nama branch resmi yang sudah disepakati di file `docs/Branch.md`. Jangan buat nama branch sendiri!
 3. **Tech Stack & Arsitektur**:
-   - Backend: Laravel 12/13 (PHP 8.4), PostgreSQL, Monolith MVC.
+   - Backend: Laravel 13 (PHP 8.4), PostgreSQL, Monolith MVC.
    - Frontend: Blade Template + Tailwind CSS + Alpine.js (Interaktivitas dinamis pakai Alpine.js, BUKAN Vue/React SPA).
    - UI Layout: Wajib menginduk ke layout yang sudah ada (`layouts.app`). Gunakan komponen Blade yang sudah ada.
    - Validasi: Gunakan Form Request (`App\Http\Requests\...`).

@@ -79,7 +79,7 @@ Jawabannya adalah melalui dua pasang berkas:
 ### A. Di Ekosistem PHP (Composer):
 1. **`composer.json` (Manifest):**
    - Menyatakan daftar pustaka yang dibutuhkan dan aturan rentang versinya.
-   - Contoh: `"laravel/framework": "^12.0"`, `"laravel/socialite": "^5.18"`.
+   - Contoh: `"laravel/framework": "^13.17"`, `"laravel/socialite": "*"`.
 2. **`composer.lock` (Lockfile — WAJIB Di-Commit ke Git):**
    - Mengunci **versi eksak hingga ke nomor rilis terkecil dan hash commit** dari setiap package yang terpasang saat pengembang menjalankannya.
    - Ketika server produksi menjalankan `composer install`, Composer **tidak akan mencari versi baru**, melainkan membaca `composer.lock` dan mengunduh versi yang persis 100% sama dengan yang ada di komputer mahasiswa.
@@ -165,7 +165,7 @@ Berkas `.env` memuat rahasia dapur sistem:
 
 ### Q2: *"Apa perbedaan antara composer.json dengan composer.lock? Mengapa dua-duanya harus ada di Git?"*
 > **Jawaban Mahasiswa:**
-> *"`composer.json` berfungsi sebagai dokumen manifes yang mendefinisikan pustaka apa saja yang kita butuhkan beserta rentang versinya, misalnya `^12.0` yang artinya versi 12 ke atas.*
+> *"`composer.json` berfungsi sebagai dokumen manifes yang mendefinisikan pustaka apa saja yang kita butuhkan beserta rentang versinya, misalnya `^13.17` yang artinya versi 13 ke atas.*
 > *Sedangkan `composer.lock` mencatat versi eksak spesifik hingga ke nomor patch dan commit hash yang berhasil terpasang saat pengembang mengujinya pertama kali.*
 > *Keduanya wajib masuk ke Git agar seluruh anggota tim pengembang dan server produksi memiliki versi pustaka yang persis sama, sehingga tidak terjadi masalah klasik 'di laptop saya jalan, tapi di laptop teman atau server kok error'."*
 

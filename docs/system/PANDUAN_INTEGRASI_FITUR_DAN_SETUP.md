@@ -3,7 +3,7 @@
 > **Dokumen Resmi Integrasi Kurikulum & Panduan Instalasi Sistem**  
 > **Aplikasi:** FoodFlow — Sistem ERP Manajemen Operasional Dapur & Evaluasi Gizi MBG  
 > **Lokasi Implementasi:** SPPG Dapur MBG Malang 01, Kota Malang, Jawa Timur  
-> **Framework & Bahasa:** Laravel 12 / PHP 8.4  
+> **Framework & Bahasa:** Laravel 13 / PHP 8.4  
 > **Database:** PostgreSQL (Supabase Cloud Hosted) / SQLite (Automated Testing)  
 > **Frontend:** Blade Templates, Tailwind CSS v3.4, Alpine.js  
 
@@ -392,7 +392,7 @@ Bagian ini mendokumentasikan seluruh tahapan rekayasa perangkat lunak FoodFlow s
 - **Penetapan Batasan Ketat (*In-Scope vs Out-of-Scope*):**
   - Pemeriksaan bahan baku tiba dibatasi pada status fisik praktis (`Baik`, `Rusak`, `Kedaluwarsa`, `Tidak Sesuai`), bukan uji laboratorium sains.
   - Saldo stok bahan baku tidak boleh diedit manual secara bebas, melainkan wajib dihitung murni dari agregasi transaksi mutasi stok: $\text{Stok Akhir} = \text{Total IN} - \text{Total OUT} \pm \text{ADJUSTMENT}$.
-- **Pemilihan Stack Teknologi:** Memilih arsitektur Monolith Server-Side Rendering (Laravel 12 + PHP 8.4) dengan Tailwind CSS, Alpine.js, dan basis data PostgreSQL Supabase Cloud demi menjamin integritas transaksi (ACID) dan performa tinggi pada perangkat kasir/dapur berspesifikasi standar.
+- **Pemilihan Stack Teknologi:** Memilih arsitektur Monolith Server-Side Rendering (Laravel 13 + PHP 8.4) dengan Tailwind CSS, Alpine.js, dan basis data PostgreSQL Supabase Cloud demi menjamin integritas transaksi (ACID) dan performa tinggi pada perangkat kasir/dapur berspesifikasi standar.
 
 #### 🔹 Fase 2: Fondasi Autentikasi Multi-Role, Keamanan, & Akun Staf
 - **Scaffolding:** Mengintegrasikan Laravel Breeze stack Blade dengan session-cookie HTTP-only.

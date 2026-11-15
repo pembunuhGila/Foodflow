@@ -19,7 +19,7 @@ Dokumen ini merangkum seluruh rekam jejak pembahasan, perbaikan, arsitektur, dan
 
 FoodFlow adalah aplikasi web ERP (*Enterprise Resource Planning*) khusus manajemen operasional katering, pengadaan bahan baku, perencanaan masak dapur, dan kalkulasi nutrisi gizi.
 
-- **Framework Backend:** Laravel 12 (PHP 8.4)
+- **Framework Backend:** Laravel 13 (PHP 8.4)
 - **Frontend / UI:** Tailwind CSS, Alpine.js, Blade Components, Chart.js
 - **Basis Data:** MySQL (Production di AWS EC2) / SQLite (Automated Unit & Feature Testing)
 - **Desain Arsitektur:** Clean MVC dengan Service Pattern, Form Requests, Enums, dan Model Traits
@@ -183,6 +183,20 @@ Selama sesi pengerjaan, sejumlah masalah teknis dan perbaikan UI telah diselesai
 - **`PurchaseOrderSeeder`:** Memuat 8 data purchase order pengadaan ke 5 mitra supplier rekanan dengan harga riil per satuan untuk membentuk acuan kalkulasi biaya bahan baku.
 - **`ProductionPlanSeeder`:** Mengaitkan jadwal masak ke pesanan katering, permintaan bahan gudang, realisasi masak, dan pencatatan pemakaian bahan aktual dengan varians biaya realistis.
 - **`ProductSeeder`:** Memastikan setiap menu hidangan di basis data memiliki formula resep bahan baku lengkap untuk perhitungan otomatis kebutuhan dapur.
+
+### J. Optimasi Memori O(1) & Pemrosesan Batch Asinkron (Materi P09)
+- **Streaming Ekspor CSV O(1):** Menggunakan Eloquent generator `lazyById(100)` dan `response()->streamDownload()` pada `ExportService.php`. Data dialirkan langsung ke output stream HTTP tanpa ditampung di memori PHP, mencegah error *Allowed memory size exhausted* pada ekspor ratusan ribu baris.
+- **Import CSV Idempoten & Chunking Batch:** `ProcessIngredientImport.php` memproses impor katalog bahan baku dalam batch 100 baris dengan transaksi atomik `DB::transaction()`. Penggunaan `updateOrCreate()` dan deteksi `wasRecentlyCreated` menjamin proses aman dijalankan berulang kali (*idempotent*).
+- **Ketahanan Antrean Background Worker:** Atribut antrean teruji `$tries = 3`, `$backoff = [10, 60]`, dan `$timeout = 60` untuk menangani kegagalan sementara jaringan atau basis data.
+- **Benchmarking Konsumsi Memori:** Command Artisan `php artisan benchmark:memory` dan dokumen riset formal `docs/pengukuran-memori.md` membuktikan efisiensi memori: `lazyById` stabil di 27.80 MB, menghemat hingga 45.5% RAM dibandingkan pemuatan koleksi `get()` (51.03 MB).
+
+### K. Standarisasi Eloquent API Resource & Endpoint Detail Catering Order (Materi P10)
+- **Lapisan Transformasi API Resource:** Implementasi `CateringOrderResource` dan `CateringOrderDetailResource` di `app/Http/Resources/` memisahkan kontrak data API dari skema database (*decoupling*) dan mengeliminasi masalah N+1 query melalui kondisional `$this->whenLoaded(...)`.
+- **Endpoint Lengkap Pesanan Katering:**
+  - `GET /api/v1/catering-orders`: Riwayat pesanan katering berpaginasi (`per_page=1..100`), filter pencarian `q` (nomor order & nama customer), filter `status`, dan sorting whitelist.
+  - `GET /api/v1/catering-orders/{cateringOrder}`: Detail satu pesanan katering lengkap dengan informasi pelanggan pemesan dan rincian item hidangan.
+  - `POST /api/v1/catering-orders`: Pembuatan pesanan katering baru dengan pengaman header `Idempotency-Key` untuk mencegah transaksi duplikat akibat *network glitch* atau *double click*.
+- **Spesifikasi OpenAPI 3.0.0 & Automated Testing:** Seluruh endpoint terstandarisasi di `docs/openapi.yaml` dan divalidasi oleh 10 unit test otomatis pada `tests/Feature/ApiTest.php` (100% lulus, 105 assertions).
 
 ---
 
