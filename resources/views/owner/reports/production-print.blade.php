@@ -95,17 +95,45 @@
         </div>
 
         {{-- KOP SURAT RESMI --}}
-        <div class="mb-6 flex items-start justify-between border-b-2 border-ink pb-4">
-            <div>
-                <h1 class="font-display text-2xl font-bold tracking-tight text-ink">FOODFLOW CATERING &amp; MBG</h1>
-                <p class="mt-0.5 text-small text-muted">Sistem Informasi Manajemen Persediaan &amp; Produksi Masakan Sehat</p>
-                <p class="text-small text-muted">Jl. Soekarno Hatta No. 9, Malang, Jawa Timur | Telp: (0341) 555-888</p>
-            </div>
-            <div class="text-right">
-                <span class="inline-block rounded-full bg-primary/10 px-3 py-1 text-label uppercase text-primary">DOKUMEN RESMI</span>
-                <p class="mt-1 text-small text-muted">Dicetak: {{ $printedAt->format('d/m/Y H:i') }}</p>
-            </div>
-        </div>
+       
+{{-- KOP SURAT RESMI --}}
+<div class="mb-6 flex items-start justify-between"
+     style="background-color: #485d80; border-bottom: 10px solid #b6d7df; padding: 24px 25px; font-family: Arial, sans-serif; color: #ffffff;">
+
+    {{-- Identitas FoodFlow --}}
+    <div>
+        <h1 class="text-3xl font-bold uppercase tracking-wide"
+            style="color: #ffffff;">
+            FOODFLOW
+        </h1>
+
+        <p class="mt-1 text-sm font-bold" style="color: #ffffff;">
+            Catering &amp; Logistics
+        </p>
+
+        <p class="mt-4 text-xs" style="color: #e5eaf2;">
+            Sistem Informasi Manajemen Katering
+        </p>
+    </div>
+
+    {{-- Informasi Laporan --}}
+    <div class="text-right">
+        <h2 class="text-4xl font-bold uppercase"
+            style="color: #ffffff;">
+            LAPORAN
+        </h2>
+
+        <p class="mt-2 text-xs" style="color: #ffffff;">
+            Dicetak:
+        </p>
+
+        <p class="text-xs font-bold" style="color: #ffffff;">
+            {{ $printedAt->format('d/m/Y H:i') }}
+        </p>
+    </div>
+
+</div>
+
 
         {{-- JUDUL LAPORAN --}}
         <div class="mb-6 text-center">
