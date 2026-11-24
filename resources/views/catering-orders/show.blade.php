@@ -252,42 +252,156 @@
         </x-card>
 
         <!-- Kop & tanda tangan (khusus cetak) -->
-        <div class="print-only hidden space-y-6 bg-white p-6">
-            <div class="border-b-2 border-gray-800 pb-4 text-center">
-                <h1 class="text-2xl font-black uppercase tracking-wider">FOODFLOW CATERING & LOGISTICS</h1>
-                <p class="text-xs text-gray-600">Sistem Pengelolaan Katering Sehat & Rencana Produksi Makanan Bersertifikat</p>
-                <p class="text-xs text-gray-500">Jl. Industri Pangan Sehat No. 12 &bull; Telp: (021) 555-FOODFLOW &bull; support@foodflow.local</p>
+        
+<!-- Invoice khusus cetak -->
+<div class="print-only hidden">
+    <div class="invoice-sheet">
+
+        <!-- Header Invoice -->
+        <div class="invoice-header">
+            <div class="invoice-company">
+                <h1>FOODFLOW</h1>
+                <p>Catering &amp; Logistics</p>
+                <span>Sistem Informasi Manajemen Katering</span>
             </div>
 
-            <div class="flex items-start justify-between text-xs">
-                <div>
-                    <div class="font-bold uppercase text-gray-600">Kepada Yth:</div>
-                    <div class="text-base font-extrabold text-gray-900">{{ $order->customer?->name }}</div>
-                    <div>PIC / Kontak: {{ $order->customer?->name }}</div>
-                    <div>No. Telp / WA: {{ $order->customer?->phone }}</div>
-                    <div class="mt-1 max-w-sm">Alamat Kirim: {{ $order->customer?->address }}</div>
-                </div>
-                <div class="text-right">
-                    <div class="font-mono text-base font-extrabold">{{ $order->order_number }}</div>
-                    <div>Tanggal Pesan: {{ $order->order_date?->format('d/m/Y') }}</div>
-                    <div class="font-bold">Tanggal Kirim: {{ $order->delivery_date?->format('d/m/Y') }}</div>
-                    <div>Status: {{ $order->status_label }}</div>
-                </div>
-            </div>
+            <div class="invoice-title">
+                <h2>INVOICE</h2>
+                <strong>{{ $order->order_number }}</strong>
 
-            <div class="grid grid-cols-2 pt-8 text-center text-xs">
-                <div>
-                    <p class="text-gray-600">Penerima / Pemesan,</p>
-                    <div class="h-20"></div>
-                    <p class="font-bold underline">{{ $order->customer?->name }}</p>
+                <div class="invoice-date">
+                    <span>Tanggal Pemesanan</span>
+                    <strong>{{ $order->order_date?->locale('id')->translatedFormat('d F Y') ?? '-' }}</strong>
                 </div>
-                <div>
-                    <p class="text-gray-600">Hormat Kami, Petugas Katering</p>
-                    <div class="h-20"></div>
-                    <p class="font-bold underline">{{ $order->creator?->name ?? 'Admin FoodFlow' }}</p>
+
+                <div class="invoice-date">
+                    <span>Tanggal Pengiriman</span>
+                    <strong>{{ $order->delivery_date?->locale('id')->translatedFormat('d F Y') ?? '-' }}</strong>
                 </div>
             </div>
         </div>
+
+        <div class="invoice-accent"></div>
+
+        <!-- Informasi Pelanggan dan Total -->
+        <div class="invoice-info">
+            <div class="invoice-customer">
+                <span class="invoice-label">KEPADA:</span>
+                <h3>{{ $order->customer?->name ?? '-' }}</h3>
+
+                <p>
+                    No. Telepon:
+                    {{ $order->customer?->phone ?? '-' }}
+                </p>
+
+                <p>
+                    Email:
+                    {{ $order->customer?->email ?? '-' }}
+                </p>
+
+                <p>
+                    Alamat:
+                    {{ $order->customer?->address ?? '-' }}
+                </p>
+            </div>
+
+            <div class="invoice-amount">
+                <span class="invoice-label">JUMLAH YANG HARUS DIBAYAR</span>
+                <strong>{{ $order->formattedTotal() }}</strong>
+                <span class="invoice-status">
+                    Status: {{ $order->status_label }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Tabel Rincian Pesanan -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Keterangan</th>
+                    <th>Harga Satuan</th>
+                    <th>Kuantitas</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @forelse ($order->details as $detail)
+                    <tr>
+                        <td>
+                            <strong>
+                                {{ $detail->product?->name ?? 'Produk #' . $detail->product_id }}
+                            </strong>
+
+                            @if ($detail->notes)
+                                <small>{{ $detail->notes }}</small>
+                            @endif
+                        </td>
+
+                        <td>
+                            Rp {{ number_format((float) $detail->unit_price, 0, ',', '.') }}
+                        </td>
+
+                        <td>
+                            {{ $detail->quantity }}
+                            {{ $detail->product?->unit ?? 'porsi' }}
+                        </td>
+
+                        <td class="invoice-item-total">
+                            Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="invoice-empty">
+                            Belum ada rincian menu untuk pesanan ini.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        <!-- Ringkasan Total -->
+        <div class="invoice-bottom">
+
+            <div class="invoice-notes">
+                <strong>Catatan Pesanan</strong>
+                <p>
+                    {{ $order->notes ?: 'Terima kasih telah mempercayakan kebutuhan katering Anda kepada FoodFlow.' }}
+                </p>
+            </div>
+
+            <div class="invoice-total">
+                <div>
+                    <span>Total Porsi</span>
+                    <strong>{{ $order->details->sum('quantity') }} porsi</strong>
+                </div>
+
+                <div class="invoice-grand-total">
+                    <span>Grand Total</span>
+                    <strong>{{ $order->formattedTotal() }}</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Invoice -->
+        <div class="invoice-footer">
+            <div class="invoice-thanks">
+                <h3>TERIMA KASIH</h3>
+                <p>Terima kasih atas kepercayaan Anda kepada FoodFlow.</p>
+            </div>
+
+            <div class="invoice-signature">
+                <span>Petugas FoodFlow</span>
+                <div class="signature-space"></div>
+                <strong>{{ $order->creator?->name ?? 'Admin FoodFlow' }}</strong>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Akhir Invoice khusus cetak -->
 
         <!-- Modal ringkasan invoice -->
         <div x-show="showInvoiceModal" x-cloak class="no-print fixed inset-0 z-50 overflow-y-auto"
@@ -383,27 +497,352 @@
 
     <!-- Print Media Stylesheet -->
     <style>
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-            }
+        
+/* =====================================
+   INVOICE FOODFLOW - PRINT STYLE
+===================================== */
 
-            .no-print,
-            header,
-            nav,
-            aside {
-                display: none !important;
-            }
+.invoice-sheet {
+    width: 100%;
+    max-width: 190mm;
+    margin: 0 auto;
+    padding: 0;
+    color: #202938;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
 
-            .print-only {
-                display: block !important;
-            }
+/* HEADER */
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 24px;
+    background: #485d80;
+    color: #fff;
+}
 
-            #printable-order-details {
-                border: 1px solid #ddd !important;
-                box-shadow: none !important;
-            }
-        }
+.invoice-company h1 {
+    margin: 0;
+    font-size: 23pt;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.invoice-company p {
+    margin: 3px 0;
+    font-size: 11pt;
+    font-weight: 600;
+}
+
+.invoice-company span {
+    display: block;
+    margin-top: 14px;
+    font-size: 9pt;
+    color: #e5eaf2;
+}
+
+.invoice-title {
+    min-width: 210px;
+    text-align: right;
+}
+
+.invoice-title h2 {
+    margin: 0;
+    font-size: 31pt;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.invoice-title > strong {
+    display: block;
+    margin: 5px 0 12px;
+    font-size: 12pt;
+}
+
+.invoice-date {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+    font-size: 8.5pt;
+}
+
+.invoice-date span {
+    color: #dce5f0;
+}
+
+/* GARIS AKSEN */
+.invoice-accent {
+    height: 9px;
+    background: #b6d7df;
+}
+
+/* INFORMASI PELANGGAN */
+.invoice-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 25px 8px;
+}
+
+.invoice-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 8pt;
+    font-weight: 700;
+    color: #596579;
+}
+
+.invoice-customer h3 {
+    margin: 0 0 6px;
+    font-size: 15pt;
+    font-weight: 700;
+}
+
+.invoice-customer p {
+    margin: 3px 0;
+    font-size: 9pt;
+    line-height: 1.4;
+}
+
+.invoice-amount {
+    min-width: 220px;
+    text-align: right;
+}
+
+.invoice-amount strong {
+    display: block;
+    color: #485d80;
+    font-size: 23pt;
+    font-weight: 700;
+}
+
+.invoice-status {
+    display: block;
+    margin-top: 6px;
+    color: #596579;
+    font-size: 8.5pt;
+}
+
+/* TABEL PESANAN */
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 9pt;
+}
+
+.invoice-table thead {
+    background: #485d80;
+    color: #fff;
+}
+
+.invoice-table th {
+    padding: 10px;
+    text-align: right;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.invoice-table th:first-child {
+    text-align: left;
+}
+
+.invoice-table td {
+    padding: 12px 10px;
+    text-align: right;
+    vertical-align: top;
+    border-bottom: 1px solid #e3e7ed;
+}
+
+.invoice-table td:first-child {
+    text-align: left;
+}
+
+.invoice-table tbody tr:nth-child(even) {
+    background: #f2f4f7;
+}
+
+.invoice-table td strong {
+    display: block;
+    font-size: 9.5pt;
+}
+
+.invoice-table td small {
+    display: block;
+    margin-top: 3px;
+    color: #687386;
+    font-size: 8pt;
+}
+
+.invoice-item-total {
+    font-weight: 700;
+}
+
+.invoice-empty {
+    text-align: center !important;
+    color: #687386;
+}
+
+/* RINGKASAN TOTAL */
+.invoice-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-top: 28px;
+    padding: 18px 8px 0;
+    border-top: 2px solid #485d80;
+}
+
+.invoice-notes {
+    max-width: 105mm;
+}
+
+.invoice-notes strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10pt;
+}
+
+.invoice-notes p {
+    margin: 0;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.invoice-total {
+    width: 65mm;
+    background: #485d80;
+    color: #fff;
+}
+
+.invoice-total > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 10px;
+    font-size: 9pt;
+}
+
+.invoice-grand-total {
+    border-top: 1px solid rgba(255,255,255,.4);
+    font-weight: 700;
+}
+
+/* FOOTER */
+.invoice-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    margin-top: 40px;
+    padding: 0 8px;
+}
+
+.invoice-thanks {
+    text-align: right;
+}
+
+.invoice-thanks h3 {
+    margin: 0;
+    font-size: 15pt;
+    font-weight: 700;
+}
+
+.invoice-thanks p {
+    margin-top: 4px;
+    font-size: 9pt;
+    font-style: italic;
+    color: #596579;
+}
+
+.invoice-signature {
+    min-width: 55mm;
+    text-align: center;
+}
+
+.invoice-signature span {
+    display: block;
+    font-size: 9pt;
+}
+
+.signature-space {
+    height: 45px;
+    border-bottom: 1px solid #485d80;
+    margin-bottom: 6px;
+}
+
+.invoice-signature strong {
+    font-size: 9pt;
+}
+
+/* PENGATURAN CETAK */
+@page {
+    size: A4 portrait;
+    margin: 12mm;
+}
+
+@media print {
+
+    html,
+    body {
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #202938 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Sembunyikan seluruh halaman aplikasi */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* Tampilkan hanya invoice */
+    .print-only,
+    .print-only * {
+        visibility: visible !important;
+    }
+
+    .print-only {
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    .invoice-sheet {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .invoice-header,
+    .invoice-table thead,
+    .invoice-total {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .invoice-header,
+    .invoice-info,
+    .invoice-table tr,
+    .invoice-bottom,
+    .invoice-footer {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
     </style>
 </x-app-layout>
